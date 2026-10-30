@@ -13,12 +13,25 @@ FIND_ID = "fnd_test123"
 
 def _row(ordinal, name, url):
     return {
+        "entity_id": f"e{ordinal}",
         "ordinal": ordinal,
         "details": [
             {"label": "Organization", "display": name, "provenance": {"source_url": url, "observed_at": "2026-10-14T19:56:02Z"}},
             {"label": "Website", "display": f"https://{name.lower()}.example"},
             {"label": "source_url", "display": "clashes"},
         ],
+    }
+
+
+def _flat(row):
+    """The API's flat row: the page of each value, and of the fact that put the row in the list."""
+    name = row["details"][0]
+    return {
+        "id": f"{FIND_ID}:{row['entity_id']}",
+        "name": name["display"],
+        "name_source": name["provenance"]["source_url"],
+        "source_url": f"{name['provenance']['source_url']}/filing",
+        "checked_at": "2026-10-14T19:56:02Z",
     }
 
 
@@ -43,7 +56,8 @@ class FakeApi:
         if path == "/v1/capacity/executions":
             return {"find_id": FIND_ID}
         if "/rows" in path:
-            return self.pages.pop(0) if len(self.pages) > 1 else self.pages[0]
+            page = self.pages.pop(0) if len(self.pages) > 1 else self.pages[0]
+            return {**page, "flat_rows": [_flat(row) for row in page["rows"]]}
         raise AssertionError(path)
 
     def paths(self):
@@ -71,7 +85,7 @@ def test_rows_become_documents_with_source_in_meta(fake):
     fake()
     result = _fetcher().run(request="Breweries in Portland")
     docs = result["documents"]
-    assert [d.meta["source_url"] for d in docs] == ["https://src/a", "https://src/b"]
+    assert [d.meta["source_url"] for d in docs] == ["https://src/a/filing", "https://src/b/filing"]
     first = docs[0]
     assert json.loads(first.content)["Organization"] == "Alpha"
     assert first.meta["checked_at"] == "2026-10-14T19:56:02Z"

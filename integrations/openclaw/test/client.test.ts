@@ -7,19 +7,30 @@ const client = (fetch: typeof globalThis.fetch, extra: Record<string, unknown> =
   new SpecStreamClient({ apiKey: "ss_live_test", fetch, sleep: async () => {}, now: () => Date.parse("2026-10-15T10:30:00Z"), ...extra });
 
 describe("flattenRow", () => {
-  it("keeps the source page and renames columns that collide with row fields", () => {
+  it("takes the pages from the API's flat row and renames columns that collide with row fields", () => {
+    const flat = {
+      id: "fnd_1:e1",
+      name: "Acme",
+      name_source: "https://acme.example/about",
+      lead_source: "Referral",
+      source_url: "https://www.sec.gov/filing",
+      checked_at: "2026-10-16T00:00:00Z",
+    };
     const row = flattenRow("fnd_1", {
       ordinal: 3,
-      details: [cell("source_url", "x"), cell("Name", "Acme", "https://acme.example/about"), { label: "Phone", absence: "not_found" }],
-    });
+      details: [cell("source_url", "x"), cell("name_source", "y"), cell("Name", "Acme", "https://acme.example/about"), { label: "Phone", absence: "not_found" }],
+    }, flat);
+    expect(row.lead_source).toBeUndefined();
     expect(row).toMatchObject({
       list_id: "fnd_1",
       position: 3,
       Name: "Acme",
       Phone: "",
       "source_url (column)": "x",
-      source_url: "https://example.org/a",
-      checked_at: "2026-10-15T10:00:00Z",
+      "name_source (column)": "y",
+      name_source: "https://acme.example/about",
+      source_url: "https://www.sec.gov/filing",
+      checked_at: "2026-10-16T00:00:00Z",
       list_link: "https://specstream.ai/workspace/collections/fnd_1",
     });
   });
@@ -32,7 +43,7 @@ describe("findList", () => {
 
     expect(result).toMatchObject({ state: "completed", list_id: "fnd_new", row_count: 1, maximum_price_usd: 2.5 });
     if (!("rows" in result)) throw new Error("expected rows");
-    expect(result.rows[0]).toMatchObject({ Name: "Acme Dental", source_url: "https://example.org/a" });
+    expect(result.rows[0]).toMatchObject({ Name: "Acme Dental", name_source: "https://example.org/a", source_url: "https://example.org/filing" });
 
     const paths = server.calls.map((call) => `${call.method} ${call.path.split("?")[0]}`);
     expect(paths.filter((p) => p.startsWith("POST"))).toEqual(["POST /v1/parse", "POST /v1/capacity/quotes", "POST /v1/capacity/executions"]);

@@ -2,7 +2,7 @@
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "specstream",
   "version": "1.2.0",
-  "description": "SpecStream for Hermes: ask for a list in plain words and get every match with the page behind each fact. You see the price first and approve it; you pay only for matches.",
+  "description": "SpecStream for Hermes: ask for a list in plain words and get every match with the page behind each fact. You see the price first and approve it; you pay for each result delivered.",
   "author": {
     "name": "SpecStream",
     "email": "support@specstream.ai",

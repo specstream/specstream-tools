@@ -29,7 +29,7 @@ export const findListAction = createAction({
     }),
     count: Property.Number({
       displayName: 'Number of Results',
-      description: 'How many matching rows to find. You pay only for rows that match.',
+      description: 'How many matching rows to find. You pay for each row delivered.',
       required: true,
       defaultValue: 25,
     }),

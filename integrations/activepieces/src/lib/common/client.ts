@@ -13,7 +13,7 @@ export const specstreamApi = { call, statusOf, listLink, runKey, isAllowedUrl };
 // Fields every row carries; a column with the same name is renamed so it can't overwrite them.
 const RESERVED = new Set(['id', 'list_id', 'list_link', 'position', 'source_url', 'checked_at', '__proto__']);
 const FINISHED = new Set(['completed', 'partial']);
-export const specstreamRows = { flatten, latest, columnName };
+export const specstreamRows = { flatten, flattenAll, latest, columnName };
 export const specstreamWebhook = { verify };
 
 async function call<T>({
@@ -115,10 +115,11 @@ type Cell = {
 };
 
 export type ListRecord = { entity_id: string; ordinal?: number; cells?: Cell[] };
+// The API's flat row for a record: its fields with each value's page and the row's source page.
+export type FlatRow = Record<string, unknown>;
 
-// One row as flat fields a flow can map: each column's label holds what the list shows,
-// plus the page the row's first value was read from and the link to the list. The built-in fields
-// always win: a column whose label is one of them, or repeats an earlier column, gets " (column)" added.
+// The built-in fields always win: a column whose label is one of them, or repeats an earlier column,
+// gets " (column)" added.
 function columnName(label: string, taken: Set<string>): string {
   if (!RESERVED.has(label) && !taken.has(label)) return label;
   let name = `${label} (column)`;
@@ -126,26 +127,44 @@ function columnName(label: string, taken: Set<string>): string {
   return name;
 }
 
-function flatten(listId: string, record: ListRecord): Record<string, unknown> {
+// Each value's page in the API's flat row: <field>_source beside the <field> it belongs to.
+function sourcesOf(flat: FlatRow | undefined): Record<string, unknown> {
+  const sources: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(flat ?? {})) {
+    if (key.endsWith('_source') && Object.hasOwn(flat ?? {}, key.slice(0, -7))) sources[key] = value;
+  }
+  return sources;
+}
+
+// One row as flat fields a flow can map: each column's label holds what the list shows. The page of each
+// value (<field>_source) and of the fact that put the row in the list (source_url, checked_at) come from
+// the API's flat row, so every tool shows the same pages.
+function flatten(listId: string, record: ListRecord, flat?: FlatRow): Record<string, unknown> {
   const row: Record<string, unknown> = {
     id: `${listId}:${record.entity_id}`,
     list_id: listId,
     list_link: listLink(listId),
     position: record.ordinal,
   };
-  const taken = new Set<string>();
-  let source: Cell['provenance'] = null;
+  const sources = sourcesOf(flat);
+  const taken = new Set<string>(Object.keys(sources));
   for (const cell of record.cells ?? []) {
     const label = String(cell.label ?? cell.column_id ?? '').trim();
     if (!label) continue;
     const name = columnName(label, taken);
     taken.add(name);
     row[name] = cell.display ?? cell.value ?? '';
-    if (!source && cell.provenance?.source_url) source = cell.provenance;
   }
-  row['source_url'] = source?.source_url ?? '';
-  row['checked_at'] = source?.observed_at ?? '';
+  Object.assign(row, sources);
+  row['source_url'] = flat?.['source_url'] ?? '';
+  row['checked_at'] = flat?.['checked_at'] ?? '';
   return row;
+}
+
+// Every record of a rows page or a delivery as a flat row, each with its own flat row's pages.
+function flattenAll(listId: string, records: ListRecord[] | undefined, flatRows: FlatRow[] | undefined): Record<string, unknown>[] {
+  const byId = new Map((flatRows ?? []).map((flat) => [String(flat['id']), flat]));
+  return (records ?? []).map((record) => flatten(listId, record, byId.get(`${listId}:${record.entity_id}`)));
 }
 
 type FindInfo = { find_id: string; status?: string; created_at?: string; updated_at?: string };
@@ -176,13 +195,13 @@ async function latest(apiKey: string, limit = 3): Promise<Record<string, unknown
   const dateOf = (find: FindInfo) => Date.parse(find.updated_at ?? find.created_at ?? '') || 0;
   const finished = finds.filter((find) => FINISHED.has(String(find.status))).sort((x, y) => dateOf(y) - dateOf(x));
   for (const find of finished) {
-    const page = await call<{ find_id: string; status: string; rows: ListRecord[] }>({
+    const page = await call<{ find_id: string; status: string; rows: ListRecord[]; flat_rows?: FlatRow[] }>({
       apiKey,
       method: HttpMethod.GET,
       path: `/v1/finds/${encodeURIComponent(find.find_id)}/rows`,
     });
     if (FINISHED.has(page.status) && page.rows?.length) {
-      return page.rows.slice(0, limit).map((record) => flatten(page.find_id, record));
+      return flattenAll(page.find_id, page.rows.slice(0, limit), page.flat_rows);
     }
   }
   return [];

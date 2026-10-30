@@ -39,29 +39,43 @@ function columnName(label, taken) {
   return name;
 }
 
-// One row as flat fields: each column's label holds what the list shows, plus the page the
-// row's first value was read from and the link to the list.
-function flattenRow(listId, record) {
+// The API's flat row for each record of a page or a delivery, by the row ID both carry.
+function flatRowsById(flatRows) {
+  return new Map((flatRows || []).map((flat) => [String(flat.id), flat]));
+}
+
+// Each value's page in the API's flat row: <field>_source beside the <field> it belongs to.
+function sourcesOf(flat) {
+  const sources = {};
+  for (const [key, value] of Object.entries(flat || {})) {
+    if (key.endsWith("_source") && Object.hasOwn(flat, key.slice(0, -7))) sources[key] = value;
+  }
+  return sources;
+}
+
+// One row as flat fields: each column's label holds what the list shows. The page of each value
+// (<field>_source) and of the fact that put the row in the list (source_url, checked_at) come from
+// the API's flat row, so every tool shows the same pages.
+function flattenRow(listId, record, flat) {
   const row = {
     id: `${listId}:${String(record.entity_id)}`,
     list_id: listId,
     list_link: `https://specstream.ai/workspace/collections/${listId}`,
     position: record.ordinal,
   };
-  const taken = new Set();
-  let source;
+  const sources = sourcesOf(flat);
+  const taken = new Set(Object.keys(sources));
   for (const cell of record.cells || []) {
     const label = String(cell.label || cell.column_id || "").trim();
     if (!label) continue;
     const name = columnName(label, taken);
     taken.add(name);
     row[name] = cell.display ?? cell.value ?? "";
-    const provenance = cell.provenance;
-    if (!source && provenance && provenance.source_url) source = provenance;
   }
-  row.source_url = (source && source.source_url) || "";
-  row.checked_at = (source && source.observed_at) || "";
+  Object.assign(row, sources);
+  row.source_url = (flat && flat.source_url) || "";
+  row.checked_at = (flat && flat.checked_at) || "";
   return row;
 }
 
-module.exports = { DEFAULT_BASE, columnName, flattenRow, resolveBase, runKey };
+module.exports = { DEFAULT_BASE, columnName, flatRowsById, flattenRow, resolveBase, runKey };

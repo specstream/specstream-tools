@@ -1,6 +1,6 @@
 # @specstream/openclaw-plugin
 
-Ask your OpenClaw agent for a list and get the whole list back. "Dental clinics in Lisbon with online booking, with their website and phone." Every row comes from the live web with the page it was read from, so you can open it and look. You pay per match, and a search that finds nothing costs nothing.
+Ask your OpenClaw agent for a list and get the whole list back. "Dental clinics in Lisbon with online booking, with their website and phone." Every row comes from the live web with the page it was read from, so you can open it and look. You pay for each result delivered, and a search that finds nothing costs nothing.
 
 [SpecStream](https://specstream.ai) is the live web data engine for teams and agents. This plugin gives OpenClaw two tools for it and, if you want the full conversation with SpecStream, four skills.
 

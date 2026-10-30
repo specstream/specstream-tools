@@ -1,6 +1,6 @@
 [project]
 name = "specstream-haystack"
-version = "0.1.1"
+version = "0.1.2"
 description = "Give a Haystack pipeline or agent lead lists, company lists and grants from the live web. Every row comes with its source, priced per match in code."
 readme = "README.md"
 requires-python = ">=3.10"

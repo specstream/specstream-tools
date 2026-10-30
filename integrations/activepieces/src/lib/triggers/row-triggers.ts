@@ -6,6 +6,7 @@ import {
 import { HttpMethod } from '@activepieces/pieces-common';
 import { specstreamAuth } from '../auth';
 import {
+  FlatRow,
   ListRecord,
   specstreamApi,
   specstreamRows,
@@ -13,7 +14,7 @@ import {
 } from '../common/client';
 
 type Hook = { hook_id: string; secret: string };
-type Delivery = { id: string; event: string; find_id: string; records?: ListRecord[] };
+type Delivery = { id: string; event: string; find_id: string; records?: ListRecord[]; flat_rows?: FlatRow[] };
 
 const STORE_KEY = 'specstream_webhook';
 
@@ -100,7 +101,7 @@ function rowTrigger({
       if (!verified) return [];
       const body = context.payload.body as Delivery;
       if (body?.event !== event || !body.find_id) return [];
-      return (body.records ?? []).map((record) => specstreamRows.flatten(body.find_id, record));
+      return specstreamRows.flattenAll(body.find_id, body.records, body.flat_rows);
     },
   });
 }

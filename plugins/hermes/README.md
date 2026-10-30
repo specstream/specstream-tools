@@ -1,6 +1,6 @@
 # SpecStream for Hermes Agent
 
-SpecStream hands your agent the finished list. Describe it in plain words ("food banks in Texas, with their annual revenue") and get every matching row from the live web, each with the page it was read from. Hermes sees the price before anything runs, you approve a maximum, and you pay only for the matches. A search that finds nothing costs nothing.
+SpecStream hands your agent the finished list. Describe it in plain words ("food banks in Texas, with their annual revenue") and get every matching row from the live web, each with the page it was read from. Hermes sees the price before anything runs, you approve a maximum, and you pay for each result delivered. A search that finds nothing costs nothing.
 
 This is a portable [Agent Plugins v1](https://agent-plugins.org) package for [Hermes Agent](https://hermes-agent.nousresearch.com). It ships no code and installs no dependencies:
 
@@ -64,7 +64,7 @@ Your request and your answers to the price go to `api.specstream.ai` over HTTPS,
 
 ## Price
 
-A list runs only after you approve its maximum price, and you pay only for matching rows, from 10 cents each. Possible candidates that were not confirmed are never billed. [Pricing](https://specstream.ai/pricing) · [API docs](https://specstream.ai/docs/api) · support@specstream.ai
+A list runs only after you approve its maximum price, and you pay for each row delivered, from 10 cents each. Possible candidates that were not confirmed are never billed. [Pricing](https://specstream.ai/pricing) · [API docs](https://specstream.ai/docs/api) · support@specstream.ai
 
 ## Unattended runs
 

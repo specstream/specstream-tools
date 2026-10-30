@@ -80,7 +80,7 @@ export class SpecStreamSettingTab extends PluginSettingTab {
 			},
 			{
 				name: "Spending limit per request",
-				desc: "The most one list may cost, in dollars. The maximum price is shown before anything runs, and a price above this limit can't be approved here. You only pay for rows that match.",
+				desc: "The most one list may cost, in dollars. The maximum price is shown before anything runs, and a price above this limit can't be approved here. You pay for each row delivered.",
 				control: {
 					type: "number",
 					key: "spendingLimit",

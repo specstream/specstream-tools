@@ -4,7 +4,7 @@ from typing import Any
 from dify_plugin import Tool
 from dify_plugin.entities.tool import ToolInvokeMessage
 
-from tools.client import SpecStreamClient, flatten, list_link
+from tools.client import SpecStreamClient, flatten_page, list_link
 
 
 class GetListResultsTool(Tool):
@@ -21,6 +21,6 @@ class GetListResultsTool(Tool):
                 "status": page.get("status"),
                 "number_of_rows": page.get("accepted_count", 0),
                 "list_link": list_link(list_id),
-                "rows": [flatten(list_id, record) for record in page.get("rows") or []],
+                "rows": flatten_page(list_id, page),
             }
         )

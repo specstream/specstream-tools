@@ -1,8 +1,8 @@
 # SpecStream for Open WebUI
 
-Ask your model for a list and get the whole list. Every roofer in Columbus rated 4.5 or better, every food bank in Texas with its revenue, every company that filed to raise $5M or more this week. SpecStream reads the live web where those things are kept and hands back every matching row with the page it came from.
+Live web data for your model. Ask in plain words and get every match: every roofer in Columbus rated 4.5 or better, every food bank in Texas with its revenue, every company that filed to raise $5M or more this week. SpecStream reads the live web where those things are kept and hands back every match, each value with the page it came from.
 
-You see the price before anything runs, and you pay only for the matches: 10¢, 30¢ or $1 a row. New accounts start with $10 of work, no card.
+You see the price before anything runs, and you pay for each result delivered: 10¢, 30¢ or $1 a row, and 5¢ for a company left out for a detail you marked as needed. New accounts start with $10 of work, no card.
 
 Two ways to connect it. Pick one.
 

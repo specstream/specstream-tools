@@ -56,7 +56,7 @@ describe("tools", () => {
     const result = await tools.specstream_find_list.execute("call-1", { request: "dental clinics in Lisbon", max_results: 10 });
 
     expect(result.details).toMatchObject({ state: "completed", list_id: "fnd_new" });
-    expect(result.details.rows[0].source_url).toBe("https://example.org/a");
+    expect(result.details.rows[0].source_url).toBe("https://example.org/filing");
     expect(server.calls.find((call) => call.path === "/v1/capacity/quotes")?.body?.requested_units).toBe(10);
   });
 

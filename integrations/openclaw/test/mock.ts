@@ -43,7 +43,10 @@ export function listServer(options: { maximumCents?: number; status?: string; ex
     if (call.path === "/v1/capacity/quotes") return { data: { quote_id: "q1", quote_hash: "b".repeat(64), maximum_cents: maximumCents } };
     if (call.path === "/v1/capacity/executions") return { data: { find_id: "fnd_new" } };
     if (call.path.startsWith("/v1/finds/")) {
-      return { data: { status, rows: [{ ordinal: 1, details: [cell("Name", "Acme Dental"), cell("Phone", "")] }], next_cursor: null } };
+      const rows = [{ entity_id: "e1", ordinal: 1, details: [cell("Name", "Acme Dental"), cell("Phone", "")] }];
+      // The API's flat rows carry the page of each value and of the fact that put the row in the list.
+      const flat_rows = [{ id: "fnd_new:e1", name: "Acme Dental", name_source: "https://example.org/a", source_url: "https://example.org/filing", checked_at: "2026-10-15T10:00:00Z" }];
+      return { data: { status, rows, flat_rows, next_cursor: null } };
     }
     return undefined;
   });

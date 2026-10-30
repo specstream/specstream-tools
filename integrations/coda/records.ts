@@ -78,6 +78,20 @@ export function columnsOf(rows: any[]): Column[] {
   return [...columns.values()];
 }
 
+// The columns a new table shows: each column that has a value in some record, followed by its source
+// when some value has one, up to five columns. Empty columns stay in the table, hidden.
+export function shownColumns(records: Record[], columns: Column[], limit = 5): string[] {
+  const has = (column: Column, part: "value" | "source") =>
+    records.some((record) => {
+      const cell = record.cells.get(column.id);
+      return Boolean(cell && cell[part]);
+    });
+  return columns
+    .filter((column) => has(column, "value"))
+    .slice(0, limit)
+    .flatMap((column) => (has(column, "source") ? [column.key, `${column.key}_source`] : [column.key]));
+}
+
 // One Coda row: the record's IDs, then each value and the page it came from.
 export function codaRow(record: Record, columns: Column[]): { [key: string]: string | null } {
   const out: { [key: string]: string | null } = { record_id: record.recordId, entity_id: record.entityId };

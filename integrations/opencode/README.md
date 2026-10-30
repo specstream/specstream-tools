@@ -1,6 +1,6 @@
 # opencode-specstream
 
-SpecStream plugin for [OpenCode](https://opencode.ai). SpecStream is the live web data engine for teams and agents: describe a list in plain words ("roofing companies in Columbus, Ohio with their website and phone") and get every matching row, each with the page it came from. You see the price first, you approve a ceiling, and you pay per match. A search that finds nothing costs nothing.
+SpecStream plugin for [OpenCode](https://opencode.ai). SpecStream is the live web data engine for teams and agents: describe a list in plain words ("roofing companies in Columbus, Ohio with their website and phone") and get every matching row, each with the page it came from. You see the price first, you approve a ceiling, and You pay for each result delivered. A search that finds nothing costs nothing.
 
 The plugin does two things when OpenCode starts:
 

@@ -86,7 +86,7 @@ export function registerParticipant(context: vscode.ExtensionContext): vscode.Di
     stream.markdown(
       `Up to ${quote.units} matches for **at most ${price}**` +
         (quote.unitCents !== null ? ` (${money(quote.unitCents, quote.currency)} a match)` : "") +
-        `. You pay only for the matches, and a search that finds nothing costs nothing.\n\n` +
+        `. You pay for each result delivered, and a search that finds nothing costs nothing.\n\n` +
         `Nothing has run. Approve this price to start.\n`,
     );
     stream.button({ command: "specstream.approve", title: `Run for up to ${price}`, arguments: [quote.quoteId] });

@@ -5,4 +5,4 @@ from llama_index.tools.specstream.base import SpecStreamToolSpec
 from llama_index.tools.specstream.retriever import SpecStreamRetriever
 
 __all__ = ["SpecStreamError", "SpecStreamRetriever", "SpecStreamToolSpec"]
-__version__ = "0.1.2"
+__version__ = "0.1.3"

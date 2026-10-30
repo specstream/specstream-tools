@@ -4,7 +4,7 @@ Ask for a list in plain words and get it in your note as a table. Every row link
 
 "Food banks in Texas, with their annual revenue." "Every roofer in Columbus rated 4.5 or better, with a phone number." "Companies that filed to raise $5M or more this week." You type it, you see the price, you click once, and the rows land where your cursor is. No forty tabs, no copy and paste, no "here are the first ten."
 
-[SpecStream](https://specstream.ai) is the live web data engine for teams and agents. It reads the live web, brings back every match, and you pay only for the matches. This plugin is the Obsidian door into it.
+[SpecStream](https://specstream.ai) is the live web data engine for teams and agents. It reads the live web, brings back every match, and you pay for each result delivered. This plugin is the Obsidian door into it.
 
 ## What lands in your note
 
@@ -44,7 +44,7 @@ The key is kept in Obsidian's secret storage, not in your vault and not in the p
 Nothing is bought without your click.
 
 1. You write the request. The plugin asks SpecStream to read it and price it. Nothing runs, nothing is charged.
-2. You see the maximum price for the row count you chose. It is a ceiling: you pay only for rows that match, and a search that finds nothing costs nothing.
+2. You see the maximum price for the row count you chose. It is a ceiling: you pay for each row delivered, and a search that finds nothing costs nothing.
 3. If the maximum is above your spending limit, the approve button stays off. Ask for fewer rows or raise the limit in settings.
 4. You click **Approve**. That approves exactly that quote at exactly that maximum, and the plugin starts the list.
 

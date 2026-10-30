@@ -1,5 +1,5 @@
 import * as coda from "@codahq/packs-sdk";
-import { codaRow, columnsOf, dollars, listIdOf, readRecord, runKey, withCount } from "./records";
+import { codaRow, columnsOf, dollars, listIdOf, readRecord, runKey, shownColumns, withCount } from "./records";
 
 export const pack = coda.newPack();
 
@@ -15,6 +15,13 @@ pack.setUserAuthentication({
     const me = await call(context, "GET", "/v1/me");
     return me.email;
   },
+});
+
+// Superhuman Go and Go agents reach every SpecStream tool through our MCP server, with the same key.
+pack.addMCPServer({
+  name: "SpecStream",
+  endpointUrl: `${API}/mcp`,
+  searchToolNames: ["search_workspace"],
 });
 
 // One SpecStream API call. Errors come back with SpecStream's own words, such as a refused key.
@@ -163,12 +170,12 @@ pack.addDynamicSyncTable({
         description: `The page ${column.label.toLowerCase()} was read from.`,
       };
     }
-    const shown = columns.map((column) => column.key);
+    const shown = shownColumns((list.rows || []).map(readRecord), columns);
     return coda.makeObjectSchema({
       properties,
       idProperty: "record_id",
       displayProperty: shown[0] || "record_id",
-      featuredProperties: shown.slice(0, 6),
+      featuredProperties: shown,
       identity: { name: "Record", dynamicUrl: context.sync.dynamicUrl },
     });
   },
@@ -206,7 +213,7 @@ const PriceSchema = coda.makeObjectSchema({
     maximumPrice: {
       type: coda.ValueType.Number,
       codaType: coda.ValueHintType.Currency,
-      description: "The most the list can cost. You pay only for the results that match.",
+      description: "The most the list can cost. You pay for each result delivered.",
     },
     freeBelow: {
       type: coda.ValueType.Number,

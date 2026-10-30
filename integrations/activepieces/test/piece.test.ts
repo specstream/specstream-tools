@@ -44,12 +44,23 @@ test('run key is stable for the same request in the same UTC hour and changes ot
   assert.equal(specstreamApi.runKey({ ...base, override: ' my-own-key-1 ' }), 'my-own-key-1');
 });
 
-test('columns named like built-in fields never overwrite them', () => {
+test('columns named like built-in fields never overwrite them, and the pages come from the flat row', () => {
   const cell = (label: string, display: string) => ({ label, display });
-  const row = specstreamRows.flatten('fnd_1', {
+  const flat = {
+    id: 'fnd_1:e1',
+    name: 'Acme',
+    name_source: 'https://a.example/p',
+    rating: '4.6',
+    rating_source: 'https://maps.example/acme',
+    lead_source: 'Referral',
+    source_url: 'https://www.sec.gov/filing',
+    checked_at: '2026-10-16T00:00:00Z',
+  };
+  const [row] = specstreamRows.flattenAll('fnd_1', [{
     entity_id: 'e1',
     ordinal: 3,
     cells: [
+      cell('rating_source', 'x'),
       { ...cell('id', 'col-id'), provenance: { source_url: 'https://a.example/p', observed_at: '2026-10-15T00:00:00Z' } },
       cell('list_id', 'col-list'),
       cell('list_link', 'col-link'),
@@ -60,13 +71,16 @@ test('columns named like built-in fields never overwrite them', () => {
       cell('Name', 'Acme'),
       cell('Name', 'Acme again'),
     ],
-  });
+  }], [flat]);
   assert.equal(row['id'], 'fnd_1:e1');
   assert.equal(row['list_id'], 'fnd_1');
   assert.equal(row['list_link'], 'https://specstream.ai/workspace/collections/fnd_1');
   assert.equal(row['position'], 3);
-  assert.equal(row['source_url'], 'https://a.example/p');
-  assert.equal(row['checked_at'], '2026-10-15T00:00:00Z');
+  assert.equal(row['source_url'], 'https://www.sec.gov/filing');
+  assert.equal(row['checked_at'], '2026-10-16T00:00:00Z');
+  assert.deepEqual([row['name_source'], row['rating_source']], ['https://a.example/p', 'https://maps.example/acme']);
+  assert.equal(row['rating_source (column)'], 'x');
+  assert.equal(row['lead_source'], undefined);
   assert.equal(row['id (column)'], 'col-id');
   assert.equal(row['id (column) (column)'], 'second');
   assert.equal(row['list_id (column)'], 'col-list');

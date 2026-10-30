@@ -1,9 +1,9 @@
 import { createAction, Property } from '@activepieces/pieces-framework';
 import { HttpMethod } from '@activepieces/pieces-common';
 import { specstreamAuth } from '../auth';
-import { ListRecord, specstreamApi, specstreamRows } from '../common/client';
+import { FlatRow, ListRecord, specstreamApi, specstreamRows } from '../common/client';
 
-type RowsPage = { find_id: string; status: string; accepted_count: number; rows: ListRecord[] };
+type RowsPage = { find_id: string; status: string; accepted_count: number; rows: ListRecord[]; flat_rows?: FlatRow[] };
 
 export const getListResultsAction = createAction({
   auth: specstreamAuth,
@@ -35,7 +35,7 @@ export const getListResultsAction = createAction({
       status: page.status,
       number_of_rows: page.accepted_count,
       list_link: specstreamApi.listLink(page.find_id),
-      rows: (page.rows ?? []).map((record) => specstreamRows.flatten(page.find_id, record)),
+      rows: specstreamRows.flattenAll(page.find_id, page.rows, page.flat_rows),
     };
   },
 });

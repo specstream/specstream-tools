@@ -1,0 +1,33 @@
+{
+  "name": "@specstream/framer-plugin",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "SpecStream for Framer: ask for live web data in plain words, approve the price, and sync the records into a Framer CMS collection, each with its source.",
+  "license": "MIT",
+  "homepage": "https://specstream.ai/docs/integrations",
+  "scripts": {
+    "dev": "vite",
+    "typecheck": "tsc",
+    "build": "vite build",
+    "test": "rm -rf .test-build && tsc -p tsconfig.test.json && echo '{\"type\":\"commonjs\"}' > .test-build/package.json && node --test .test-build/test/*.test.js",
+    "check": "npm run typecheck && npm test && npm run build",
+    "pack": "npx framer-plugin-tools@1.2.2 pack",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@framer/plugin": "^5.1.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^18.3.24",
+    "@types/react-dom": "^18.3.7",
+    "@vitejs/plugin-react": "^6.0.1",
+    "typescript": "^5.9.2",
+    "vite": "^8.0.16",
+    "vite-plugin-framer": "^1.1.1",
+    "vite-plugin-mkcert": "^1.17.8"
+  }
+}

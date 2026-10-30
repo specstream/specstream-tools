@@ -1,6 +1,6 @@
 # @specstream/sdk
 
-TypeScript client for [SpecStream](https://specstream.ai), the live web data engine for teams and agents. Describe the list you need in plain words; SpecStream reads the web where those things live, hands back only the matches, each with the page it came from, and you pay only for the matches.
+TypeScript client for [SpecStream](https://specstream.ai), the live web data engine for teams and agents. Describe the list you need in plain words; SpecStream reads the web where those things live, hands back only the matches, each with the page it came from, and you pay for each result delivered.
 
 The client has no runtime dependencies and needs Node 22 or newer. It uses the same account, permissions, projects and balance as the workspace.
 

@@ -8,7 +8,7 @@ import unittest
 from typing import Any
 
 from specstream_client.client import Client
-from specstream_client.families import FAMILIES
+from specstream_client.families import FAMILIES, assert_family
 
 
 class _FakeResponse:
@@ -32,6 +32,12 @@ class ClientTests(unittest.TestCase):
         for family in ("software_repository", "dataset", "organization", "grant", "tender"):
             self.assertIn(family, FAMILIES)
         self.assertNotIn("company", FAMILIES)
+
+    def test_any_kind_name_is_a_valid_entity_type(self):
+        self.assertEqual(assert_family("organization"), "organization")
+        self.assertEqual(assert_family("wine_estate"), "wine_estate")
+        with self.assertRaises(ValueError):
+            assert_family("  ")
 
     def test_no_obsolete_spending_or_sample_methods(self):
         client = Client("fixture-key")

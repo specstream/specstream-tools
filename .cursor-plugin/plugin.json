@@ -1,7 +1,7 @@
 {
   "name": "specstream",
   "version": "1.0.0",
-  "description": "Teams and agents get the finished list (companies, people, products and more) from the live web, every row with its source, paid per match. Ask in plain words from Cursor and approve the price before anything runs.",
+  "description": "Teams and agents get the finished list (companies, people, products and more) from the live web, every row with its source, priced per result. Ask in plain words from Cursor and approve the price before anything runs.",
   "author": {
     "name": "SpecStream",
     "email": "support@specstream.ai"

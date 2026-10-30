@@ -15,9 +15,19 @@ function cell(label: string, value: unknown, source?: string) {
 }
 
 const ROWS = [
-  { ordinal: 1, cells: [cell("Organization", "Clínica Sorriso", "https://sorriso.pt/marcacoes"), cell("Website", "https://sorriso.pt")] },
-  { ordinal: 2, cells: [cell("Organization", "Dentes de Lisboa", "https://dentesdelisboa.pt"), { ...cell("Website", null), absence: "Not published" }] },
+  { entity_id: "e1", ordinal: 1, cells: [cell("Organization", "Clínica Sorriso", "https://sorriso.pt/marcacoes"), cell("Website", "https://sorriso.pt")] },
+  { entity_id: "e2", ordinal: 2, cells: [cell("Organization", "Dentes de Lisboa", "https://dentesdelisboa.pt"), { ...cell("Website", null), absence: "Not published" }] },
 ];
+
+/** The API's flat rows: the page of each value, and of the fact that put the row in the list. */
+const FLAT: Record<string, Record<string, unknown>> = {
+  e1: { id: "fnd_1:e1", name: "Clínica Sorriso", name_source: "https://sorriso.pt/marcacoes", source_url: "https://filings.example/e1", checked_at: "2026-10-15T09:00:00Z" },
+  e2: { id: "fnd_1:e2", name: "Dentes de Lisboa", name_source: "https://dentesdelisboa.pt", source_url: "https://filings.example/e2", checked_at: "2026-10-15T09:00:00Z" },
+};
+const withFlat = (data: { status: string; rows: typeof ROWS; next_cursor: string | null }) => ({
+  ...data,
+  flat_rows: data.rows.map((row) => FLAT[row.entity_id]),
+});
 
 type Call = { method: string; path: string; body: any; headers: Record<string, string> };
 
@@ -53,10 +63,10 @@ class FakeSpecStream {
     if (url.pathname === "/v1/capacity/quotes") return reply({ quote_id: "cqt_1", quote_hash: "b".repeat(64), maximum_cents: this.opts.maximumCents ?? 250 });
     if (url.pathname === "/v1/capacity/executions") return reply({ find_id: "fnd_1", state: "running" });
     if (url.pathname === "/v1/finds/fnd_1/rows") {
-      if (url.searchParams.get("cursor") === "page-2") return reply({ status: "completed", rows: ROWS.slice(1), next_cursor: null });
+      if (url.searchParams.get("cursor") === "page-2") return reply(withFlat({ status: "completed", rows: ROWS.slice(1), next_cursor: null }));
       this.polls += 1;
-      if (this.polls === 1) return reply({ status: "running", rows: [], next_cursor: null });
-      return reply({ status: "completed", rows: ROWS.slice(0, 1), next_cursor: "page-2" });
+      if (this.polls === 1) return reply(withFlat({ status: "running", rows: [], next_cursor: null }));
+      return reply(withFlat({ status: "completed", rows: ROWS.slice(0, 1), next_cursor: "page-2" }));
     }
     throw new Error(`unexpected call ${init?.method} ${url.pathname}`);
   };
@@ -98,8 +108,9 @@ describe("specstream_find_list", () => {
     expect(result.maximum_price_usd).toBe(2.5);
     const [first, second] = result.rows;
     expect(first.Organization).toBe("Clínica Sorriso");
-    expect(first.source_url).toBe("https://sorriso.pt/marcacoes");
-    expect(first.checked_at).toBe("2026-10-14T08:00:00Z");
+    expect(first.source_url).toBe("https://filings.example/e1");
+    expect(first.checked_at).toBe("2026-10-15T09:00:00Z");
+    expect(first.name_source).toBe("https://sorriso.pt/marcacoes");
     expect(second.Website).toBe("");
     const run = fake.body("/v1/capacity/executions");
     expect(run.confirm_max_cents).toBe(250);
@@ -280,7 +291,7 @@ describe("the key", () => {
     expect(fake.calls.length).toBeGreaterThan(0);
     for (const call of fake.calls) {
       expect(call.headers.Authorization).toBe(`Bearer ${KEY}`);
-      expect(call.headers["User-Agent"]).toBe("@specstream/ai-sdk/0.1.2");
+      expect(call.headers["User-Agent"]).toBe("@specstream/ai-sdk/0.1.3");
     }
     expect(JSON.stringify(result)).not.toContain(KEY);
   });
@@ -340,13 +351,17 @@ describe("errors", () => {
 });
 
 describe("flattenRow", () => {
-  it("renames a column that would overwrite a field every row carries", () => {
+  it("renames a column that would overwrite a field every row carries, and takes the pages from the flat row", () => {
+    const flat = { id: "fnd_9:e1", title: "Head of sales", title_source: "https://example.com/team", lead_source: "Referral", source_url: "https://example.com/team" };
     const row = flattenRow("fnd_9", {
       ordinal: 3,
-      details: [cell("position", "Head of sales", "https://example.com/team"), cell("source_url", "https://other.example")],
-    });
+      details: [cell("position", "Head of sales", "https://example.com/team"), cell("source_url", "https://other.example"), cell("title_source", "x")],
+    }, flat);
     expect(row["position (column)"]).toBe("Head of sales");
     expect(row["source_url (column)"]).toBe("https://other.example");
+    expect(row["title_source (column)"]).toBe("x");
+    expect(row.title_source).toBe("https://example.com/team");
+    expect(row.lead_source).toBeUndefined();
     expect(row.position).toBe(3);
     expect(row.source_url).toBe("https://example.com/team");
     expect(row.list_link).toBe("https://specstream.ai/workspace/collections/fnd_9");

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { Client, FAMILIES } from "../dist/index.js";
+import { Client, FAMILIES, assertFamily } from "../dist/index.js";
 
 const approval = { quote_id: "cqt_fixture", quote_hash: "a".repeat(64), confirm_max_cents: 900, idempotency_key: "reviewed-request-001" };
 
@@ -8,6 +8,12 @@ test("supported public targets are broad and canonical", () => {
   assert.equal(FAMILIES.length, new Set(FAMILIES).size);
   for (const target of ["software_repository", "dataset", "organization", "grant"]) assert.ok(FAMILIES.includes(target));
   assert.ok(!FAMILIES.includes("company"));
+});
+
+test("any kind name is a valid entity_type", () => {
+  assert.equal(assertFamily("organization"), "organization");
+  assert.equal(assertFamily("wine_estate"), "wine_estate");
+  assert.throws(() => assertFamily("  "));
 });
 
 test("obsolete spending and sample methods do not exist", () => {

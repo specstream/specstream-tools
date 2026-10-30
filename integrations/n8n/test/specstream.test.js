@@ -1,7 +1,7 @@
 "use strict";
 
 const assert = require("assert");
-const { flattenRow, resolveBase, runKey } = require("../lib/specstream");
+const { flatRowsById, flattenRow, resolveBase, runKey } = require("../lib/specstream");
 
 // Credentials go only to https://api.specstream.ai.
 assert.strictEqual(resolveBase(""), "https://api.specstream.ai");
@@ -29,12 +29,24 @@ assert.notStrictEqual(a, runKey({ ...base, request: "Plumbers", now: new Date("2
 assert.notStrictEqual(a, runKey({ ...base, maxPrice: 6, now: new Date("2026-10-15T10:30:00Z") }));
 assert.strictEqual(runKey({ ...base, override: " my-own-key-1 " }), "my-own-key-1");
 
-// Columns named like built-in fields never overwrite them.
+// Columns named like built-in fields never overwrite them. The pages come from the API's flat row:
+// the filing that put the row in the list, not the first value's page.
 const cell = (label, display, provenance) => ({ label, display, provenance });
+const flat = {
+  id: "fnd_1:e1",
+  name: "Acme",
+  name_source: "https://a.example/p",
+  rating: "4.6",
+  rating_source: "https://maps.example/acme",
+  lead_source: "Referral",
+  source_url: "https://www.sec.gov/filing",
+  checked_at: "2026-10-16T00:00:00Z",
+};
 const row = flattenRow("fnd_1", {
   entity_id: "e1",
   ordinal: 3,
   cells: [
+    cell("rating_source", "x"),
     cell("id", "col-id", { source_url: "https://a.example/p", observed_at: "2026-10-15T00:00:00Z" }),
     cell("list_id", "x"),
     cell("list_link", "x"),
@@ -46,13 +58,16 @@ const row = flattenRow("fnd_1", {
     cell("Name", "Acme"),
     cell("Name", "Acme again"),
   ],
-});
+}, flatRowsById([flat]).get("fnd_1:e1"));
 assert.strictEqual(row.id, "fnd_1:e1");
 assert.strictEqual(row.list_id, "fnd_1");
 assert.strictEqual(row.list_link, "https://specstream.ai/workspace/collections/fnd_1");
 assert.strictEqual(row.position, 3);
-assert.strictEqual(row.source_url, "https://a.example/p");
-assert.strictEqual(row.checked_at, "2026-10-15T00:00:00Z");
+assert.strictEqual(row.source_url, "https://www.sec.gov/filing");
+assert.strictEqual(row.checked_at, "2026-10-16T00:00:00Z");
+assert.deepStrictEqual([row.name_source, row.rating_source], ["https://a.example/p", "https://maps.example/acme"]);
+assert.strictEqual(row["rating_source (column)"], "x");
+assert.strictEqual(row.lead_source, undefined);
 assert.strictEqual(row["id (column)"], "col-id");
 assert.strictEqual(row["id (column) (column)"], "second");
 assert.strictEqual(row["source_url (column)"], "col-src");

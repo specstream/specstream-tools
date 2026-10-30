@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from typing import Any, Callable
 
 DEFAULT_BASE_URL = "https://api.specstream.ai"
-USER_AGENT = "specstream-haystack/0.1.1"
+USER_AGENT = "specstream-haystack/0.1.2"
 # A list runs for up to about five minutes, so the tools wait a little longer than that by default.
 DEFAULT_WAIT_SECONDS = 420.0
 FINISHED = {"completed", "partial"}
@@ -35,15 +35,23 @@ def list_link(find_id: str) -> str:
     return f"https://specstream.ai/workspace/collections/{urllib.parse.quote(find_id, safe='')}"
 
 
-def flatten_row(find_id: str, record: dict[str, Any]) -> dict[str, Any]:
-    """One row as flat fields: each column's label holds what the list shows, plus where the row was read."""
+def _sources(flat: dict[str, Any]) -> dict[str, Any]:
+    """Each value's page in the API's flat row: <field>_source beside the <field> it belongs to."""
+    return {key: value for key, value in flat.items() if key.endswith("_source") and key[: -len("_source")] in flat}
+
+
+def flatten_row(find_id: str, record: dict[str, Any], flat: dict[str, Any] | None = None) -> dict[str, Any]:
+    """One row as flat fields: each column's label holds what the list shows. The page of each value
+    (<field>_source) and of the fact that put the row in the list (source_url, checked_at) come from
+    the API's flat row, so every tool shows the same pages."""
+    flat = flat or {}
+    sources = _sources(flat)
     row: dict[str, Any] = {"list_id": find_id, "position": record.get("ordinal")}
-    source: dict[str, Any] | None = None
     for cell in record.get("details") or record.get("cells") or []:
         label = str(cell.get("label") or cell.get("column_id") or "").strip()
         if not label:
             continue
-        if label in RESERVED:
+        if label in RESERVED or label in sources:
             label = f"{label} (column)"
         if cell.get("absence"):
             value: Any = ""
@@ -52,11 +60,9 @@ def flatten_row(find_id: str, record: dict[str, Any]) -> dict[str, Any]:
         else:
             value = cell.get("value") if cell.get("value") is not None else ""
         row[label] = value
-        provenance = cell.get("provenance") or {}
-        if source is None and str(provenance.get("source_url") or "").startswith("http"):
-            source = provenance
-    row["source_url"] = source.get("source_url", "") if source else ""
-    row["checked_at"] = source.get("observed_at", "") if source else ""
+    row.update(sources)
+    row["source_url"] = flat.get("source_url") or ""
+    row["checked_at"] = flat.get("checked_at") or ""
     row["list_link"] = list_link(find_id)
     return row
 
@@ -115,7 +121,11 @@ class SpecStreamAPI:
             query = {"limit": "100", **({"cursor": cursor} if cursor else {})}
             page = self.request("GET", f"/v1/finds/{urllib.parse.quote(find_id, safe='')}/rows?{urllib.parse.urlencode(query)}") or {}
             status = page.get("status") or status
-            rows.extend(flatten_row(find_id, record) for record in page.get("rows") or [])
+            flat = {str(item.get("id")): item for item in page.get("flat_rows") or []}
+            rows.extend(
+                flatten_row(find_id, record, flat.get(f"{find_id}:{record.get('entity_id')}"))
+                for record in page.get("rows") or []
+            )
             cursor = page.get("next_cursor")
             if not cursor:
                 break

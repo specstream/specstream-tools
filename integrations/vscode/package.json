@@ -1,7 +1,7 @@
 {
   "name": "specstream",
   "displayName": "SpecStream: lead lists and web data for agents",
-  "description": "Ask Copilot or your agent for a lead list, a company list or open grants. Every match comes from the live web, with its source. Pay per match.",
+  "description": "Ask Copilot or your agent for a lead list, a company list or open grants. Every match comes from the live web, with its source. Priced per match.",
   "version": "0.1.6",
   "publisher": "specstream",
   "license": "MIT",

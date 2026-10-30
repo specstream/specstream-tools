@@ -1,6 +1,6 @@
 # SpecStream for Pi
 
-Ask for any list in plain words and get every match from the live web, each row with the page it was read from: lead lists, company lists, grants, jobs, places. You see the price before anything runs and pay only for the matching rows, from 10 cents each.
+Ask for any list in plain words and get every match from the live web, each row with the page it was read from: lead lists, company lists, grants, jobs, places. You see the price before anything runs and pay for each row delivered, from 10 cents each.
 
 This is a [Pi package](https://pi.dev/packages). It adds the hosted [SpecStream](https://specstream.ai) MCP server and four skills, so Pi reads your request back, gets the price, asks you to approve it, and returns the finished list.
 

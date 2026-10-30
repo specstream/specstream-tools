@@ -26,7 +26,11 @@ export const FAMILIES = [
   "person",
 ] as const;
 
-export type EntityType = (typeof FAMILIES)[number];
+/** A record kind the service names today. FAMILIES lists them; they are examples, not a limit. */
+export type KnownEntityType = (typeof FAMILIES)[number];
+
+/** A record kind is an open string: any kind name a reading gives is valid. */
+export type EntityType = KnownEntityType | (string & {});
 
 export const DEFAULT_BASE_URL = "https://api.specstream.ai";
 
@@ -55,10 +59,10 @@ export class SpecstreamError extends Error {
 }
 
 export function assertFamily(entityType: string): EntityType {
-  if (!(FAMILIES as readonly string[]).includes(entityType)) {
-    throw new Error(`unsupported entity_type ${entityType}`);
+  if (typeof entityType !== "string" || !entityType.trim()) {
+    throw new Error("entity_type must be a non-empty string");
   }
-  return entityType as EntityType;
+  return entityType;
 }
 
 export type FetchFn = (input: string, init?: RequestInit) => Promise<Response>;
@@ -95,7 +99,7 @@ export class Client {
     }
   }
 
-  families(): readonly EntityType[] {
+  families(): readonly KnownEntityType[] {
     return FAMILIES;
   }
 
@@ -504,8 +508,22 @@ export class Client {
     return this.request("POST", path, request) as Promise<Schemas["CapacityExecutionData"]>;
   }
 
+  startCapacityRequest(request: Schemas["CapacityStartRequest"]): Promise<Schemas["CapacityStartData"]> {
+    let path = `/v1/capacity/requests`;
+    return this.request("POST", path, request) as Promise<Schemas["CapacityStartData"]>;
+  }
+
   getCapacityRequest(requestKey: string, query: { "project_id"?: string; } = {}): Promise<{ [key: string]: unknown; }> {
     let path = `/v1/capacity/requests/${encodeURIComponent(requestKey)}`;
+    const queryString = new URLSearchParams();
+    for (const [key, value] of Object.entries(query))
+      if (value !== undefined && value !== null) queryString.set(key, String(value));
+    if (queryString.size) path += "?" + queryString.toString();
+    return this.request("GET", path) as Promise<{ [key: string]: unknown; }>;
+  }
+
+  getCapacityRequestRows(requestKey: string, query: { "project_id"?: string; "cursor"?: string; "limit"?: number; } = {}): Promise<{ [key: string]: unknown; }> {
+    let path = `/v1/capacity/requests/${encodeURIComponent(requestKey)}/rows`;
     const queryString = new URLSearchParams();
     for (const [key, value] of Object.entries(query))
       if (value !== undefined && value !== null) queryString.set(key, String(value));
@@ -1104,7 +1122,7 @@ export class Client {
       Authorization: token,
       Accept: "application/json",
       "Content-Type": "application/json",
-      "User-Agent": "specstream-typescript/1.1.1",
+      "User-Agent": "specstream-typescript/1.2.0",
     };
   }
 

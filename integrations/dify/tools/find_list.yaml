@@ -27,7 +27,7 @@ parameters:
     label:
       en_US: Number of results
     human_description:
-      en_US: How many matching rows to find. You pay only for rows that match.
+      en_US: How many matching rows to find. You pay for each row delivered.
     llm_description: How many matching rows to find, from 1 to 1000.
   - name: max_price_usd
     type: number

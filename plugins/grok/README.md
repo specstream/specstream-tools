@@ -1,6 +1,6 @@
 # SpecStream plugin for Grok Build
 
-Ask for any list in plain words and get the whole list from the live web: lead lists, company lists, grants, jobs, places. Every row comes with the page it was read from. You see the price before anything runs and pay only for the matching rows, from 10 cents each. A search that finds nothing costs nothing.
+Ask for any list in plain words and get the whole list from the live web: lead lists, company lists, grants, jobs, places. Every row comes with the page it was read from. You see the price before anything runs and pay for each row delivered, from 10 cents each. A search that finds nothing costs nothing.
 
 [SpecStream](https://specstream.ai) is the live web data engine for teams and agents. This plugin connects Grok Build to SpecStream's hosted MCP server and adds four skills for the flow: read the request back, get the price, approve it, read and send the rows.
 

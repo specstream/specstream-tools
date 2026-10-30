@@ -38,7 +38,9 @@ def _parser() -> argparse.ArgumentParser:
         "--ast", required=True, type=argparse.FileType("r"), help="AST JSON file or -"
     )
     options = sub.add_parser("spec-options", help="Read supported conditions and return facts")
-    options.add_argument("target", choices=FAMILIES)
+    options.add_argument(
+        "target", help="A record kind, for example: " + ", ".join(FAMILIES[:4])
+    )
     for command, help_text in (
         ("get", "Inspect an owned Find"),
         ("rows", "Read Matches with evidence"),

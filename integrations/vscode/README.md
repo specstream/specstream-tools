@@ -16,7 +16,7 @@ SpecStream is the live web data engine for teams and agents. This extension adds
 
 1. Say what you need in plain words.
 2. SpecStream shows the price. Nothing runs yet.
-3. Press **Run for up to $X**. You pay only for the matches, and a search that finds nothing costs nothing.
+3. Press **Run for up to $X**. You pay for each result delivered, and a search that finds nothing costs nothing.
 4. The matches stream into chat as a table, each with a link to its source.
 5. Press **Open in workspace** to send them to your sheet, CRM or agent, or save the request so new matches arrive on their own.
 

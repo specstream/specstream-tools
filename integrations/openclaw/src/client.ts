@@ -1,7 +1,7 @@
 /** The SpecStream REST calls the tools share: read a request, price it, start it within a maximum, read its rows. */
 
 export const BASE_URL = "https://api.specstream.ai";
-export const USER_AGENT = "@specstream/openclaw-plugin/0.1.0";
+export const USER_AGENT = "@specstream/openclaw-plugin/0.1.1";
 /** A list runs for up to about five minutes, so the default wait is just under that. */
 export const DEFAULT_WAIT_SECONDS = 300;
 export const DEFAULT_POLL_INTERVAL_SECONDS = 3;
@@ -104,25 +104,39 @@ type Cell = {
   provenance?: { source_url?: unknown; observed_at?: unknown } | null;
 };
 
-type RawRecord = { ordinal?: number | null; details?: Cell[] | null; cells?: Cell[] | null };
+type RawRecord = { entity_id?: unknown; ordinal?: number | null; details?: Cell[] | null; cells?: Cell[] | null };
+/** The API's flat row for a record: its fields with each value's page and the row's source page. */
+type FlatRow = Record<string, unknown>;
 
-/** Flattens one record into a row: each column label maps to what the list shows, plus where the row was read. */
-export function flattenRow(findId: string, record: RawRecord): ListRow {
+/** Each value's page in the API's flat row: <field>_source beside the <field> it belongs to. */
+function sourcesOf(flat: FlatRow | undefined): Record<string, unknown> {
+  const sources: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(flat ?? {})) {
+    if (key.endsWith("_source") && Object.prototype.hasOwnProperty.call(flat, key.slice(0, -7))) sources[key] = value;
+  }
+  return sources;
+}
+
+/**
+ * One row as flat fields: each column's label holds what the list shows. The page of each value (<field>_source)
+ * and of the fact that put the row in the list (source_url, checked_at) come from the API's flat row, so every
+ * tool shows the same pages.
+ */
+export function flattenRow(findId: string, record: RawRecord, flat?: FlatRow): ListRow {
   const row: Record<string, unknown> = { list_id: findId, position: record.ordinal ?? null };
-  let source: { source_url?: unknown; observed_at?: unknown } | null = null;
+  const sources = sourcesOf(flat);
   const cells = record.details?.length ? record.details : (record.cells ?? []);
   for (const cell of cells) {
     let label = String(cell.label || cell.column_id || "").trim();
     if (!label) continue;
-    if (RESERVED.has(label)) label = `${label} (column)`;
+    if (RESERVED.has(label) || label in sources) label = `${label} (column)`;
     if (cell.absence) row[label] = "";
     else if (cell.display != null) row[label] = cell.display;
     else row[label] = cell.value ?? "";
-    const provenance = cell.provenance || {};
-    if (source === null && String(provenance.source_url || "").startsWith("http")) source = provenance;
   }
-  row.source_url = source ? (source.source_url ?? "") : "";
-  row.checked_at = source ? (source.observed_at ?? "") : "";
+  Object.assign(row, sources);
+  row.source_url = flat?.source_url ?? "";
+  row.checked_at = flat?.checked_at ?? "";
   row.list_link = listLink(findId);
   return row as ListRow;
 }
@@ -223,7 +237,10 @@ export class SpecStreamClient {
       const page: Record<string, unknown> =
         (await this.request("GET", `/v1/finds/${encodeURIComponent(findId)}/rows?${query}`, undefined, { abortSignal })) ?? {};
       state = typeof page.status === "string" && page.status ? page.status : state;
-      for (const record of Array.isArray(page.rows) ? (page.rows as RawRecord[]) : []) rows.push(flattenRow(findId, record));
+      const flat = new Map((Array.isArray(page.flat_rows) ? (page.flat_rows as FlatRow[]) : []).map((item) => [String(item.id), item]));
+      for (const record of Array.isArray(page.rows) ? (page.rows as RawRecord[]) : []) {
+        rows.push(flattenRow(findId, record, flat.get(`${findId}:${String(record.entity_id)}`)));
+      }
       const next: string | null = typeof page.next_cursor === "string" && page.next_cursor ? page.next_cursor : null;
       if (!next || next === cursor) break;
       cursor = next;

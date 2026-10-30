@@ -3,15 +3,16 @@ title: SpecStream
 author: SpecStream
 author_url: https://specstream.ai
 git_url: https://github.com/specstream/specstream-tools
-description: Ask for a list in plain words and get every matching row from the live web, each with the page it came from. You see the price first and pay only for the matches.
+description: Live web data for your model. Describe what you need in plain words and get every match from the live web, each value with the page it came from. See the price first and pay for each result delivered.
 required_open_webui_version: 0.6.31
-version: 1.0.0
+version: 1.0.1
 license: MIT
 """
 
 import asyncio
 import hashlib
 import json
+import re
 import time
 import urllib.error
 import urllib.parse
@@ -51,7 +52,7 @@ def _send(api_key: str, method: str, path: str, body: Optional[dict] = None) -> 
         headers={
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json",
-            "User-Agent": "specstream-open-webui/1.0.0",
+            "User-Agent": "specstream-open-webui/1.0.1",
         },
     )
     try:
@@ -66,8 +67,13 @@ def _send(api_key: str, method: str, path: str, body: Optional[dict] = None) -> 
             code = error.get("code")
         except ValueError:
             pass
-        if exc.code in (401, 403) or (exc.code == 404 and message == "This page isn't available."):
+        if exc.code == 401 or (exc.code == 404 and message == "This page isn't available."):
             message = "SpecStream did not accept this API key. Check the key in the tool's Valves."
+        elif exc.code == 403:
+            message = (
+                "This API key doesn't have permission for this. In SpecStream, open Agents & API and create a key "
+                "that can prepare work, authorize paid work and read the balance."
+            )
         raise SpecStreamError(message, exc.code, code) from None
     except (urllib.error.URLError, OSError, ValueError):
         raise SpecStreamError("Could not reach SpecStream. Try again in a moment.") from None
@@ -79,6 +85,20 @@ def _send(api_key: str, method: str, path: str, body: Optional[dict] = None) -> 
 
 def _dollars(cents: Any) -> float:
     return round(int(cents or 0) / 100, 2)
+
+
+def _money(cents: Any) -> str:
+    return f"${int(cents or 0) / 100:.2f}"
+
+
+def _distance(a: str, b: str) -> int:
+    """Edit distance, to tell a quote_id the model copied with a slip from the one it was given."""
+    row = list(range(len(b) + 1))
+    for i, x in enumerate(a, 1):
+        prev, row[0] = row[0], i
+        for j, y in enumerate(b, 1):
+            prev, row[j] = row[j], min(row[j] + 1, row[j - 1] + 1, prev + (x != y))
+    return row[-1]
 
 
 def _flatten(record: dict) -> dict:
@@ -141,8 +161,20 @@ class Tools:
 
     def __init__(self) -> None:
         self.valves = self.Valves()
+        # The quotes this tool gave out, per person, newest last.
+        self._quoted: dict[str, list[str]] = {}
 
     # Helpers start with an underscore so Open WebUI does not offer them to the model.
+
+    def _quote_meant(self, quote_id: str, user: Optional[dict]) -> str:
+        """The quote this tool gave out that the model meant. Smaller models often copy a long ID with
+        one character dropped or changed; a near match to exactly one quote given to this person is
+        that quote. Its price is still looked up again and still approved by the person."""
+        issued = self._quoted.get(str((user or {}).get("id") or ""), [])
+        if not issued or quote_id in issued:
+            return quote_id
+        near = [q for q in issued if _distance(q, quote_id) <= 2]
+        return near[0] if len(near) == 1 else quote_id
 
     def _key(self, user: Optional[dict]) -> str:
         own = ""
@@ -243,7 +275,12 @@ class Tools:
             reading = await asyncio.to_thread(
                 _send, key, "POST", "/v1/parse", {"q": request, "locale": "en-US"}
             )
-            read_as = reading.get("canonical_sentence")
+            # read_back is the reading in plain words; its leading count is the parser's default,
+            # so it is dropped here and the rows asked for are given separately.
+            read_as = reading.get("read_back") or reading.get("canonical_sentence")
+            if read_as:
+                read_as = re.sub(r"^\d[\d,]*\s+", "", read_as)
+                read_as = read_as[:1].upper() + read_as[1:]
             if reading.get("status") != "runnable" or not reading.get("ast_hash"):
                 await self._status(__event_emitter__, "Needs a clearer request", True)
                 return {
@@ -260,6 +297,9 @@ class Tools:
                 "/v1/capacity/quotes",
                 {"ast_hash": reading["ast_hash"], "operation": "find", "requested_units": count},
             )
+            issued = self._quoted.setdefault(str((__user__ or {}).get("id") or ""), [])
+            issued.append(quote["quote_id"])
+            del issued[:-20]
             cap = self._cap_cents(__user__)
             maximum = int(quote["maximum_cents"])
             terms = quote.get("terms") or {}
@@ -304,7 +344,7 @@ class Tools:
     ) -> dict:
         """
         Start the list from a quote the person has approved, then return the rows found. This spends money,
-        up to the quoted maximum and never more, and only for matches. Call it only after the person has
+        up to the quoted maximum and never more, and only for what the run used. Call it only after the person has
         seen the price from quote_list and said yes. Never guess a quote_id.
 
         :param quote_id: The quote_id returned by quote_list.
@@ -312,6 +352,7 @@ class Tools:
         """
         try:
             key = self._key(__user__)
+            quote_id = self._quote_meant(str(quote_id or "").strip(), __user__)
             quote = await asyncio.to_thread(
                 _send, key, "GET", f"/v1/capacity/quotes/{urllib.parse.quote(quote_id, safe='')}"
             )
@@ -320,7 +361,7 @@ class Tools:
             if maximum > cap:
                 return {
                     "status": "not_started",
-                    "message": f"The most it can cost, ${_dollars(maximum)}, is above the spending cap of ${_dollars(cap)}. Nothing ran and nothing was charged.",
+                    "message": f"The most it can cost, {_money(maximum)}, is above the spending cap of {_money(cap)}. Nothing ran and nothing was charged.",
                 }
             if quote.get("can_authorize") is False:
                 return {
@@ -345,7 +386,7 @@ class Tools:
                                 "type": "confirmation",
                                 "data": {
                                     "title": "Start this list?",
-                                    "message": f"SpecStream will read the web for this list. It can cost at most ${_dollars(maximum)} and you pay only for the matches.",
+                                    "message": f"SpecStream will read the web for this list. It can cost at most {_money(maximum)} and you pay for each result delivered.",
                                 },
                             }
                         )
@@ -357,7 +398,7 @@ class Tools:
                     elif not user_said_yes:
                         return {
                             "status": "not_started",
-                            "message": f"Ask the person first: the most this list can cost is ${_dollars(maximum)}. Call approve_list again with user_said_yes=true after they agree.",
+                            "message": f"Ask the person first: the most this list can cost is {_money(maximum)}. Call approve_list again with user_said_yes=true after they agree.",
                         }
                 await self._status(__event_emitter__, "Starting the list")
                 started = await asyncio.to_thread(

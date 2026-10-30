@@ -23,7 +23,8 @@ describe("generateText with specstreamTools", () => {
       if (url.pathname === "/v1/capacity/executions") return reply({ find_id: "fnd_1" });
       return reply({
         status: "completed",
-        rows: [{ ordinal: 1, cells: [{ label: "Organization", display: "RapidCanvas Inc", provenance: { source_url: "https://www.sec.gov/x" } }] }],
+        rows: [{ entity_id: "e1", ordinal: 1, cells: [{ label: "Organization", display: "RapidCanvas Inc", provenance: { source_url: "https://rapidcanvas.example" } }] }],
+        flat_rows: [{ id: "fnd_1:e1", name: "RapidCanvas Inc", name_source: "https://rapidcanvas.example", source_url: "https://www.sec.gov/x" }],
       });
     }) as typeof fetch;
 

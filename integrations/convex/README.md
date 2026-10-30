@@ -22,7 +22,7 @@ const page = await specstream.listRows(ctx, {
 });
 ```
 
-[SpecStream](https://specstream.ai) is the live web data engine for teams and agents. You pay only for the matches, and a search that finds nothing costs nothing. A free account starts with $10 of work to use within 30 days and needs no card.
+[SpecStream](https://specstream.ai) is the live web data engine for teams and agents. You pay for each result delivered, and a search that finds nothing costs nothing. A free account starts with $10 of work to use within 30 days and needs no card.
 
 ## What you get
 
@@ -135,7 +135,7 @@ if (quote.status === "quoted") {
 }
 ```
 
-The maximum is a ceiling. You pay only for rows that match. Approving the same quote twice starts one list, and an expired quote runs nothing.
+The maximum is a ceiling. You pay for each row delivered. Approving the same quote twice starts one list, and an expired quote runs nothing.
 
 ## Read the rows
 
@@ -294,7 +294,7 @@ To use the real service, remove `SPECSTREAM_API_URL` and set a real key. See the
 
 ## FAQ
 
-**What does a list cost?** The quote shows the maximum before anything runs. You pay only for rows that match, and a search that finds nothing costs nothing. Rates are on the [pricing page](https://specstream.ai/pricing).
+**What does a list cost?** The quote shows the maximum before anything runs. You pay for each row delivered, and a search that finds nothing costs nothing. Rates are on the [pricing page](https://specstream.ai/pricing).
 
 **Can the model or the browser raise the price?** No. The maximum is an argument in your server code. `confirmMaxCents` has to match the quote the component saved.
 

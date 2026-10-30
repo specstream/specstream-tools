@@ -15,7 +15,7 @@ from specstream_client.authorization import require_work_authorization
 from specstream_client.families import FAMILIES
 
 DEFAULT_BASE_URL = "https://api.specstream.ai"
-USER_AGENT = "specstream-python/1.1.1"
+USER_AGENT = "specstream-python/1.2.0"
 
 OpenFn = Callable[[urllib.request.Request, float], Any]
 
@@ -676,6 +676,11 @@ class Client:
         require_work_authorization(request)
         return self._request("POST", path, request)
 
+    def start_capacity_request(self, request: dict[str, Any]) -> dict[str, Any]:
+        """Ask for a list in plain words and run it within a maximum price, answering at once."""
+        path = "/v1/capacity/requests"
+        return self._request("POST", path, request)
+
     def get_capacity_request(
         self,
         request_key: str,
@@ -686,6 +691,32 @@ class Client:
         path = f"/v1/capacity/requests/{quote_path(request_key, safe='')}"
         query: dict[str, Any] = {
             "project_id": project_id,
+        }
+        encoded = urlencode(
+            {
+                key: str(value).lower() if isinstance(value, bool) else value
+                for key, value in query.items()
+                if value is not None
+            }
+        )
+        if encoded:
+            path += "?" + encoded
+        return self._request("GET", path, None)
+
+    def get_capacity_request_rows(
+        self,
+        request_key: str,
+        *,
+        project_id: str | None = None,
+        cursor: str | None = None,
+        limit: int | None = None,
+    ) -> dict[str, Any]:
+        """Read where the request asked with this key stands and the rows it found so far."""
+        path = f"/v1/capacity/requests/{quote_path(request_key, safe='')}/rows"
+        query: dict[str, Any] = {
+            "project_id": project_id,
+            "cursor": cursor,
+            "limit": limit,
         }
         encoded = urlencode(
             {

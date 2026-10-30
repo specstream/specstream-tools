@@ -106,9 +106,10 @@ export class Backend {
 }
 
 function toMatch(row: Json): Match {
-  let sourceUrl: string | null = null;
+  // A compact row names its main source once and a cell names its own only when it differs.
+  let sourceUrl: string | null = row.source_url ?? null;
   const cells = (row.cells ?? []).map((c: Json) => {
-    sourceUrl ??= c.provenance?.source_url ?? null;
+    sourceUrl ??= c.source_url ?? c.provenance?.source_url ?? null;
     const value = c.display ?? (c.value === null || c.value === undefined ? "" : typeof c.value === "object" ? JSON.stringify(c.value) : String(c.value));
     return { label: String(c.label ?? c.column_id ?? ""), text: String(value) };
   });

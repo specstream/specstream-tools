@@ -1,6 +1,6 @@
 import { strict as assert } from "node:assert";
 import { test } from "node:test";
-import { codaRow, columnKey, columnsOf, listIdOf, readRecord, runKey, withCount } from "../records";
+import { codaRow, columnKey, columnsOf, listIdOf, readRecord, runKey, shownColumns, withCount } from "../records";
 
 const found = {
   ordinal: 3,
@@ -23,6 +23,14 @@ test("found records keep each value with its page, and a value not found stays e
   assert.equal(row.maps_phone_source, "https://maps.example/ace");
   assert.equal(row.web_email, null);
   assert.equal(row.open, undefined);
+});
+
+test("a new table shows each value beside its page and hides columns no record has", () => {
+  const columns = columnsOf([found]);
+  assert.deepEqual(shownColumns([readRecord(found)], columns), ["identity", "identity_source", "maps_phone", "maps_phone_source"]);
+  const imported = readRecord({ id: "r1", provided: { Company: "Acme", Employees: 40 } });
+  assert.deepEqual(shownColumns([imported], columnsOf([{ id: "r1", provided: { Company: "Acme", Employees: 40 } }])), ["Company", "Employees"]);
+  assert.deepEqual(shownColumns([readRecord(found)], columns, 1), ["identity", "identity_source"]);
 });
 
 test("imported and combined rows read like found ones", () => {

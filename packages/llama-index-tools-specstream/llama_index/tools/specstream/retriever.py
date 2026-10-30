@@ -66,14 +66,18 @@ class SpecStreamRetriever(BaseRetriever):
             raise SpecStreamError(result["message"])
         nodes = []
         for row in result["rows"]:
-            facts = "\n".join(f"{label}: {value}" for label, value in row.items() if label not in _META and value not in ("", None))
+            # Each value's page (<field>_source) goes in the metadata beside the row's own source.
+            sources = {key: value for key, value in row.items() if key.endswith("_source")}
+            facts = "\n".join(
+                f"{label}: {value}" for label, value in row.items() if label not in _META and label not in sources and value not in ("", None)
+            )
             node = TextNode(
                 id_=f"{row['list_id']}:{row['position']}",
                 text=facts,
-                metadata={key: row.get(key) for key in _META} | {"request": result.get("request")},
+                metadata={key: row.get(key) for key in _META} | sources | {"request": result.get("request")},
                 # The model sees each row's facts and the page behind them; the bookkeeping stays out of its prompt.
                 excluded_llm_metadata_keys=["list_id", "list_link", "position", "request"],
-                excluded_embed_metadata_keys=list(_META) + ["request"],
+                excluded_embed_metadata_keys=list(_META) + list(sources) + ["request"],
             )
             nodes.append(NodeWithScore(node=node, score=None))
         return nodes

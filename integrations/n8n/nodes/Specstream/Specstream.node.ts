@@ -9,7 +9,7 @@ import type {
 import { NodeConnectionTypes, NodeOperationError } from "n8n-workflow";
 
 import { requireConfirmMaxUsd } from "../../lib/confirm_max_usd.js";
-import { flattenRow, resolveBase, runKey } from "../../lib/specstream.js";
+import { flatRowsById, flattenRow, resolveBase, runKey } from "../../lib/specstream.js";
 
 export class Specstream implements INodeType {
   description: INodeTypeDescription = {
@@ -58,7 +58,7 @@ export class Specstream implements INodeType {
         typeOptions: { minValue: 1 },
         default: 25,
         required: true,
-        description: "How many matching rows to find. You pay only for rows that match.",
+        description: "How many matching rows to find. You pay for each row delivered.",
         displayOptions: { show: { operation: ["findList"] } },
       },
       {
@@ -298,8 +298,10 @@ export class Specstream implements INodeType {
         const listId = String(this.getNodeParameter("list_id", i) || "").trim();
         const page = await call("GET", `/v1/finds/${encodeURIComponent(listId)}/rows`);
         const rows = (page.rows as IDataObject[] | undefined) || [];
+        const flat = flatRowsById(page.flat_rows as IDataObject[] | undefined);
         for (const record of rows) {
-          out.push({ json: { ...flattenRow(String(page.find_id), record), list_status: page.status as string }, pairedItem: { item: i } });
+          const row = flattenRow(String(page.find_id), record, flat.get(`${String(page.find_id)}:${String(record.entity_id)}`));
+          out.push({ json: { ...row, list_status: page.status as string }, pairedItem: { item: i } });
         }
         continue;
       }

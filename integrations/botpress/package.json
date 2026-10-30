@@ -1,0 +1,19 @@
+{
+  "name": "@specstream/botpress-integration",
+  "integrationName": "specstream/specstream",
+  "private": true,
+  "scripts": {
+    "check:type": "tsc --noEmit",
+    "build": "bp build",
+    "deploy": "bp deploy"
+  },
+  "dependencies": {
+    "@botpress/client": "2.8.0",
+    "@botpress/sdk": "7.2.8"
+  },
+  "devDependencies": {
+    "@botpress/cli": "7.1.8",
+    "@types/node": "^22.16.4",
+    "typescript": "^6.0.0"
+  }
+}

@@ -4,7 +4,7 @@ identity:
   label:
     en_US: SpecStream
   description:
-    en_US: Ask for a list in plain words and get every matching row from the live web, each with its source.
+    en_US: Live web data in plain words. Structured records from the live web, every value with its source.
   icon: icon.png
   tags:
     - search

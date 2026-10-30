@@ -5,4 +5,4 @@ from langchain_specstream.retrievers import SpecStreamRetriever
 from langchain_specstream.tools import SpecStreamFindList, SpecStreamGetListResults, specstream_tools
 
 __all__ = ["SpecStreamError", "SpecStreamFindList", "SpecStreamGetListResults", "SpecStreamRetriever", "specstream_tools"]
-__version__ = "0.1.3"
+__version__ = "0.1.4"

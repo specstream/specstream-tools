@@ -1,4 +1,8 @@
-"""Lock result families from finder.cross-source.v1 OpenAPI EntityType."""
+"""Record kinds the service names today, from the finder.cross-source.v1 OpenAPI.
+
+A record kind is an open string. FAMILIES lists the known kinds as examples; any
+other non-empty kind name a reading gives is valid too.
+"""
 
 from __future__ import annotations
 
@@ -29,8 +33,6 @@ FAMILY_SET = frozenset(FAMILIES)
 
 
 def assert_family(entity_type: str) -> str:
-    if entity_type not in FAMILY_SET:
-        raise ValueError(
-            f"unsupported entity_type {entity_type!r}; must be one of: {', '.join(FAMILIES)}"
-        )
+    if not isinstance(entity_type, str) or not entity_type.strip():
+        raise ValueError("entity_type must be a non-empty string")
     return entity_type

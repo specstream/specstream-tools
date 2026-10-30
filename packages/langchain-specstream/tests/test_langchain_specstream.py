@@ -22,9 +22,15 @@ def cell(label, value, source=None):
 
 
 ROWS = [
-    {"ordinal": 1, "cells": [cell("Organization", "Clínica Sorriso", "https://sorriso.pt/marcacoes"), cell("Website", "https://sorriso.pt")]},
-    {"ordinal": 2, "cells": [cell("Organization", "Dentes de Lisboa", "https://dentesdelisboa.pt"), cell("Website", None) | {"absence": "Not published"}]},
+    {"entity_id": "e1", "ordinal": 1, "cells": [cell("Organization", "Clínica Sorriso", "https://sorriso.pt/marcacoes"), cell("Website", "https://sorriso.pt")]},
+    {"entity_id": "e2", "ordinal": 2, "cells": [cell("Organization", "Dentes de Lisboa", "https://dentesdelisboa.pt"), cell("Website", None) | {"absence": "Not published"}]},
 ]
+
+# The API's flat rows: the page of each value, and of the fact that put the row in the list.
+FLAT = {
+    "e1": {"id": "fnd_1:e1", "name": "Clínica Sorriso", "name_source": "https://sorriso.pt/marcacoes", "source_url": "https://filings.example/e1", "checked_at": "2026-10-15T09:00:00Z"},
+    "e2": {"id": "fnd_1:e2", "name": "Dentes de Lisboa", "name_source": "https://dentesdelisboa.pt", "source_url": "https://filings.example/e2", "checked_at": "2026-10-15T09:00:00Z"},
+}
 
 
 class FakeSpecStream:
@@ -67,6 +73,8 @@ class FakeSpecStream:
 
     @staticmethod
     def reply(data):
+        if "rows" in data:
+            data = {**data, "flat_rows": [FLAT[row["entity_id"]] for row in data["rows"]]}
         return io.BytesIO(json.dumps({"data": data}).encode())
 
     def paths(self):
@@ -93,7 +101,8 @@ def test_finds_a_list_within_the_maximum_and_returns_every_row(api):
     assert result["list_link"] == "https://specstream.ai/workspace/collections/fnd_1"
     first, second = result["rows"]
     assert first["Organization"] == "Clínica Sorriso"
-    assert first["source_url"] == "https://sorriso.pt/marcacoes"
+    assert first["source_url"] == "https://filings.example/e1"
+    assert first["name_source"] == "https://sorriso.pt/marcacoes"
     assert second["Website"] == ""
     run = next(body for method, path, body, _ in fake.calls if path == "/v1/capacity/executions")
     assert run["confirm_max_cents"] == 250
@@ -155,7 +164,8 @@ def test_the_retriever_returns_one_document_per_row_with_its_source(api):
 
     assert len(docs) == 2
     assert docs[0].page_content == "Organization: Clínica Sorriso\nWebsite: https://sorriso.pt"
-    assert docs[0].metadata["source_url"] == "https://sorriso.pt/marcacoes"
+    assert docs[0].metadata["source_url"] == "https://filings.example/e1"
+    assert docs[0].metadata["name_source"] == "https://sorriso.pt/marcacoes"
     assert docs[1].page_content == "Organization: Dentes de Lisboa"
 
 

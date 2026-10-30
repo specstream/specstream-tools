@@ -49,6 +49,11 @@ class SpecStreamRetriever(BaseRetriever):
             raise SpecStreamError(result["message"])
         documents = []
         for row in result["rows"]:
-            facts = "\n".join(f"{label}: {value}" for label, value in row.items() if label not in _META and value not in ("", None))
-            documents.append(Document(page_content=facts, metadata={key: row.get(key) for key in _META} | {"request": result.get("request")}))
+            # Each value's page (<field>_source) goes in the metadata beside the row's own source.
+            sources = {key: value for key, value in row.items() if key.endswith("_source")}
+            facts = "\n".join(
+                f"{label}: {value}" for label, value in row.items() if label not in _META and label not in sources and value not in ("", None)
+            )
+            metadata = {key: row.get(key) for key in _META} | sources | {"request": result.get("request")}
+            documents.append(Document(page_content=facts, metadata=metadata))
         return documents

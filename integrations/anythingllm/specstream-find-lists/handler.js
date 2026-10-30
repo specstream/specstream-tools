@@ -64,12 +64,15 @@ const wholeNumber = (value, fallback, min, max) => {
 };
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+// Columns the workspace shows as buttons (open the site, open why it matches), not facts.
+const SCREEN_ONLY = new Set(["matches", "open"]);
+
 function describeRow(record) {
   const values = [];
   const pages = [];
   for (const cell of record.cells || []) {
     const label = String(cell.label || cell.column_id || "").trim();
-    if (!label) continue;
+    if (!label || SCREEN_ONLY.has(cell.column_id)) continue;
     const shown = cell.display ?? cell.value;
     values.push(`${label}: ${shown === null || shown === undefined || shown === "" ? "-" : shown}`);
     const url = cell.provenance?.source_url;
@@ -100,7 +103,7 @@ async function readRows(ctx, apiKey, listId, waitSeconds, cursor) {
     `List ${listId}: ${page.accepted_count || 0} rows found (${page.status}). Open it in SpecStream: ${LIST_URL}${listId}`,
   ];
   if (finished && page.commerce?.amount_captured_cents !== undefined) {
-    lines.push(`Charged: $${dollars(page.commerce.amount_captured_cents)}, only for the matches.`);
+    lines.push(`Charged: $${dollars(page.commerce.amount_captured_cents)}.`);
   }
   lines.push(rows.length ? rows.join("\n") : "No rows yet.");
   if (page.next_cursor) {
@@ -124,7 +127,8 @@ async function findList(ctx, apiKey, request, count) {
 
   ctx.introspect("Reading your request.");
   const reading = await send(apiKey, "POST", "/v1/parse", { q: request, locale: "en-US" });
-  const readAs = reading.canonical_sentence || request;
+  // The reading starts with the engine's default count; say the count this request asks for.
+  const readAs = String(reading.read_back || reading.canonical_sentence || request).replace(/^\d[\d,]*(?=\s)/, String(count));
   if (reading.status !== "runnable" || !reading.ast_hash) {
     return `SpecStream needs a clearer request before it can price it. It read: "${readAs}". Ask the person to add the place, the kind of thing, or what every row must meet, then call this skill again.`;
   }
@@ -156,7 +160,7 @@ async function findList(ctx, apiKey, request, count) {
     if (String(args.APPROVAL || "ask").trim().toLowerCase() !== "within_cap") {
       const answer = await ctx.requestToolApproval({
         payload: { list: readAs, rows_asked_for: count, most_it_can_cost_usd: dollars(maximum) },
-        description: `Read the web for this list: "${readAs}". It can cost at most $${dollars(maximum)}, and you pay only for the matches.`,
+        description: `Read the web for this list: "${readAs}". It can cost at most $${dollars(maximum)}, and you pay for each result delivered.`,
       });
       if (!answer?.approved) {
         return answer?.message || "The person did not approve the price. Nothing ran and nothing was charged.";

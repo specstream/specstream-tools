@@ -156,7 +156,7 @@
             control_type: 'integer',
             optional: false,
             default: 25,
-            hint: 'How many matching rows to find. You pay only for the rows that match.'
+            hint: 'How many matching rows to find. You pay for each row delivered.'
           },
           {
             name: 'confirm_max_usd',

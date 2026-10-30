@@ -1,0 +1,6 @@
+{
+    "id": "5e57a1",
+    "name": "SpecStream",
+    "modes": ["configureManagedCollection", "syncManagedCollection"],
+    "icon": "/icon.png"
+}
