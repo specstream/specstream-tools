@@ -24,7 +24,7 @@ The plugin connects only to `https://api.specstream.ai` over HTTPS.
 
 ## Pricing
 
-Each matching row costs from 10¢ (Standard, up to five facts a row). Searches that find nothing cost nothing. See https://specstream.ai/pricing.
+Each matching row costs 5¢, 15¢ or $1, depending on how much it needs, plus 5¢ for a person's email and 15¢ for a phone. A row that is left out costs nothing, and a search that finds nothing costs nothing. See https://specstream.ai/pricing.
 
 ## Support
 

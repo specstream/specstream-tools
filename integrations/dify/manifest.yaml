@@ -11,6 +11,10 @@ created_at: '2026-10-14T05:20:00.000000000Z'
 privacy: PRIVACY.md
 repo: https://github.com/specstream/specstream-tools
 contact: support@specstream.ai
+network:
+  domains:
+    - api.specstream.ai
+    - specstream.ai
 resource:
   memory: 268435456
   permission:
