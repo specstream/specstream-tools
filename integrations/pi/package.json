@@ -1,6 +1,6 @@
 {
   "name": "@specstream/pi-package",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "SpecStream for Pi: ask for any list in plain words and get every match from the live web, each row with its source. Adds the SpecStream MCP server and four agent skills.",
   "type": "module",
   "keywords": [

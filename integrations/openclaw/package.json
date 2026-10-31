@@ -1,6 +1,6 @@
 {
   "name": "@specstream/openclaw-plugin",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "SpecStream plugin for OpenClaw: ask for any list in plain words and get every matching row from the live web, each with its source page, priced per match.",
   "type": "module",
   "files": [

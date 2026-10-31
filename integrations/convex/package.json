@@ -1,6 +1,6 @@
 {
   "name": "@specstream/convex",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "SpecStream component for Convex: ask for a list in plain words, approve the price in your code, and get every row with the page behind it, kept in your database.",
   "keywords": [
     "convex",
