@@ -2,9 +2,8 @@
 # to npm with a provenance statement.
 #
 # n8n only verifies community nodes that are published from GitHub Actions with
-# provenance. The workflow file must be named publish.yml if you set up an npm
-# Trusted Publisher; otherwise set the NPM_TOKEN repository secret (a granular
-# access token with read and write on the packages below).
+# provenance. Each package trusts this file (publish.yml in specstream/specstream-tools)
+# as its npm Trusted Publisher, so no token is stored here.
 #
 # Run it from the Actions tab, or:  gh workflow run publish.yml -f package=n8n
 name: publish
@@ -56,7 +55,6 @@ jobs:
       - run: npm test
       - name: Publish with provenance
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           RELEASE_MODE: "true"
           NPM_CONFIG_PROVENANCE: "true"
         run: npm publish --access public
@@ -82,7 +80,6 @@ jobs:
       - run: npm test
       - name: Publish with provenance
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: "true"
         run: npm publish --access public
 
@@ -107,7 +104,6 @@ jobs:
       - run: npm test
       - name: Publish with provenance
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: "true"
         run: npm publish --access public
 
@@ -133,7 +129,6 @@ jobs:
       - run: npm run plugin:validate
       - name: Publish with provenance
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: "true"
         run: npm publish --access public
 
@@ -158,7 +153,6 @@ jobs:
       - run: npm test
       - name: Publish with provenance
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: "true"
         run: npm publish --access public
 
@@ -182,6 +176,5 @@ jobs:
       - run: npm run verify
       - name: Publish with provenance
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: "true"
         run: npm publish --access public

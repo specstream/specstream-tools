@@ -3,9 +3,8 @@
 #
 # The n8n node has its own workflow, publish.yml, because n8n requires that file name.
 #
-# Secrets, set once with `gh secret set`:
-#   NPM_TOKEN       npm granular access token with read and write on the @specstream packages
-#   PYPI_API_TOKEN  PyPI API token for the project (or the account, for the first upload)
+# No tokens: every package trusts this file (release.yml in specstream/specstream-tools)
+# as its Trusted Publisher on npm and PyPI. A new PyPI project needs a pending publisher first.
 name: release
 
 on:
@@ -41,17 +40,20 @@ jobs:
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org
+      # npm 11.5+ publishes through an npm Trusted Publisher (OIDC) with no token.
+      - run: npm install -g npm@latest
       - run: npm ci
       - run: npm test
       - run: npm run build
       - name: Publish with provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --access public --provenance
 
   pypi:
     if: ${{ contains(fromJSON('["sdk-py","mcp-stdio","langchain","llamaindex","crewai","haystack"]'), inputs.package) }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     defaults:
       run:
         working-directory: ${{ fromJSON('{"sdk-py":"packages/sdk-py","mcp-stdio":"packages/mcp-stdio","langchain":"packages/langchain-specstream","llamaindex":"packages/llama-index-tools-specstream","crewai":"packages/crewai-specstream","haystack":"packages/specstream-haystack"}')[inputs.package] }}
@@ -64,8 +66,6 @@ jobs:
           python -m pip install build twine
           python -m build
           python -m twine check dist/*
-      - name: Upload
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-        run: python -m twine upload dist/*
+          mv dist "$GITHUB_WORKSPACE/dist"
+      # Trusted Publisher upload (OIDC), with attestations.
+      - uses: pypa/gh-action-pypi-publish@release/v1
