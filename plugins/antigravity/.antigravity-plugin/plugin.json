@@ -1,0 +1,22 @@
+{
+  "$schema": "https://antigravity.google/schemas/v1/plugin.json",
+  "name": "specstream",
+  "displayName": "SpecStream",
+  "version": "1.3.0",
+  "description": "Live web data for your agent: describe the data in plain words and get structured rows, every value linked to the page it came from.",
+  "logo": "assets/specstream-icon-512.png",
+  "suggestedPrompts": [
+    "Find US startups that filed a Form D over $5M this month, with the amount and the SEC filing",
+    "Find dental clinics in Lisbon with online booking, with their website and phone",
+    "Keep a weekly list of GLP-1 clinical trials that are recruiting, with the sponsor and the trial page"
+  ],
+  "author": {
+    "name": "SpecStream",
+    "email": "support@specstream.ai",
+    "url": "https://specstream.ai"
+  },
+  "homepage": "https://specstream.ai/docs",
+  "repository": "https://github.com/specstream/specstream-tools",
+  "license": "MIT",
+  "keywords": ["web-data", "data", "search", "research", "mcp", "structured-data"]
+}
