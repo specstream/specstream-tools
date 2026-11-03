@@ -2,7 +2,7 @@
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "specstream",
   "version": "1.2.0",
-  "description": "The live web data engine for teams and agents. Ask for a list in plain words and get rows that match what you asked, each with the page it came from.",
+  "description": "The live web data engine for teams and agents. Ask for a list in plain words and get rows that match what you asked.",
   "author": {
     "name": "SpecStream SAS",
     "email": "support@specstream.ai",
@@ -22,7 +22,7 @@
       "interface": {
         "displayName": "SpecStream",
         "shortDescription": "Any list, from the live web",
-        "longDescription": "SpecStream builds data lists from the live web. Describe the list you need in plain words: companies, local businesses, tenders, datasets, repositories or public records. SpecStream reads live pages and official sources when you ask and returns structured rows that meet your conditions, with the page behind each fact.\n\nOpen any row to see why it matched, the quote that supports it and the page it came from. Candidates SpecStream couldn't confirm are shown apart, labeled as possible, and never counted as results.\n\nAsk in your own words, in any language. Try roofing contractors in Columbus rated 4.5 or better with fewer than 20 Google reviews, datasets on urban tree canopy under an open license, or Texas food banks with annual revenue from Form 990.\n\nThe Lists app shows your recent lists and fills in rows as they're found. Download a list as CSV, Excel, JSON, HTML, KML or GeoJSON from the conversation, or share it with a link.\n\nYou approve each run before it starts, and you can stop it at any time.",
+        "longDescription": "SpecStream builds data lists from the live web. Describe the list you need in plain words: companies, local businesses, tenders, datasets, repositories or public records. SpecStream reads live pages and official sources when you ask and returns structured rows that meet your conditions, with the page behind each fact.\n\nOpen any row to see why it matched and the quote that supports it. Source URL and read time on every value. Candidates SpecStream couldn't confirm are shown apart, labeled as possible, and never counted as results.\n\nAsk in your own words, in any language. Try roofing contractors in Columbus rated 4.5 or better with fewer than 20 Google reviews, datasets on urban tree canopy under an open license, or Texas food banks with annual revenue from Form 990.\n\nThe Lists app shows your recent lists and fills in rows as they're found. Download a list as CSV, Excel, JSON, HTML, KML or GeoJSON from the conversation, or share it with a link.\n\nYou approve each run before it starts, and you can stop it at any time.",
         "developerName": "SpecStream SAS",
         "category": "Data & Analytics",
         "capabilities": [

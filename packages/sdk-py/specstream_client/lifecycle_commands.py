@@ -809,6 +809,13 @@ COMMANDS = {'get-vocabulary': {'method': 'get_vocabulary',
                                   'query': {},
                                   'summary': 'Save a personal relationship column with an expected '
                                              'version'},
+ 'workspace-share-collection': {'method': 'workspace_share_collection',
+                                'arguments': ['collection_id'],
+                                'body': True,
+                                'body_required': True,
+                                'query': {},
+                                'summary': 'Share a fixed copy of every record in a list through a '
+                                           'link'},
  'workspace-report-result': {'method': 'workspace_report_result',
                              'arguments': ['collection_id'],
                              'body': True,

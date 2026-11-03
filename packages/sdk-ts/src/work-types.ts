@@ -1,4 +1,4 @@
-// Generated from implemented public OpenAPI sha256:76ad47efe38c5721a32594b77db0380573fe18477cbb440c2e401fe846243353; run packages/generate_clients.py.
+// Generated from implemented public OpenAPI sha256:4414408df1991f04bf22efd5e94ce82927b66798724f0889d6941399feded204; run packages/generate_clients.py.
 export interface Schemas {
   "AcceptedRow": { "target_evidence"?: ({ [key: string]: unknown; } | null); "worded_evidence"?: ({ [key: string]: unknown; } | null); "lineage"?: (Schemas["MatchLineage"] | null); "spec_version"?: "accepted_row.v1"; "entity_id": string; "ordinal": number; "cells": Array<Schemas["RowCell"]>; "predicates": Array<Schemas["PredicateEvidence"]>; "match_proof"?: (Schemas["LogicalProof"] | null); "billable": boolean; "contact_visibility": Schemas["ContactVisibility"]; "locked"?: boolean; "details"?: Array<Schemas["RowCell"]>; };
   "AccountData": { "account_id": string; "email": string; "finds": Array<Schemas["Find"]>; };
@@ -59,6 +59,8 @@ export interface Schemas {
   "CloudImportPreview": { "connection_id": string; "link": string; "sheet_id"?: (string | null); };
   "CloudImportUpdate": { "keepUpdated": boolean; };
   "CollectionFilter": { "record_ids"?: (Array<string> | null); "source_collection_ids"?: (Array<string> | null); "bbox"?: (Array<unknown> | null); };
+  "CollectionShareData": { "id": string; "snapshot_id": string; "public_url": string; "created_at": string; "expires_at"?: (string | null); "revoked": boolean; "allow_export": boolean; "row_count": number; };
+  "CollectionShareInput": { "expires_days"?: (number | null); "allow_export"?: boolean; };
   "CombineCollectionsInput": { "request_id": string; "name": string; "collection_ids": Array<string>; "project_id"?: (string | null); };
   "CommerceData": { "spec_version"?: "commerce.v1"; "find_id": string; "payment_status": string; "fulfillment_status": string; "settlement_status": "none" | "pending" | "settled" | "attention"; "access_state": string; "access_allowed": boolean; "next_action": "wait" | "retrieve" | "contact_support" | "none"; "currency"?: "USD"; "amount_authorized_cents": number; "amount_captured_cents": number; "amount_refunded_cents": number; "delivered_rows": number; "fulfilled_at": (string | null); "access_expires_at": (string | null); "cancel_requested": boolean; "capacity_offer": Schemas["CapacityQuoteData"]; "billing_model"?: "capacity.v1"; "reservation_id": string; "billed_unit_ids"?: Array<string>; "billed_units"?: Array<Schemas["BilledUnit"]>; "shortfall"?: (Schemas["Shortfall"] | null); };
   "CompilerStatus": "runnable" | "needs_edit" | "rejected" | "capability_pending" | "compiler_unavailable" | "unquoted_plan" | "pending";

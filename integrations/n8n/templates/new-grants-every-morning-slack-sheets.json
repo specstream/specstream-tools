@@ -1,0 +1,842 @@
+{
+  "name": "Send new federal grants for your field to Slack and Google Sheets every morning with SpecStream",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## New grants for your field, every morning\n\nEach morning at 7 this workflow asks SpecStream for open federal grants that fit your field and posts only the new ones to Slack, with the funder, the deadline and a link to the official listing. Every grant also goes to a Google Sheet, so you keep a log of what you've seen.\n\n### How it works\n1. **First run:** SpecStream finds every open grant that fits the request and logs them all.\n2. **Every run after that:** it continues the same list and asks only for grants the log doesn't hold yet. A morning with nothing new costs nothing and posts nothing.\n3. Each run is priced first. If the price is above your maximum, the workflow stops and tells you.\n\n### Set up (5 minutes)\n1. Get a free API key at [specstream.ai](https://specstream.ai) under **Agents & API**. New accounts get $10 of work free, no card.\n2. In n8n, create a **Bearer Auth** credential with the key and pick it in the six SpecStream HTTP nodes.\n3. Write your field in **Your grant search**, for example *Open federal grants for rural broadband*.\n4. Connect Google Sheets and pick the same empty sheet in **Read the grant log** and **Add to the grant log**.\n5. Connect Slack and pick a channel in **Post to Slack**. Run once by hand, then activate.\n\n### Price\n10¢ a grant, shown before anything runs. You pay only for new matches. The default maximum is $2.50 a morning.",
+        "height": 960,
+        "width": 560
+      },
+      "id": "37fe5049-93e5-52f4-b9c2-ef2ccbf17e50",
+      "name": "Overview",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -640,
+        -420
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 1. Your search and the log\nChange the request in **Your grant search**. To start a log for a different field, use a new empty sheet. **First run or new ones?** reads the log to see where the last run stopped.",
+        "height": 440,
+        "width": 880,
+        "color": 7
+      },
+      "id": "6a9a4ea7-f261-5403-8da3-6a8c1101ef24",
+      "name": "Step 1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -60,
+        -220
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 2. First run, or the next one\nThe first run reads your request. Every run after that opens the last list in the log and continues it, so you never get the same grant twice.",
+        "height": 760,
+        "width": 840,
+        "color": 7
+      },
+      "id": "4911fd72-f8b0-5dd2-a4e4-7a9c5c9ad605",
+      "name": "Step 2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        840,
+        -460
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 3. Price, approve and wait\nReading and pricing are free. **Approve and start** is the only step that spends, and only up to `max_cents` in **Your grant search**. The loop checks every 30 seconds until the run ends.",
+        "height": 620,
+        "width": 1560,
+        "color": 7
+      },
+      "id": "c4093ad4-471e-53a9-8499-45c2d6e141ed",
+      "name": "Step 3",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1700,
+        -220
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 4. Slack and the sheet\nOne Slack message with every new grant, linked to its official listing. The sheet keeps one row per grant with **List id**, which the next run continues from.",
+        "height": 620,
+        "width": 680,
+        "color": 7
+      },
+      "id": "c20552eb-c814-5c50-a7a4-c27e646da176",
+      "name": "Step 4",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3240,
+        -320
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 7
+            }
+          ]
+        }
+      },
+      "id": "1e562a0d-8b19-5ff1-8d5d-2301bf9ff73b",
+      "name": "Every morning at 7",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d9ab2d71-c548-5a45-a01c-67698982020f",
+              "name": "request",
+              "type": "string",
+              "value": "Open federal grants for cancer research"
+            },
+            {
+              "id": "8c5adef7-e325-5c61-a116-9766580d4626",
+              "name": "count",
+              "type": "number",
+              "value": 25
+            },
+            {
+              "id": "c727763f-e34e-522a-8ccf-30df71fc8883",
+              "name": "max_cents",
+              "type": "number",
+              "value": 250
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7fba573f-2cb2-587d-9553-4a50e447a22e",
+      "name": "Your grant search",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "options": {}
+      },
+      "id": "76a617da-f252-52f5-812d-abd4de1b9199",
+      "name": "Read the grant log",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        440,
+        0
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// The first run finds the whole list. Every run after that asks only for grants\n// the log doesn't hold yet, by continuing the most recent list.\nconst search = $('Your grant search').first().json;\nconst logged = $input.all().map((item) => item.json).filter((row) => row['List id']);\nconst parent = logged.length ? logged[logged.length - 1]['List id'] : '';\nreturn [{ json: { ...search, parent_find_id: parent, operation: parent ? 'extend' : 'find' } }];\n"
+      },
+      "id": "81b163fa-37d7-5e71-a677-0a4d19a2a3c5",
+      "name": "First run or new ones?",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        660,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "0cea0bf3-2393-5bbe-afc8-e3c147c4ca56",
+              "leftValue": "={{ $json.operation }}",
+              "rightValue": "find",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "335a97d7-9518-5ab2-a509-0fe147b56a30",
+      "name": "First run?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        880,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.specstream.ai/v1/parse",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ q: $json.request, locale: 'en-US' }) }}",
+        "options": {}
+      },
+      "id": "decae365-8a4e-58e5-9028-98656d7e06b9",
+      "name": "Read the request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1100,
+        -100
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "46b6bb5c-5c6a-5f71-8675-ec499aa9f9b8",
+              "leftValue": "={{ $json.data.status }}",
+              "rightValue": "runnable",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "0576b643-b043-5156-b6ef-c97f15f444e4",
+      "name": "Clear enough to price?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1320,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "errorMessage": "=SpecStream needs a clearer request before it can price it. It read: \"{{ $json.data.canonical_sentence }}\". Name the kind of grant and the field."
+      },
+      "id": "bd901254-005f-5893-8b80-cd5860fc08a1",
+      "name": "Stop: reword the request",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        1540,
+        -320
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api.specstream.ai/v1/finds/{{ $json.parent_find_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "options": {}
+      },
+      "id": "bc78afc0-1ca5-5a9c-b5ef-77c4e56fe1da",
+      "name": "Open the last list",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1320,
+        100
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.specstream.ai/v1/capacity/quotes",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify(Object.assign({ ast_hash: $json.data.ast_hash, operation: $('First run or new ones?').first().json.operation, requested_units: $('First run or new ones?').first().json.count }, $('First run or new ones?').first().json.parent_find_id ? { parent_find_id: $('First run or new ones?').first().json.parent_find_id } : {})) }}",
+        "options": {}
+      },
+      "id": "8f5105b9-68e8-57a0-919b-578954fe1191",
+      "name": "Get the price",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1760,
+        0
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "1ded2e9a-46a3-56aa-817a-8938165f82fa",
+              "leftValue": "={{ $json.data.maximum_cents }}",
+              "rightValue": "={{ $('Your grant search').first().json.max_cents }}",
+              "operator": {
+                "type": "number",
+                "operation": "lte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "3d0f1ca0-4dab-594a-b557-8e4b09cf3bc2",
+      "name": "Within your maximum?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1980,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "errorMessage": "=This list can cost up to ${{ ($json.data.maximum_cents / 100).toFixed(2) }}, above your maximum of ${{ ($('Your grant search').first().json.max_cents / 100).toFixed(2) }}. Raise the maximum or ask for fewer results."
+      },
+      "id": "bb91b98f-13ce-5d46-806b-43bb4c98f880",
+      "name": "Stop: price above your maximum",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        2200,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.specstream.ai/v1/capacity/executions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ quote_id: $json.data.quote_id, quote_hash: $json.data.quote_hash, confirm_max_cents: $json.data.maximum_cents, idempotency_key: 'grants-' + $execution.id }) }}",
+        "options": {}
+      },
+      "id": "5643fa47-1ba8-5270-96a0-f2fa6934004d",
+      "name": "Approve and start",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2200,
+        0
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "amount": 30,
+        "unit": "seconds"
+      },
+      "id": "99d178ea-01c1-575f-98c9-e9946c6e7cb0",
+      "name": "Wait 30 seconds",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2420,
+        0
+      ],
+      "webhookId": "282a83d3-45eb-537f-a1fc-276feea78a21"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api.specstream.ai/v1/finds/{{ $('Approve and start').first().json.data.find_id }}/rows",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "limit",
+              "value": "1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fd28e206-2533-5586-a6f9-982eca0a9dd5",
+      "name": "Check progress",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2640,
+        0
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a0538ff1-c46d-5d9d-a620-044173595d1f",
+              "leftValue": "={{ $json.data.status }}",
+              "rightValue": "queued",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            },
+            {
+              "id": "0fbd87e6-18ce-5e15-bfcb-c37042933e0d",
+              "leftValue": "={{ $json.data.status }}",
+              "rightValue": "planning",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            },
+            {
+              "id": "a426204f-279e-5b50-a883-0b3f38e86fc7",
+              "leftValue": "={{ $json.data.status }}",
+              "rightValue": "running",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "8f7e725a-36be-5d88-9908-298fe0f59fdc",
+      "name": "Finished?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2860,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api.specstream.ai/v1/finds/{{ $('Approve and start').first().json.data.find_id }}/rows",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "limit",
+              "value": "100"
+            }
+          ]
+        },
+        "options": {
+          "pagination": {
+            "pagination": {
+              "parameters": {
+                "parameters": [
+                  {
+                    "type": "qs",
+                    "name": "cursor",
+                    "value": "={{ $response.body.data.next_cursor }}"
+                  }
+                ]
+              },
+              "paginationCompleteWhen": "other",
+              "completeExpression": "={{ !$response.body.data.next_cursor }}",
+              "limitPagesFetched": true,
+              "maxRequests": 100
+            }
+          }
+        }
+      },
+      "id": "9c43b2dd-4ce6-5c86-b223-ccf2b953f47c",
+      "name": "Get every row",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3080,
+        -20
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "jsCode": "// One item per result: each column becomes a field, plus the page the row came from.\nconst out = [];\nfor (const page of $input.all()) {\n  const data = page.json.data || {};\n  const listId = data.find_id;\n  for (const record of data.rows || []) {\n    const row = {};\n    let source;\n    for (const cell of record.cells || []) {\n      // \"matches\" and \"open\" are workspace buttons, not facts.\n      if (['matches', 'open'].includes(cell.column_id)) continue;\n      const label = String(cell.label || cell.column_id || '').trim();\n      if (!label) continue;\n      row[label] = cell.absence ? '' : (cell.display ?? cell.value ?? '');\n      if (!source && cell.provenance && cell.provenance.source_url) source = cell.provenance;\n    }\n    // Extra facts the source published (funder, deadline, official link...), when present.\n    for (const cell of record.details || []) {\n      const label = String(cell.label || '').trim();\n      const value = cell.display ?? cell.value ?? '';\n      if (!label || label in row || cell.absence || Object.values(row).includes(value)) continue;\n      row[label] = value;\n    }\n    row['Source'] = source ? source.source_url : '';\n    row['Read at'] = source ? source.observed_at : '';\n    // Link to the official listing rather than the feed it was read from.\n    if (row['Official opportunity / application']) {\n      row['Source'] = row['Official opportunity / application'];\n      delete row['Official opportunity / application'];\n    }\n    row['Found on'] = $now.toFormat('yyyy-MM-dd');\n    row['List id'] = listId;\n    out.push({ json: row });\n  }\n}\nreturn out;\n"
+      },
+      "id": "139663b8-662e-5d3e-9825-3facdef12a53",
+      "name": "One row per grant",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3300,
+        -20
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {
+          "handlingExtraData": "insertInNewColumn"
+        }
+      },
+      "id": "5b1826e6-28b4-52ac-a02d-4f158b3e6f40",
+      "name": "Add to the grant log",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        3520,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// One message a morning, one line per new grant.\nconst rows = $input.all().map((item) => item.json);\nconst lines = rows.map((row) => {\n  const title = row['Grant'] || row['Funding opportunity'] || 'Untitled grant';\n  const link = row['Source'];\n  const funder = row['Funding agency'] ? ` · ${row['Funding agency']}` : '';\n  const ceiling = row['Award ceiling (USD)'] ? ` · up to $${Number(row['Award ceiling (USD)']).toLocaleString('en-US')}` : '';\n  const closes = row['Application deadline'] ? ` · closes ${row['Application deadline']}` : '';\n  return `• <${link}|${title}>${funder}${ceiling}${closes}`;\n});\nconst search = $('Your grant search').first().json.request;\nreturn [{ json: { text: `*${rows.length} new grant${rows.length === 1 ? '' : 's'}* for \"${search}\"\\n${lines.join('\\n')}` } }];\n"
+      },
+      "id": "54412052-07fd-5266-8ac5-95077f9a3b34",
+      "name": "Write the Slack message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3520,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "text": "={{ $json.text }}",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "id": "3fd2f999-ddd2-56e3-8307-60b38054924e",
+      "name": "Post to Slack",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.2,
+      "position": [
+        3740,
+        80
+      ],
+      "webhookId": "0bfe2c57-a072-59ef-a22a-f10e2f16cddc"
+    }
+  ],
+  "connections": {
+    "Get the price": {
+      "main": [
+        [
+          {
+            "node": "Within your maximum?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Within your maximum?": {
+      "main": [
+        [
+          {
+            "node": "Approve and start",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop: price above your maximum",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approve and start": {
+      "main": [
+        [
+          {
+            "node": "Wait 30 seconds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 30 seconds": {
+      "main": [
+        [
+          {
+            "node": "Check progress",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check progress": {
+      "main": [
+        [
+          {
+            "node": "Finished?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Finished?": {
+      "main": [
+        [
+          {
+            "node": "Get every row",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait 30 seconds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Every morning at 7": {
+      "main": [
+        [
+          {
+            "node": "Your grant search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Your grant search": {
+      "main": [
+        [
+          {
+            "node": "Read the grant log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read the grant log": {
+      "main": [
+        [
+          {
+            "node": "First run or new ones?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "First run or new ones?": {
+      "main": [
+        [
+          {
+            "node": "First run?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "First run?": {
+      "main": [
+        [
+          {
+            "node": "Read the request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Open the last list",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read the request": {
+      "main": [
+        [
+          {
+            "node": "Clear enough to price?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clear enough to price?": {
+      "main": [
+        [
+          {
+            "node": "Get the price",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop: reword the request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Open the last list": {
+      "main": [
+        [
+          {
+            "node": "Get the price",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get every row": {
+      "main": [
+        [
+          {
+            "node": "One row per grant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "One row per grant": {
+      "main": [
+        [
+          {
+            "node": "Add to the grant log",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Write the Slack message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write the Slack message": {
+      "main": [
+        [
+          {
+            "node": "Post to Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}

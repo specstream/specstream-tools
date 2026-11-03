@@ -1,6 +1,6 @@
 # SpecStream for Obsidian
 
-Ask for a list in plain words and get it in your note as a table. Every row links to the page it came from, so you can click through before you trust it.
+Ask for a list in plain words and get it in your note as a table. Source URL and read time on every value.
 
 "Food banks in Texas, with their annual revenue." "Every roofer in Columbus rated 4.5 or better, with a phone number." "Companies that filed to raise $5M or more this week." You type it, you see the price, you click once, and the rows land where your cursor is. No forty tabs, no copy and paste, no "here are the first ten."
 
@@ -12,7 +12,7 @@ A Markdown table with one column per fact you asked for, plus a Source column th
 
 | Name | Website | Annual revenue | Source |
 | --- | --- | --- | --- |
-| *the match* | *its own site* | *the figure it published* | *[the page it came from]* |
+| *the match* | *its own site* | *the figure it published* | *[its source URL]* |
 
 Under the table, if you leave it on, goes one line with your request, the row count, the date, and a link to the list in your SpecStream workspace. The workspace is where a list stays current, goes to Sheets or a CRM, and lands in your inbox when something new shows up.
 

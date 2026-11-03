@@ -3,7 +3,7 @@ title: SpecStream
 author: SpecStream
 author_url: https://specstream.ai
 git_url: https://github.com/specstream/specstream-tools
-description: Live web data for your model. Describe what you need in plain words and get every match from the live web, each value with the page it came from. See the price first and pay for each result delivered.
+description: Live web data for your model. Describe what you need in plain words and get every match from the live web. See the price first and pay for each result delivered.
 required_open_webui_version: 0.6.31
 version: 1.0.1
 license: MIT

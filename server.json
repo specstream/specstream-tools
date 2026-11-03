@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "ai.specstream/specstream",
   "title": "SpecStream",
-  "description": "The live web data engine for agents: structured rows, each value linked to the page it came from.",
+  "description": "The live web data engine for teams and agents. Any dataset from the entire web, kept up to date.",
   "version": "1.3.0",
   "websiteUrl": "https://specstream.ai",
   "remotes": [

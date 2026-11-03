@@ -2,7 +2,7 @@
   "identifier": "specstream",
   "name": "SpecStream",
   "version": "1.2.2",
-  "description": "Live web data for your agent. Describe the records you need in plain words (companies, local businesses, people, SEC filings, jobs, grants, tenders) and get structured rows from the live web, every value with the page it came from, always up to date. Search tools hand an agent pages to read; SpecStream hands it finished data, priced before anything runs, with a spending cap the model can't raise.",
+  "description": "Live web data for your agent. Describe the records you need in plain words (companies, local businesses, people, SEC filings, jobs, grants, tenders) and get structured rows from the live web, always up to date. Search tools hand an agent pages to read; SpecStream hands it finished data, priced before anything runs, with a spending cap the model can't raise.",
   "icon": "https://specstream.ai/icons/icon-512.png",
   "category": "web-search",
   "cloudEndpoint": "https://api.specstream.ai/mcp",
@@ -23,7 +23,7 @@
     {
       "name": "find_data",
       "title": "Find live web data",
-      "description": "Describe the records you need and get them from the live web, every value with the page it came from.",
+      "description": "Describe the records you need and get them from the live web, with the source URL and read time on every value.",
       "arguments": [
         {
           "name": "request",

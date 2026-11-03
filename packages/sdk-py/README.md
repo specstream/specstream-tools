@@ -2,7 +2,9 @@
 
 `pip install specstream-client` (the `specstream` package on PyPI is a different project)
 
-Python client and command line for [SpecStream](https://specstream.ai), the live web data engine for teams and agents. Describe the list you need in plain words; SpecStream reads the web where those things live, hands back only the matches, each with the page it came from, and you pay for each result delivered.
+Python client and command line for [SpecStream](https://specstream.ai), the live web data engine for teams and agents. Describe the list you need in plain words; SpecStream reads the web where those things live, hands back only the matches, and you pay for each result delivered.
+
+Source URL and read time on every value.
 
 The client has no dependencies and needs Python 3.12 or newer. It uses the same account, permissions, projects and balance as the workspace.
 

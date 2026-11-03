@@ -78,7 +78,7 @@ The tools above work without it.
 
 > Find food banks in Texas with their annual revenue. Keep it under $3.
 
-The agent calls `specstream_find_list` with `max_price_usd: 3`, and you get a table of food banks, each row with the page it came from, plus a link to open the list in your workspace.
+The agent calls `specstream_find_list` with `max_price_usd: 3`, and you get a table of food banks, each row with its source URL and read time, plus a link to open the list in your workspace.
 
 ## Develop
 

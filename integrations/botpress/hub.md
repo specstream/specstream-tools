@@ -1,6 +1,6 @@
 # SpecStream
 
-Live web data for your bot. A user asks for many real things at once (every roofer in Columbus rated 4.5 or better, US companies that filed to raise $5M or more this week, food banks in Texas with their revenue) and your bot answers with every match from the live web as rows. Every value carries the page it came from.
+Live web data for your bot. A user asks for many real things at once (every roofer in Columbus rated 4.5 or better, US companies that filed to raise $5M or more this week, food banks in Texas with their revenue) and your bot answers with every match from the live web as rows. Source URL and read time on every value.
 
 The user sees the price before anything runs, and pays for each result delivered.
 

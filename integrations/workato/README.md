@@ -1,6 +1,6 @@
 # SpecStream for Workato
 
-Ask for a list in plain words inside a Workato recipe and get every match from the live web, each row with the page it came from.
+Ask for any dataset in plain words inside a Workato recipe and get structured records from the live web.
 
 ## Actions
 

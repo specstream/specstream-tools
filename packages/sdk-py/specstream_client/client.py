@@ -1261,6 +1261,15 @@ class Client:
         path = f"/v1/workspace/collections/{quote_path(collection_id, safe='')}/relationships"
         return self._request("PUT", path, request)
 
+    def workspace_share_collection(
+        self,
+        collection_id: str,
+        request: dict[str, Any],
+    ) -> dict[str, Any]:
+        """Share a fixed copy of every record in a list through a link."""
+        path = f"/v1/workspace/collections/{quote_path(collection_id, safe='')}/share"
+        return self._request("POST", path, request)
+
     def workspace_report_result(
         self,
         collection_id: str,

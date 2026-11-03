@@ -3,7 +3,7 @@
   "name": "specstream",
   "displayName": "SpecStream",
   "version": "1.3.0",
-  "description": "Live web data for your agent: describe the data in plain words and get structured rows, every value linked to the page it came from.",
+  "description": "Live web data for your agent: describe the data in plain words and get structured rows.",
   "logo": "assets/specstream-icon-512.png",
   "suggestedPrompts": [
     "Find US startups that filed a Form D over $5M this month, with the amount and the SEC filing",

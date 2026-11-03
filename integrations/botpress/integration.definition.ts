@@ -11,7 +11,7 @@ export default new IntegrationDefinition({
   name: integrationName,
   title: 'SpecStream',
   description:
-    'Live web data for your bot: every match from the live web as rows, each value with the page it came from. Price first, billed for each result delivered.',
+    'Live web data for your bot: every match from the live web as rows. Price first, billed for each result delivered.',
   version: '1.0.1',
   readme: 'hub.md',
   icon: 'icon.svg',
@@ -82,7 +82,7 @@ export default new IntegrationDefinition({
     getRows: {
       title: 'Get rows',
       description:
-        'Reads the results of a run, each value with the page it came from. Free. Call again with nextCursor for more, or later while the run is still going.',
+        'Reads the results of a run, with the source URL and read time on every value. Free. Call again with nextCursor for more, or later while the run is still going.',
       input: {
         schema: z.object({
           findId: z.string().min(1).title('Find ID').describe('From Approve and run'),

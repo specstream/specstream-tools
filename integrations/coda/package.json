@@ -2,7 +2,7 @@
   "name": "specstream-coda-pack",
   "version": "1.0.0",
   "private": true,
-  "description": "SpecStream for Coda: sync your lists and records, each value with the page it came from; price a request; find a list.",
+  "description": "SpecStream for Coda: sync your lists and records; price a request; find a list.",
   "license": "MIT",
   "scripts": {
     "build": "coda build pack.ts",

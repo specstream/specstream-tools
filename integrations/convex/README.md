@@ -31,7 +31,7 @@ const page = await specstream.listRows(ctx, {
 | `findList` | Read a request, price it, and start it only when the most it can cost is within your maximum |
 | `quote` and `approve` | The same in two steps: show the person the price, then approve exactly that price |
 | `getList` and `listRows` | Status, a live row count and the rows, as plain Convex queries your client subscribes to |
-| Every row's page | Each cell carries the page it came from and when SpecStream read it. `row.sourceUrl` is the page behind the row |
+| Every row's page | Each cell carries its source URL and read time. `row.sourceUrl` is the page behind the row |
 | `onComplete` | Your mutation runs once when the list finishes, with whatever context you passed |
 | Webhook route | Optional. SpecStream calls your deployment when a list finishes, so it shows up without waiting for a status check |
 | `cancel`, `resume`, `deleteList` | Stop a list and keep the rows found so far, pick tracking back up, clean up |

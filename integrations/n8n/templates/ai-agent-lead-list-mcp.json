@@ -1,0 +1,349 @@
+{
+  "name": "Ask an AI agent for a lead list in chat, with the SpecStream MCP server and Google Sheets",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Ask for a lead list in chat\n\nType the list you want, the way you'd say it to a colleague: *25 web design agencies in Austin with their email and phone*, or *every roofer in Columbus rated 4.5 or better with fewer than 20 reviews*. The agent asks SpecStream over MCP, shows you the price, waits for your yes, then shows the rows and saves them to Google Sheets when you ask.\n\n### How it works\n1. **SpecStream MCP** connects the agent to `https://api.specstream.ai/mcp` with six tools: read the request, price it, approve it, check progress, read the rows, share a link.\n2. The agent never starts paid work without your yes in the chat, and never above the cap in **Settings**.\n3. **add_lead_to_sheet** writes one row per lead, with its source URL and read time.\n\n### Set up (5 minutes)\n1. Get a free API key at [specstream.ai](https://specstream.ai) under **Agents & API**. Give the key a spending limit while you're there. New accounts get $10 of work free, no card.\n2. In **SpecStream MCP**, create a **Bearer Auth** credential with the key.\n3. Add your OpenAI key to **OpenAI Chat Model**, or swap in any chat model.\n4. Connect Google Sheets in **add_lead_to_sheet** and pick a sheet with the headers Name, Website, Phone, Email, City, Source, Request.\n5. Click **Open chat** and ask for a list.\n\n### Price\n10¢, 30¢ or $1 a match depending on the list, plus a little more for a named person's email or phone. The agent shows the exact maximum before anything runs, and you pay only for the matches.",
+        "height": 800,
+        "width": 540
+      },
+      "id": "006e026d-20ad-57ea-9ce3-b138881cd11f",
+      "name": "Overview",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -600,
+        -420
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### Two limits on spending\n1. **Settings → max_usd**: the agent refuses any quote above it.\n2. **The key's own spending limit**, set at specstream.ai under Agents & API. The key can't raise it, so it holds even if a prompt goes wrong.",
+        "height": 420,
+        "width": 360,
+        "color": 7
+      },
+      "id": "c1bab6bc-e4f9-573b-89a3-5777532afd37",
+      "name": "Spending",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -60,
+        -220
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### The agent and its tools\nAdd more SpecStream tools in **SpecStream MCP** when you need them: `export_find` for a CSV or Excel link, `quote_capacity_work` with `extend` to find more, `create_capacity_schedule` to keep a list current.",
+        "height": 660,
+        "width": 700,
+        "color": 7
+      },
+      "id": "6610ec8d-e171-5fc9-af98-a21d508b7381",
+      "name": "Tools",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        320,
+        -220
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "65fb0cc3-29a4-5591-8268-82c5e355615f",
+      "name": "When a chat message arrives",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "d1233022-192f-576d-b382-4574376fc5e5"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5e6bd006-9085-5f4c-97d0-1dccb6eb8b59",
+              "name": "max_usd",
+              "type": "number",
+              "value": 10
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "259d1985-841d-5d16-aa0a-3a6a559aa054",
+      "name": "Settings",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('When a chat message arrives').first().json.chatInput }}",
+        "options": {
+          "systemMessage": "=You build lead lists and company lists for the user with SpecStream, which finds every match on the live web and returns each row with its source URL and read time.\n\nFollow these steps in order.\n1. Call compile with the user's request in their words. Tell the user in one sentence how SpecStream read it. If the status is not runnable, ask the user what to change.\n2. Call quote_capacity_work with the ast_hash from compile, operation \"find\", and requested_units: the number the user asked for, or 25 if they gave none. Show the maximum price in dollars (maximum_cents / 100) and ask: \"Run it for up to $X?\"\n3. Call authorize_capacity_work only after the user says yes in this chat to that price. Use confirm_max_cents equal to the quote's maximum_cents and idempotency_key equal to the quote_id. Never authorize a quote above {{ $('Settings').first().json.max_usd }} US dollars; ask the user to lower the count instead.\n4. Tell the user the list has started and usually takes 2 to 10 minutes. When they ask, call get_find. When the status is completed or partial, call list_find_rows and follow next_cursor until it is null.\n5. Show the rows as a Markdown table with the columns the user asked for and a Source column. Show the first 20 rows and say how many there are.\n6. When the user asks to save the list, call add_lead_to_sheet once for each row. When they ask for a link, call share_find.\n\nNever invent rows, emails or phone numbers. If a value is empty, leave the cell empty. Results in the \"possible\" list are not matches; don't show them as results.",
+          "maxIterations": 60
+        }
+      },
+      "id": "bb88630c-21c1-5ea8-be34-70ab7320da20",
+      "name": "Lead list agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        480,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "id": "824e7afd-8606-59ab-932f-3782f4dc1eeb",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        360,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('When a chat message arrives').first().json.sessionId }}",
+        "contextWindowLength": 30
+      },
+      "id": "6ba37204-4d0e-5f58-8419-aa87e6557eee",
+      "name": "Chat memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        520,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "endpointUrl": "https://api.specstream.ai/mcp",
+        "serverTransport": "httpStreamable",
+        "authentication": "bearerAuth",
+        "include": "selected",
+        "includeTools": [
+          "compile",
+          "quote_capacity_work",
+          "authorize_capacity_work",
+          "get_find",
+          "list_find_rows",
+          "share_find"
+        ],
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "id": "ddb785c2-6558-53f5-9e5c-7f4ecbf600e7",
+      "name": "SpecStream MCP",
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.2,
+      "position": [
+        680,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Add one lead to the user's Google Sheet. Call it once for each row, only when the user asks to save the list.",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $fromAI('name', \"The business or company name, exactly as in the row\", 'string') }}",
+            "Website": "={{ $fromAI('website', \"The website from the row, or empty\", 'string') }}",
+            "Phone": "={{ $fromAI('phone', \"The phone number from the row, or empty\", 'string') }}",
+            "Email": "={{ $fromAI('email', \"The email from the row, or empty\", 'string') }}",
+            "City": "={{ $fromAI('city', \"The city or address from the row, or empty\", 'string') }}",
+            "Source": "={{ $fromAI('source', \"The source URL of the row\", 'string') }}",
+            "Request": "={{ $fromAI('request', \"The user's request, in their words\", 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Website",
+              "displayName": "Website",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "City",
+              "displayName": "City",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Source",
+              "displayName": "Source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Request",
+              "displayName": "Request",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fbc072a1-f84a-59f1-b5e4-473792025850",
+      "name": "add_lead_to_sheet",
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.5,
+      "position": [
+        840,
+        260
+      ]
+    }
+  ],
+  "connections": {
+    "When a chat message arrives": {
+      "main": [
+        [
+          {
+            "node": "Settings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Settings": {
+      "main": [
+        [
+          {
+            "node": "Lead list agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Lead list agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Lead list agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SpecStream MCP": {
+      "ai_tool": [
+        [
+          {
+            "node": "Lead list agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "add_lead_to_sheet": {
+      "ai_tool": [
+        [
+          {
+            "node": "Lead list agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}

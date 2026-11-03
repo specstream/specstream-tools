@@ -909,6 +909,11 @@ export class Client {
     return this.request("PUT", path, request) as Promise<Schemas["RelationshipData"]>;
   }
 
+  workspaceShareCollection(collectionId: string, request: Schemas["CollectionShareInput"]): Promise<Schemas["CollectionShareData"]> {
+    let path = `/v1/workspace/collections/${encodeURIComponent(collectionId)}/share`;
+    return this.request("POST", path, request) as Promise<Schemas["CollectionShareData"]>;
+  }
+
   workspaceReportResult(collectionId: string, request: Schemas["ResultReportInput"]): Promise<Schemas["ResultReportData"]> {
     let path = `/v1/workspace/collections/${encodeURIComponent(collectionId)}/reports`;
     return this.request("POST", path, request) as Promise<Schemas["ResultReportData"]>;

@@ -75,7 +75,7 @@ export class FindListModal extends Modal {
 		const { contentEl } = this;
 		contentEl.createEl("p", {
 			cls: "specstream-lede",
-			text: "Say what you want in plain words. The live web gets read, every match comes back with the page it came from, and you see the price before anything runs.",
+			text: "Say what you want in plain words. You see the price before anything runs. Source URL and read time on every value.",
 		});
 
 		new Setting(contentEl)

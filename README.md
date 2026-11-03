@@ -15,7 +15,7 @@
 
 <br>
 
-Live web data for your agent. Describe the data in plain words and get structured rows, every value linked to the page it came from and the time it was read. The most a run can cost is set before anything runs, and you pay only for rows that meet the request. A saved request reruns on a schedule and sends each change where you work.
+Live web data for your agent. Describe the data in plain words and get structured rows. Source URL and read time on every value. The most a run can cost is set before anything runs, and you pay only for rows that meet the request. A saved request reruns on a schedule and sends each change where you work.
 
 Your agent asks for "food banks in Texas, with their annual revenue" and gets rows it can cite, each with the page behind it. It sees the price first, and a search that finds nothing costs nothing.
 
