@@ -397,7 +397,7 @@ Nothing is spent until a person – or an agent inside a limit a person set – 
 4. `get_find` shows progress while rows arrive. `list_find_rows` returns results with the reason and the source for each fact.
 5. `export_find`, `share_find`, and `send_to_destination` move results on. Reading, exporting, and sharing cost nothing.
 
-Each delivered result costs 10 cents, 30 cents or $1 depending on how many facts it carries. A search that finds nothing is free. See [pricing](https://specstream.ai/pricing).
+Each delivered result costs 5 cents, 15 cents or $1 depending on how many facts it carries. A search that finds nothing is free. See [pricing](https://specstream.ai/pricing).
 
 The four skills in [`skills/`](skills) teach an agent this order and where to stop and ask: `compile`, `review-work`, `approve-work`, `continue-work`.
 

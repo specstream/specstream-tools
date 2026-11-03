@@ -64,7 +64,7 @@ Your request and your answers to the price go to `api.specstream.ai` over HTTPS,
 
 ## Price
 
-A list runs only after you approve its maximum price, and you pay for each row delivered, from 10 cents each. Possible candidates that were not confirmed are never billed. [Pricing](https://specstream.ai/pricing) · [API docs](https://specstream.ai/docs/api) · support@specstream.ai
+A list runs only after you approve its maximum price, and you pay for each row delivered, from 5 cents each. Possible candidates that were not confirmed are never billed. [Pricing](https://specstream.ai/pricing) · [API docs](https://specstream.ai/docs/api) · support@specstream.ai
 
 ## Unattended runs
 

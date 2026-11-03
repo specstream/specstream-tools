@@ -61,7 +61,7 @@ If the response is lost, `getCapacityRequest(savedRequestKey)` returns the same 
 
 ## Pricing
 
-New accounts start with $10 of work for 30 days, no card. A delivered result costs 10 cents, 30 cents or $1 depending on how many facts it carries. No result, no charge. See [pricing](https://specstream.ai/pricing).
+New accounts start with $10 of work for 30 days, no card. A delivered result costs 5 cents, 15 cents or $1 depending on how many facts it carries. No result, no charge. See [pricing](https://specstream.ai/pricing).
 
 ## Links
 

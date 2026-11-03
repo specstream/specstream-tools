@@ -1,6 +1,6 @@
 # SpecStream power for Kiro
 
-Ask for any list in plain words and get every match from the live web: lead lists, company lists, grants, jobs, places. Each row comes with the page it was read from. You see the price before anything runs and pay for each row delivered, from 10 cents each. A search that finds nothing costs nothing.
+Ask for any list in plain words and get every match from the live web: lead lists, company lists, grants, jobs, places. Each row comes with the page it was read from. You see the price before anything runs and pay for each row delivered, from 5 cents each. A search that finds nothing costs nothing.
 
 [SpecStream](https://specstream.ai) is the live web data engine for teams and agents. This power connects Kiro to SpecStream's hosted MCP server and adds four skills for the flow: read the request back, get the price, approve it, read and send the rows. It follows the [Agent Plugins](https://agent-plugins.org) format, so the same folder works in other compatible clients.
 
@@ -66,7 +66,7 @@ Your request and your answers to the price go to `api.specstream.ai` over HTTPS,
 
 ## Price
 
-Reading a request and getting a price are free. A list runs only after you approve its maximum price. Results cost 10 cents, 30 cents or $1 each depending on the kind of work, plus 10 cents for a person's email and 25 cents for a phone. Possible matches that were not confirmed are never billed. [Pricing](https://specstream.ai/pricing)
+Reading a request and getting a price are free. A list runs only after you approve its maximum price. Results cost 5 cents, 15 cents or $1 each depending on the kind of work, plus 5 cents for a person's email and 15 cents for a phone. Possible matches that were not confirmed are never billed. [Pricing](https://specstream.ai/pricing)
 
 ## Privacy and support
 

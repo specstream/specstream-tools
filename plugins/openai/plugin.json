@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "specstream",
-  "version": "1.2.0",
-  "description": "The live web data engine for teams and agents. Ask for a list in plain words and get rows that match what you asked.",
+  "version": "1.2.1",
+  "description": "The live web data engine for teams and agents. One platform to build, search, extract, enrich, map, and monitor data across the entire web.",
   "author": {
     "name": "SpecStream SAS",
     "email": "support@specstream.ai",
@@ -21,8 +21,8 @@
     "com.openai": {
       "interface": {
         "displayName": "SpecStream",
-        "shortDescription": "Any list, from the live web",
-        "longDescription": "SpecStream builds data lists from the live web. Describe the list you need in plain words: companies, local businesses, tenders, datasets, repositories or public records. SpecStream reads live pages and official sources when you ask and returns structured rows that meet your conditions, with the page behind each fact.\n\nOpen any row to see why it matched and the quote that supports it. Source URL and read time on every value. Candidates SpecStream couldn't confirm are shown apart, labeled as possible, and never counted as results.\n\nAsk in your own words, in any language. Try roofing contractors in Columbus rated 4.5 or better with fewer than 20 Google reviews, datasets on urban tree canopy under an open license, or Texas food banks with annual revenue from Form 990.\n\nThe Lists app shows your recent lists and fills in rows as they're found. Download a list as CSV, Excel, JSON, HTML, KML or GeoJSON from the conversation, or share it with a link.\n\nYou approve each run before it starts, and you can stop it at any time.",
+        "shortDescription": "The live web data engine",
+        "longDescription": "SpecStream is the live web data engine for teams and agents. One platform to build, search, extract, enrich, map, and monitor data across the entire web.\n\nAsk for any dataset in plain words, in any language: companies, local businesses, grants, tenders, papers, repositories, public records or regulations. SpecStream builds it from the live web as structured rows that meet your conditions. Matches it couldn't confirm are shown apart, labeled as possible, and never counted as results.\n\nTry aluminum die casting makers in Mexico whose own sites state IATF 16949 certification, datasets on urban tree canopy under an open license, or Texas food banks with their annual revenue.\n\nBefore anything runs, you see how SpecStream read your request, as parts you can change, and you approve each run. You can stop a run at any time. Open a row to see why it matched.\n\nFrom there, ask for more results, add facts to every row, or recheck the rows you have. Bring your own CSV or Excel file and SpecStream fills in or checks each row. Paste a few example rows from a website and SpecStream reads the rest of it the same way.\n\nThe Lists app shows your recent runs and fills in rows as they arrive. Download results as CSV, Excel, JSON or HTML, or as KML and GeoJSON when they have places, or share them with a link.",
         "developerName": "SpecStream SAS",
         "category": "Data & Analytics",
         "capabilities": [
@@ -99,7 +99,7 @@
       },
       "onboardingSkill": "./skills/get-started/SKILL.md",
       "publication": {
-        "release_notes": "Version 1.2.0. First release. Ask for a list in plain words, see how it was read, get a quote and approve it, then read results that meet every condition, each with the page behind each fact. Possible matches are shown apart and never counted. Download results as CSV, Excel, JSON or HTML. The Lists app opens from the sidebar and beside a conversation, opens CSV, Excel, GeoJSON and KML files, offers your lists as mentions and keeps its settings in ChatGPT. When a place matches several, ChatGPT asks which one in a form. Events tell a chat when a list finishes or a saved request finds new results. Includes five skills, with get-started as the setup skill."
+        "release_notes": "Version 1.2.1. First release. Ask for any dataset in plain words, see how SpecStream read it, approve the run, then get rows that meet your conditions. Possible matches are shown apart and never counted. Ask for more results, add facts or recheck the rows you have. Bring a CSV or Excel file to fill in or check, or show SpecStream a few example rows from a website to read the rest. Download results as CSV, Excel, JSON or HTML, or as KML and GeoJSON for records with places, or share them with a link. The Lists app opens from the sidebar and beside a conversation, opens CSV, Excel, GeoJSON and KML files, offers your saved work as mentions and keeps its settings in ChatGPT. When a place matches several, ChatGPT asks which one in a form. Events tell a chat when a run finishes or a saved request finds new results. Includes five skills, with get-started as the setup skill."
       }
     }
   }

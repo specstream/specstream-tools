@@ -2,7 +2,7 @@
 
 Ask `@agent` in plain words and get live web data back, every match with its values and the page each one came from. Every roofer in Columbus rated 4.5 or better with their phone, every food bank in Texas with its revenue, every company that filed to raise $5M or more this week. SpecStream reads the live web where those things are kept, at the moment you ask.
 
-You approve the price before anything runs, and you pay for each result delivered: 10¢, 30¢ or $1 each, depending on how many facts you ask for. A search that finds nothing is free. New accounts start with $10 of work, no card.
+You approve the price before anything runs, and you pay for each result delivered: 5¢, 15¢ or $1 each, depending on how many facts you ask for. A search that finds nothing is free. New accounts start with $10 of work, no card.
 
 ## Set up
 

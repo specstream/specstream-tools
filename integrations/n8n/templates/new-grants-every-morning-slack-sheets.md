@@ -86,4 +86,4 @@ Each row in the sheet also has the opportunity number, the posted date, the assi
 
 ## What it costs
 
-10¢ a grant, shown before anything runs. The default maximum is $2.50 a morning (25 new grants). You pay only for new grants, and a morning with nothing new is free.
+5¢ a grant, shown before anything runs. The default maximum is $2.50 a morning (50 new grants). You pay only for new grants, and a morning with nothing new is free.

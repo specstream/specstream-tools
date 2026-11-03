@@ -4,7 +4,7 @@ Live web data for your model. Ask in plain words and get every match: every roof
 
 Source URL and read time on every value.
 
-You see the price before anything runs, and you pay for each result delivered: 10¢, 30¢ or $1 a row, and 5¢ for a company left out for a detail you marked as needed. New accounts start with $10 of work, no card.
+You see the price before anything runs, and you pay for each result delivered: 5¢, 15¢ or $1 a row. A company left out costs nothing. New accounts start with $10 of work, no card.
 
 Two ways to connect it. Pick one.
 
@@ -84,7 +84,7 @@ The server tells the model to show you the price and wait for your yes before an
 
 ## Pricing
 
-A match costs 10¢, 30¢ or $1 depending on how many facts it carries. No match, no charge. A recheck costs half. The same rates apply on every plan, Free included. See [specstream.ai/pricing](https://specstream.ai/pricing).
+A match costs 5¢, 15¢ or $1 depending on how many facts it carries. No match, no charge. A recheck costs half. The same rates apply on every plan, Free included. See [specstream.ai/pricing](https://specstream.ai/pricing).
 
 ## Troubleshooting
 

@@ -81,4 +81,4 @@ The agent never starts paid work on its own. It needs your yes in the chat, it r
 
 ## What it costs
 
-10¢, 30¢ or $1 a match depending on the list, plus a little more for a named person's email or phone. The agent shows the exact maximum before anything runs. You pay only for the matches, and a search that finds nothing is free.
+5¢, 15¢ or $1 a match depending on the list, plus a little more for a named person's email or phone. The agent shows the exact maximum before anything runs. You pay only for the matches, and a search that finds nothing is free.

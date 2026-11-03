@@ -16,4 +16,4 @@ Ask for any dataset in plain words inside a Workato recipe and get structured re
 
 Create an API key in SpecStream under [Agents & API](https://specstream.ai/workspace/settings) and paste it into the connection. New accounts start with $10 of work free.
 
-Pricing: you pay for each row delivered, from 10 cents each. [specstream.ai/pricing](https://specstream.ai/pricing)
+Pricing: you pay for each row delivered, from 5 cents each. [specstream.ai/pricing](https://specstream.ai/pricing)

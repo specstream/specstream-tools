@@ -1,6 +1,6 @@
 # SpecStream for Pi
 
-Ask for any list in plain words and get every match from the live web, each row with the page it was read from: lead lists, company lists, grants, jobs, places. You see the price before anything runs and pay for each row delivered, from 10 cents each.
+Ask for any list in plain words and get every match from the live web, each row with the page it was read from: lead lists, company lists, grants, jobs, places. You see the price before anything runs and pay for each row delivered, from 5 cents each.
 
 This is a [Pi package](https://pi.dev/packages). It adds the hosted [SpecStream](https://specstream.ai) MCP server and four skills, so Pi reads your request back, gets the price, asks you to approve it, and returns the finished list.
 
@@ -64,7 +64,7 @@ Your request and your answers to the price go to `api.specstream.ai` over HTTPS,
 
 ## Price
 
-A list runs only after you approve its maximum price. Results cost 10 cents, 30 cents or $1 each depending on the kind of work, plus 10 cents for a person's email and 25 cents for a phone. Nothing is charged when nothing matches, and possible matches that were not confirmed are never billed. [Pricing](https://specstream.ai/pricing)
+A list runs only after you approve its maximum price. Results cost 5 cents, 15 cents or $1 each depending on the kind of work, plus 5 cents for a person's email and 15 cents for a phone. Nothing is charged when nothing matches, and possible matches that were not confirmed are never billed. [Pricing](https://specstream.ai/pricing)
 
 ## Links
 

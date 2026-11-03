@@ -55,7 +55,7 @@ Give the key only what the task needs: its scope, projects, an expiry and a spen
 | `max_results` | How many rows, 1 to 1000. Default 25 |
 | `max_price_usd` | Optional. A lower ceiling for this call |
 
-The tool reads the request, gets the price, and starts the run only if the quoted maximum is within your ceiling. The agent can ask for a lower ceiling on a call and can never raise yours. If the price is above the ceiling, nothing runs and the agent is told so. Results cost 10 cents, 30 cents or $1 each depending on the list, plus 10 cents for a person's email and 25 cents for a phone number, and nothing when nothing matches.
+The tool reads the request, gets the price, and starts the run only if the quoted maximum is within your ceiling. The agent can ask for a lower ceiling on a call and can never raise yours. If the price is above the ceiling, nothing runs and the agent is told so. Results cost 5 cents, 15 cents or $1 each depending on the list, plus 5 cents for a person's email and 15 cents for a phone number, and nothing when nothing matches.
 
 It waits for the list, then returns JSON: `state`, `list_id`, `list_link` and `rows`. Each row has its columns plus `source_url` and `checked_at`. A retry of the same request with the same limits within the hour reaches the run it already started, so a flaky turn does not buy the list twice.
 

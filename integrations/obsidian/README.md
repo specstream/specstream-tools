@@ -48,7 +48,7 @@ Nothing is bought without your click.
 3. If the maximum is above your spending limit, the approve button stays off. Ask for fewer rows or raise the limit in settings.
 4. You click **Approve**. That approves exactly that quote at exactly that maximum, and the plugin starts the list.
 
-Matches cost 10¢, 30¢ or $1 each depending on how many facts you ask for. A person's email adds 10¢ and a phone number adds 25¢ on top of the row's rate. SpecStream shows the maximum before anything runs, so there is no bill to discover afterward. Current rates are on the [pricing page](https://specstream.ai/pricing).
+Matches cost 5¢, 15¢ or $1 each depending on how many facts you ask for. A person's email adds 5¢ and a phone number adds 15¢ on top of the row's rate. SpecStream shows the maximum before anything runs, so there is no bill to discover afterward. Current rates are on the [pricing page](https://specstream.ai/pricing).
 
 ## Settings
 
