@@ -1,7 +1,7 @@
 {
   "name": "specstream",
-  "version": "1.2.0",
-  "description": "SpecStream, the live web data engine for teams and agents: ask for any list in plain words and get every match from the live web, with its source.",
+  "version": "1.3.0",
+  "description": "SpecStream, the live web data engine for agents: describe the data in plain words and get structured rows from the live web, every value linked to the page it came from.",
   "mcpServers": {
     "specstream": {
       "httpUrl": "https://api.specstream.ai/mcp",
