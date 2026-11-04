@@ -72,13 +72,22 @@ export class Specstream implements INodeType {
         displayOptions: { show: { operation: ["findList"] } },
       },
       {
-        displayName: "Run Key",
-        name: "run_key",
-        type: "string",
-        default: "",
-        description:
-          "Identifies one run, 8 to 128 characters. A second request with the same key gets the run it already started and is not charged again. To start a fresh run every time, map something unique, such as the execution ID. If left empty, identical requests within the same UTC hour share one run.",
+        displayName: "Options",
+        name: "findOptions",
+        type: "collection",
+        placeholder: "Add Option",
+        default: {},
         displayOptions: { show: { operation: ["findList"] } },
+        options: [
+          {
+            displayName: "Run Key",
+            name: "run_key",
+            type: "string",
+            default: "",
+            description:
+              "Identifies one run, 8 to 128 characters. A second request with the same key gets the run it already started and is not charged again. To start a fresh run every time, map something unique, such as the execution ID. If left empty, identical requests within the same UTC hour share one run.",
+          },
+        ],
       },
       {
         displayName: "List ID",
@@ -91,6 +100,23 @@ export class Specstream implements INodeType {
         displayOptions: { show: { operation: ["getListRows"] } },
       },
       {
+        displayName: "Return All",
+        name: "returnAll",
+        type: "boolean",
+        default: false,
+        description: "Whether to return all results or only up to a given limit",
+        displayOptions: { show: { operation: ["getListRows"] } },
+      },
+      {
+        displayName: "Limit",
+        name: "limit",
+        type: "number",
+        typeOptions: { minValue: 1 },
+        default: 50,
+        description: "Max number of results to return",
+        displayOptions: { show: { operation: ["getListRows"], returnAll: [false] } },
+      },
+      {
         displayName: "Request",
         name: "q",
         type: "string",
@@ -101,11 +127,21 @@ export class Specstream implements INodeType {
         displayOptions: { show: { operation: ["compile"] } },
       },
       {
-        displayName: "Locale",
-        name: "locale",
-        type: "string",
-        default: "en-US",
+        displayName: "Options",
+        name: "readOptions",
+        type: "collection",
+        placeholder: "Add Option",
+        default: {},
         displayOptions: { show: { operation: ["compile"] } },
+        options: [
+          {
+            displayName: "Locale",
+            name: "locale",
+            type: "string",
+            default: "en-US",
+            description: "The language and region the request is written in",
+          },
+        ],
       },
       {
         displayName: "Confirm Max USD",
@@ -151,15 +187,26 @@ export class Specstream implements INodeType {
         name: "parent_find_id",
         type: "string",
         default: "",
-        description: "For more results, added details or a recheck: the run to build on",
-        displayOptions: { show: { operation: ["quoteWork"] } },
+        required: true,
+        description: "The run to build on",
+        displayOptions: { show: { operation: ["quoteWork"], work_operation: ["extend", "add_facts", "refresh"] } },
       },
       {
-        displayName: "Project ID",
-        name: "project_id",
-        type: "string",
-        default: "",
+        displayName: "Options",
+        name: "quoteOptions",
+        type: "collection",
+        placeholder: "Add Option",
+        default: {},
         displayOptions: { show: { operation: ["quoteWork"] } },
+        options: [
+          {
+            displayName: "Project ID",
+            name: "project_id",
+            type: "string",
+            default: "",
+            description: "The project the work belongs to",
+          },
+        ],
       },
       {
         displayName: "Reviewed Quote ID",
@@ -231,7 +278,9 @@ export class Specstream implements INodeType {
         if (!q) throw fail("Describe the list to find");
         if (!Number.isSafeInteger(count) || count < 1) throw fail("Number of Results must be 1 or more");
         if (!Number.isSafeInteger(maxCents) || maxCents <= 0) throw fail("Set a Maximum Price above 0");
-        const given = String(this.getNodeParameter("run_key", i, "") || "").trim();
+        const findOptions = this.getNodeParameter("findOptions", i, {}) as IDataObject;
+        // Workflows saved before 1.1.6 kept Run Key at the top level.
+        const given = String(findOptions.run_key ?? this.getNodeParameter("run_key", i, "") ?? "").trim();
         if (given && (given.length < 8 || given.length > 128)) throw fail("Run Key must be 8 to 128 characters");
         // A retry, even in a new execution, recovers the run it already started instead of buying the list again.
         const requestKey = runKey({ request: q, count, maxPrice: Number(this.getNodeParameter("max_price_usd", i)), override: given });
@@ -296,12 +345,27 @@ export class Specstream implements INodeType {
 
       if (operation === "getListRows") {
         const listId = String(this.getNodeParameter("list_id", i) || "").trim();
-        const page = await call("GET", `/v1/finds/${encodeURIComponent(listId)}/rows`);
-        const rows = (page.rows as IDataObject[] | undefined) || [];
-        const flat = flatRowsById(page.flat_rows as IDataObject[] | undefined);
-        for (const record of rows) {
-          const row = flattenRow(String(page.find_id), record, flat.get(`${String(page.find_id)}:${String(record.entity_id)}`));
-          out.push({ json: { ...row, list_status: page.status as string }, pairedItem: { item: i } });
+        const returnAll = this.getNodeParameter("returnAll", i, false) as boolean;
+        const wanted = returnAll ? Infinity : Math.floor(Number(this.getNodeParameter("limit", i, 50)));
+        if (!returnAll && (!Number.isSafeInteger(wanted) || wanted < 1)) throw fail("Limit must be 1 or more");
+        let cursor = "";
+        let returned = 0;
+        // Each page holds up to 100 rows; follow next_cursor until the list ends or the limit is reached.
+        for (let pages = 0; pages < 10000 && returned < wanted; pages++) {
+          const pageSize = Math.min(100, wanted - returned);
+          const query = `limit=${pageSize}${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`;
+          const page = await call("GET", `/v1/finds/${encodeURIComponent(listId)}/rows?${query}`);
+          const rows = (page.rows as IDataObject[] | undefined) || [];
+          const flat = flatRowsById(page.flat_rows as IDataObject[] | undefined);
+          for (const record of rows) {
+            if (returned >= wanted) break;
+            const row = flattenRow(String(page.find_id), record, flat.get(`${String(page.find_id)}:${String(record.entity_id)}`));
+            out.push({ json: { ...row, list_status: page.status as string }, pairedItem: { item: i } });
+            returned++;
+          }
+          const next = page.next_cursor ? String(page.next_cursor) : "";
+          if (!next || next === cursor || rows.length === 0) break;
+          cursor = next;
         }
         continue;
       }
@@ -314,7 +378,7 @@ export class Specstream implements INodeType {
         path = "/v1/parse";
         body = {
           q: this.getNodeParameter("q", i) as string,
-          locale: (this.getNodeParameter("locale", i) as string) || "en-US",
+          locale: String((this.getNodeParameter("readOptions", i, {}) as IDataObject).locale ?? this.getNodeParameter("locale", i, "") ?? "") || "en-US",
         };
       } else if (operation === "quoteWork") {
         method = "POST";
@@ -324,10 +388,13 @@ export class Specstream implements INodeType {
           operation: this.getNodeParameter("work_operation", i) as string,
           requested_units: this.getNodeParameter("requested_units", i) as number,
         };
-        for (const name of ["parent_find_id", "project_id"]) {
-          const value = this.getNodeParameter(name, i) as string;
-          if (value) body[name] = value;
-        }
+        const workOperation = this.getNodeParameter("work_operation", i) as string;
+        const parent = workOperation === "find" ? "" : String(this.getNodeParameter("parent_find_id", i, "") || "").trim();
+        if (workOperation !== "find" && !parent) throw fail("Earlier Run ID is required to add results, add details or recheck");
+        if (parent) body.parent_find_id = parent;
+        const quoteOptions = this.getNodeParameter("quoteOptions", i, {}) as IDataObject;
+        const project = String(quoteOptions.project_id ?? this.getNodeParameter("project_id", i, "") ?? "").trim();
+        if (project) body.project_id = project;
       } else if (operation === "confirmAndRun") {
         let amount: number;
         try {

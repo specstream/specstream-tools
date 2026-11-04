@@ -12,16 +12,17 @@ Create an API key under **Agents & API** in your SpecStream workspace, then add 
 
 ## Operations
 
-The **SpecStream** node has six operations. Together they follow the same order as the product: read, price, approve, read the results.
+The **SpecStream** node has five operations. Together they follow the same order as the product: ask, read, price, approve, read the results.
 
 | Operation | What it does |
 | --- | --- |
+| Find a List | Describes a list in plain words, prices it and starts it when the price is within your Maximum Price. Returns the List ID |
+| Get List Results | One item per matching row, each with the page it was read from. Turn on Return All to follow every page of a long list, or set a Limit |
 | Read Request | Reads a request in your own words and returns how SpecStream understood it, with a request hash |
-| Review Quote | Prices that request, or more results, added details or a recheck on an earlier run. Returns the quote, its hash and the maximum |
+| Review Quote | Prices that request, or more results, added details or a recheck on an earlier run (set Earlier Run ID for those). Returns the quote, its hash and the maximum |
 | Approve Quoted Work | Approves that exact quote. You type the maximum in dollars (`Confirm Max USD`); there is no default, and zero is refused |
-| Get Status | Progress of a run |
-| Get Results | The results of a run, each with the reason and the source for its facts |
-| Register Webhook | Sends a signed event when a run completes |
+
+Optional settings (Run Key, Locale, Project ID) sit under **Options** on the operation they belong to.
 
 The **SpecStream Trigger** node starts a workflow when a run completes, a monitor finds new or changed records, or records are added to a collection. It checks the signature of every event.
 

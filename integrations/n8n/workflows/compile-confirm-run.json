@@ -19,7 +19,9 @@
       "parameters": {
         "operation": "compile",
         "q": "={{$json.request}}",
-        "locale": "en-US"
+        "readOptions": {
+          "locale": "en-US"
+        }
       }
     },
     {
@@ -35,9 +37,7 @@
         "operation": "quoteWork",
         "ast_hash": "={{$json.ast_hash}}",
         "requested_units": "={{$json.ast.limit.max}}",
-        "work_operation": "find",
-        "parent_find_id": "",
-        "project_id": ""
+        "work_operation": "find"
       }
     },
     {

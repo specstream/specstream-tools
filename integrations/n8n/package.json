@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-specstream",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "Build lead lists from the live web in n8n: local businesses, companies, grants and jobs, each row with its source. Send them to Google Sheets, HubSpot or Slack. Priced per match.",
   "license": "MIT",
   "homepage": "https://specstream.ai/docs/integrations",
