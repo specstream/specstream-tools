@@ -27,6 +27,8 @@ describe("@specstream/pi-package", () => {
     assert.equal(calls[0][0], SERVER_NAME);
     assert.equal(calls[0][1].url, MCP_URL);
     assert.equal(MCP_URL, "https://api.specstream.ai/mcp");
+    // oh-my-pi has no registerMcpServer: loading must not throw there.
+    assert.doesNotThrow(() => specstream({} as never));
   });
 
   it("signs in with OAuth unless a key is set", () => {

@@ -27,5 +27,7 @@ export function serverConfig(env: Record<string, string | undefined> = process.e
 }
 
 export default function specstream(pi: ExtensionAPI) {
-  pi.registerMcpServer(SERVER_NAME, serverConfig());
+  // oh-my-pi (omp) has no registerMcpServer: there the package loads only its skills, and the
+  // server comes from omp's mcp.json (integrations/omp/README.md). Without the guard omp rolls back the install.
+  if (typeof pi.registerMcpServer === "function") pi.registerMcpServer(SERVER_NAME, serverConfig());
 }

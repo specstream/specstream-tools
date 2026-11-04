@@ -1,0 +1,15 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.1.0/plugin.schema.json",
+  "name": "specstream",
+  "version": "1.0.0",
+  "description": "The live web data engine for teams and agents. Ask for a list in plain words and get every match from the live web, each row with its source. Priced before anything runs.",
+  "author": {
+    "name": "SpecStream SAS",
+    "email": "support@specstream.ai",
+    "url": "https://specstream.ai/?utm_source=rakazo"
+  },
+  "homepage": "https://specstream.ai/docs/mcp?utm_source=rakazo",
+  "repository": "https://github.com/specstream/specstream-tools",
+  "license": "MIT",
+  "keywords": ["web data", "lists", "research", "lead lists", "mcp", "sources"]
+}
