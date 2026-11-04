@@ -1,0 +1,51 @@
+{
+  "name": "@specstream/dsh-plugin",
+  "version": "0.1.0",
+  "description": "SpecStream for DeepSeek Harness: live web data as rows with a source URL on every value. Registers the hosted SpecStream MCP server.",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./package.json": "./package.json"
+  },
+  "keywords": [
+    "deepseek-harness",
+    "dsh-plugin",
+    "mcp",
+    "specstream",
+    "web-data",
+    "web-search"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/specstream/specstream-tools.git",
+    "directory": "packages/dsh-plugin-specstream"
+  },
+  "homepage": "https://specstream.ai/?utm_source=deepseek-harness",
+  "author": {
+    "name": "SpecStream",
+    "email": "support@specstream.ai",
+    "url": "https://specstream.ai"
+  },
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0"
+  },
+  "files": [
+    "src",
+    "cordis.patch.yml",
+    "LICENSE",
+    "README.md"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "node --test test/plugin.test.js"
+  }
+}

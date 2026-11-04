@@ -1,0 +1,3 @@
+- insert:
+    - id: specstream
+      name: '@specstream/dsh-plugin'
