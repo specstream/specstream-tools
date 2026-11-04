@@ -5,7 +5,7 @@ name: specstream
 label:
   en_US: SpecStream
 description:
-  en_US: Live web data for Dify agents and workflows. Describe what you need in plain words and get structured records, every value with its source page. Price shown first; pay for each result delivered.
+  en_US: The live web data engine. One platform to build, search, extract, enrich, map, and monitor data across the entire web. Source URL and read time on every value. Nothing runs until you approve the price, and you pay for each result delivered.
 icon: icon.png
 created_at: '2026-10-14T05:20:00.000000000Z'
 privacy: PRIVACY.md
