@@ -4,7 +4,7 @@ identity:
   label:
     en_US: SpecStream
   description:
-    en_US: Live web data in plain words. Structured records from the live web, every value with its source.
+    en_US: The live web data engine. One platform to build, search, extract, enrich, map, and monitor data across the entire web.
   icon: icon.png
   tags:
     - search
