@@ -1,9 +1,9 @@
-"""A LangChain agent that finds lists with SpecStream over MCP.
+"""A LangChain agent that finds data on the live web with SpecStream over MCP.
 
     pip install -r requirements.txt
     export SPECSTREAM_API_KEY="ss_live_..."
     export MODEL="openai:<model id>"        # or "anthropic:<model id>", with that provider's key set
-    python agent.py "Food banks in Texas, with their annual revenue."
+    python agent.py "Open-source vector databases on GitHub with more than 5,000 stars, with their license."
 
 By default the agent can read a request and get a price, but it cannot approve one: the
 tools that spend money or change anything are left out of its tool list. It shows you the
@@ -34,7 +34,7 @@ SPENDS = {
     "request_account_deletion",
 }
 
-PROMPT = """You find lists with SpecStream.
+PROMPT = """You find data on the live web with SpecStream.
 1. Call compile with the person's request and say back how it was read.
 2. Call quote_capacity_work and tell the person the most it can cost and when the price expires.
 3. Stop and ask. Call authorize_capacity_work only after the person has said yes to that exact price.

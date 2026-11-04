@@ -1,6 +1,10 @@
 # specstream-haystack
 
-Give your Haystack pipeline or agent any list from the live web. Search components hand a pipeline pages to read; SpecStream hands it the finished list. Ask in plain words – "dental clinics in Lisbon with online booking", "US startups that filed a $5M+ Form D this week" – and get back every matching row as a `Document`, each with the page it was read from. The list starts only within a price you set in code, and the model can't raise it.
+[SpecStream](https://specstream.ai) is the live web data engine. One platform to build, search, extract, enrich, map, and monitor data across the entire web.
+
+Ask for any dataset in plain words, and SpecStream builds it from the entire live web: every match found, extracted and enriched into structured records, then monitored for change. This package gives your Haystack pipeline or agent a fetcher component and a tool for it, with one `Document` per row. A run starts only within a price you set in code, and the model can't raise it.
+
+Source URL and read time on every value.
 
 ```bash
 pip install -U specstream-haystack

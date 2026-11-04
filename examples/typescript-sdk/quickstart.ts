@@ -2,7 +2,7 @@
 //
 //   export SPECSTREAM_API_KEY="ss_live_..."
 //   npm install
-//   npm start -- "Food banks in Texas, with their annual revenue."
+//   npm start -- "Open-source vector databases on GitHub with more than 5,000 stars, with their license."
 //
 // Nothing runs until you type yes. The request key is derived from the quote, so
 // running this twice on the same quote never pays twice.

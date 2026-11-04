@@ -1,8 +1,13 @@
 # SpecStream for Pi
 
-Ask for any list in plain words and get every match from the live web, each row with the page it was read from: lead lists, company lists, grants, jobs, places. You see the price before anything runs and pay for each row delivered, from 5 cents each.
+The live web data engine. One platform to build, search, extract, enrich, map, and monitor data across the entire web.
 
-This is a [Pi package](https://pi.dev/packages). It adds the hosted [SpecStream](https://specstream.ai) MCP server and four skills, so Pi reads your request back, gets the price, asks you to approve it, and returns the finished list.
+Ask for any dataset in plain words, and SpecStream builds it from the entire live web: every match found, extracted and enriched into structured records, then monitored for change.
+
+- Source URL and read time on every value.
+- You see the price before anything runs and pay for each row delivered, from 5 cents each.
+
+This is a [Pi package](https://pi.dev/packages). It adds the hosted [SpecStream](https://specstream.ai) MCP server and four skills, so Pi shows how SpecStream read your request, gets the price, asks you to approve it, and returns the rows.
 
 ## Install
 
@@ -22,7 +27,7 @@ Try it for one run without installing: `pi -e npm:@specstream/pi-package`.
 
 | Skill | What it does |
 |---|---|
-| `/skill:specstream-compile` | Reads your request back before anything runs |
+| `/skill:specstream-compile` | Shows how SpecStream read your request before anything runs |
 | `/skill:specstream-review-work` | Gets the exact price and its expiry |
 | `/skill:specstream-approve-work` | Starts the list after you approve that price |
 | `/skill:specstream-continue-work` | Reads every row, sends them to Sheets, Excel, Notion, Airtable, HubSpot or Salesforce, brings back more, refreshes, monitors |
@@ -30,11 +35,7 @@ Try it for one run without installing: `pi -e npm:@specstream/pi-package`.
 ## Try it
 
 ```text
-Find every independent bookstore in Oregon with a website and a phone number.
-```
-
-```text
-List open grants for food banks in Texas, with the deadline and the award size.
+Find open grants for climate research in the EU, with the deadline and the award size.
 ```
 
 Reading a request and getting its price are free. Nothing that costs money runs until you approve an exact maximum.

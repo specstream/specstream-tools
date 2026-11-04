@@ -1,11 +1,16 @@
 # opencode-specstream
 
-SpecStream plugin for [OpenCode](https://opencode.ai). SpecStream is the live web data engine for teams and agents: describe a list in plain words ("roofing companies in Columbus, Ohio with their website and phone") and get every matching row. Source URL and read time on every value. You see the price first, you approve a ceiling, and You pay for each result delivered. A search that finds nothing costs nothing.
+SpecStream plugin for [OpenCode](https://opencode.ai). SpecStream is the live web data engine. One platform to build, search, extract, enrich, map, and monitor data across the entire web.
+
+Ask for any dataset in plain words, and SpecStream builds it from the entire live web: every match found, extracted and enriched into structured records, then monitored for change.
+
+- Source URL and read time on every value.
+- You see the price first and approve a ceiling. You pay for each row delivered, and a run that finds nothing costs nothing.
 
 The plugin does two things when OpenCode starts:
 
 - adds the hosted SpecStream MCP server, `https://api.specstream.ai/mcp`, to your config as `specstream`
-- adds four agent skills: `compile` (read the request back), `review-work` (get the price), `approve-work` (approve it) and `continue-work` (read the rows, send them on, keep them current)
+- adds four agent skills: `compile` (show how SpecStream read the request), `review-work` (get the price), `approve-work` (approve it) and `continue-work` (read the rows, send them on, keep them up to date)
 
 ## Install
 
@@ -49,11 +54,11 @@ With the variable set, the plugin sends it as a bearer header and turns the brow
 
 ## Use it
 
-Ask for a list:
+Ask in plain words:
 
-> Find food banks in Texas, with their annual revenue.
+> Find open tenders on SAM.gov for translation services, with the buyer and the deadline.
 
-The agent reads the request back, shows the quoted ceiling, and starts only after you say yes. Rows come back with their source pages, ready to export as CSV, Excel or JSON or to send to Google Sheets, Notion, Airtable, HubSpot or Salesforce.
+The agent shows how SpecStream read the request and the quoted ceiling, and starts only after you say yes. Rows come back with their source pages, ready to export as CSV, Excel or JSON or to send to Google Sheets, Notion, Airtable, HubSpot or Salesforce.
 
 ## Options
 

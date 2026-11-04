@@ -1,4 +1,4 @@
-"""SpecStream for LlamaIndex: any list from the live web, every row with its source, within a price set in code."""
+"""SpecStream for LlamaIndex: the live web data engine, with the source URL and read time on every value, within a price set in code."""
 
 from llama_index.tools.specstream._api import SpecStreamError
 from llama_index.tools.specstream.base import SpecStreamToolSpec

@@ -2,7 +2,7 @@
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "specstream",
   "version": "1.2.1",
-  "description": "The live web data engine for teams and agents. One platform to build, search, extract, enrich, map, and monitor data across the entire web.",
+  "description": "SpecStream is the live web data engine for teams and agents. One platform to build, search, extract, enrich, map, and monitor data across the entire web.",
   "author": {
     "name": "SpecStream SAS",
     "email": "support@specstream.ai",
@@ -22,7 +22,7 @@
       "interface": {
         "displayName": "SpecStream",
         "shortDescription": "The live web data engine",
-        "longDescription": "SpecStream is the live web data engine for teams and agents. One platform to build, search, extract, enrich, map, and monitor data across the entire web.\n\nAsk for any dataset in plain words, in any language: companies, local businesses, grants, tenders, papers, repositories, public records or regulations. SpecStream builds it from the live web as structured rows that meet your conditions. Matches it couldn't confirm are shown apart, labeled as possible, and never counted as results.\n\nTry aluminum die casting makers in Mexico whose own sites state IATF 16949 certification, datasets on urban tree canopy under an open license, or Texas food banks with their annual revenue.\n\nBefore anything runs, you see how SpecStream read your request, as parts you can change, and you approve each run. You can stop a run at any time. Open a row to see why it matched.\n\nFrom there, ask for more results, add facts to every row, or recheck the rows you have. Bring your own CSV or Excel file and SpecStream fills in or checks each row. Paste a few example rows from a website and SpecStream reads the rest of it the same way.\n\nThe Lists app shows your recent runs and fills in rows as they arrive. Download results as CSV, Excel, JSON or HTML, or as KML and GeoJSON when they have places, or share them with a link.",
+        "longDescription": "SpecStream is the live web data engine for teams and agents. One platform to build, search, extract, enrich, map, and monitor data across the entire web.\n\nAsk for any dataset in plain words, and SpecStream builds it from the entire live web: every match found, extracted and enriched into structured records, then monitored for change. It runs through the API and MCP, and inside Sheets, CRMs, Slack, n8n, Zapier and the other tools teams already use.\n\nRows meet the conditions you wrote. Matches SpecStream couldn't confirm are shown apart, labeled as possible, and never counted as results.\n\nBefore anything runs, you see how SpecStream read your request, as parts you can change, and you approve each run. You can stop a run at any time. Open a row to see each condition it meets.\n\nSource URL and read time on every value.\n\nFrom there, ask for more results, add facts to every row, or recheck the rows you have. Bring your own CSV or Excel file and SpecStream fills in or checks each row. Paste a few example rows from a website and SpecStream reads the rest of it the same way.\n\nThe Lists app shows your recent runs and fills in rows as they arrive. Download results as CSV, Excel, JSON or HTML, or as KML and GeoJSON when they have places, or share them with a link.",
         "developerName": "SpecStream SAS",
         "category": "Data & Analytics",
         "capabilities": [
@@ -34,9 +34,7 @@
         "privacyPolicyURL": "https://specstream.ai/privacy",
         "termsOfServiceURL": "https://specstream.ai/terms",
         "defaultPrompt": [
-          "Use SpecStream to find roofing contractors in Columbus, Ohio rated 4.5 or better with fewer than 20 Google reviews.",
-          "Use SpecStream to find datasets on urban tree canopy published since 2020 under an open license.",
-          "Use SpecStream to find food banks in Texas, with their annual revenue."
+          "Use SpecStream to find datasets on urban tree canopy published since 2020 under an open license."
         ],
         "logo": "./assets/logo.png",
         "composerIcon": "./assets/icon.png"
@@ -58,9 +56,9 @@
             },
             {
               "description": "Runs a request within a ceiling the user set, follows the run and shows sourced results.",
-              "prompt": "Find 10 food banks in Texas with their annual revenue. Get a price and run it if it's $5 or less.",
+              "prompt": "Find 10 software companies in Germany with 50 to 200 employees, with their website. Get a price and run it if it's $5 or less.",
               "tools_triggered": "compile, quote_new_list, run_new_list, get_find, list_find_rows, show_specstream_records",
-              "expected_behavior": "Gets a price. If the price ceiling is at most $5, runs it with run_new_list and confirm_max_cents no higher than 500, follows progress until the run finishes, and lists the food banks with their annual revenue and the source behind each fact. If the price is above $5, asks before running."
+              "expected_behavior": "Gets a price. If the price ceiling is at most $5, runs it with run_new_list and confirm_max_cents no higher than 500, follows progress until the run finishes, and lists the companies with their website and the source behind each fact. If the price is above $5, asks before running."
             },
             {
               "description": "Downloads results from a run in the same conversation.",
@@ -78,7 +76,7 @@
           "negative": [
             {
               "description": "A writing task about businesses SpecStream could find, with no list asked for.",
-              "prompt": "Write a short cold email I can send to roofing contractors in Columbus, Ohio.",
+              "prompt": "Write a short cold email I can send to independent bookstores in Oregon.",
               "expected_behavior": "ChatGPT writes the email itself. No SpecStream tool is called, because the user asked for an email, not a list."
             },
             {

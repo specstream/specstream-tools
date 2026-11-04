@@ -2,9 +2,12 @@
 
 `pip install specstream-client` (the `specstream` package on PyPI is a different project)
 
-Python client and command line for [SpecStream](https://specstream.ai), the live web data engine for teams and agents. Describe the list you need in plain words; SpecStream reads the web where those things live, hands back only the matches, and you pay for each result delivered.
+Python client and command line for [SpecStream](https://specstream.ai), the live web data engine. One platform to build, search, extract, enrich, map, and monitor data across the entire web.
 
-Source URL and read time on every value.
+Ask for any dataset in plain words, and SpecStream builds it from the entire live web: every match found, extracted and enriched into structured records, then monitored for change.
+
+- Source URL and read time on every value.
+- You pay for each row delivered.
 
 The client has no dependencies and needs Python 3.12 or newer. It uses the same account, permissions, projects and balance as the workspace.
 
@@ -65,7 +68,7 @@ If the response is lost, `get_capacity_request(saved_request_key)` returns the s
 
 - `quote_capacity_work` also prices `extend` (more results), `add_facts` and `refresh` (a recheck, at half price) on a finished run. Pass the original `parent_find_id`.
 - `spec_options(kind)` lists the facts you can ask for, per kind of thing. `edit_spec` changes a request without rereading it.
-- `create_capacity_schedule` keeps a request current, hourly to yearly, inside per-run and per-period limits.
+- `create_capacity_schedule` keeps a request up to date, hourly to yearly, inside per-run and per-period limits.
 - `export` and `download_export` give CSV, XLSX, JSON or HTML. `create_customer_webhook` sends signed events.
 - Projects, members, shares and starred items have their own methods.
 
@@ -74,7 +77,7 @@ Kinds of thing include local businesses, companies, people, creators, products, 
 ## Command line
 
 ```sh
-specstream compile "Food banks in Texas, with their annual revenue."
+specstream compile "Open-source vector databases on GitHub with more than 5,000 stars, with their license."
 specstream get-capacity-balance
 specstream quote-capacity-work --body quote-request.json
 specstream authorize-capacity-work --body approved-execution.json

@@ -1,7 +1,7 @@
 {
   "name": "@specstream/piece-specstream",
   "version": "0.1.5",
-  "description": "SpecStream piece for Activepieces: ask for any list in plain words and get every match from the live web, with its source.",
+  "description": "SpecStream is the live web data engine for teams and agents. One platform to build, search, extract, enrich, map, and monitor data across the entire web.",
   "license": "MIT",
   "homepage": "https://specstream.ai/docs/integrations",
   "repository": {

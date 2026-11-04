@@ -2,10 +2,10 @@
   "$schema": "https://raw.githubusercontent.com/Mintplex-Labs/anything-llm/refs/heads/master/server/utils/agents/imported-manifest.schema.json",
   "active": true,
   "hubId": "specstream-find-lists",
-  "name": "SpecStream: live web data",
+  "name": "SpecStream",
   "schema": "skill-1.0.0",
   "version": "1.0.0",
-  "description": "Live web data from a request in plain words: every roofer in Columbus rated 4.5 or better, every food bank in Texas with its revenue, every company that filed to raise $5M or more this week. Returns every match with its values and the page each value came from. Shows the price first and runs only after the person approves it; matches are the only thing paid for. Pass list_id to read the rows of a run already started, for free. Not for a single fact.",
+  "description": "SpecStream, the live web data engine. Builds structured rows from the entire live web for a request in plain words. Source URL and read time on every value. Shows the price first and runs only after the person approves it; only delivered rows are billed. Pass list_id to read the rows of a run already started, for free. Not for a single fact.",
   "author": "SpecStream",
   "author_url": "https://specstream.ai",
   "license": "MIT",
@@ -68,12 +68,8 @@
   },
   "examples": [
     {
-      "prompt": "Find every roofing company in Columbus, Ohio rated 4.5 or better with fewer than 20 reviews. Include their phone number.",
-      "call": "{\"request\": \"Roofing companies in Columbus, Ohio rated 4.5 or better with fewer than 20 Google reviews, with their phone number\", \"count\": 50}"
-    },
-    {
-      "prompt": "List the food banks in Texas with their annual revenue.",
-      "call": "{\"request\": \"Food banks in Texas, with their annual revenue\", \"count\": 100}"
+      "prompt": "Find open tenders on SAM.gov for translation services, with the buyer and the deadline.",
+      "call": "{\"request\": \"Open tenders on SAM.gov for translation services, with the buyer and the deadline\", \"count\": 50}"
     },
     {
       "prompt": "Show me the rows of list fnd_1a2b3c4d again.",

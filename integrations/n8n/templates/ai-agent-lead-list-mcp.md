@@ -16,13 +16,13 @@ Template page text for n8n.io. Workflow file: [ai-agent-lead-list-mcp.json](ai-a
 | "Web design agencies in Austin, Texas, with their website, phone number and email", 10 results | `fnd_74hsa1m8jftxs9p3jyd7rchek4` | 10 agencies, 7 with a published email or phone |
 | "Find 5 more" on the same list | `fnd_gfjd0nc2w3k9bzscrcn5hmha74` | 5 new agencies, none repeated |
 
-Tested in n8n 2.43.5: the workflow imports cleanly, and the **SpecStream MCP** settings (Streamable HTTP, Bearer Auth) connect to `https://api.specstream.ai/mcp` and call `compile`. The rows above came from the same request through the API the MCP tools call.
+Tested in n8n 2.43.5: the workflow imports cleanly, and the **SpecStream** node settings (Streamable HTTP, Bearer Auth) connect to `https://api.specstream.ai/mcp` and call `compile`. The rows above came from the same request through the API the MCP tools call.
 
 ---
 
 ## Template page
 
-Ask for a lead list the way you'd ask a colleague, and get the list back in the chat: *25 web design agencies in Austin with their email and phone*, or *every roofer in Columbus rated 4.5 or better with fewer than 20 Google reviews*. The agent sends the request to SpecStream over MCP, tells you what the list will cost, waits for your yes, then shows the rows and saves them to Google Sheets when you ask.
+Ask for a lead list the way you'd ask a colleague, and get the list back in the chat: *25 web design agencies in Austin with their email and phone*. The agent sends the request to SpecStream over MCP, tells you what the list will cost, waits for your yes, then shows the rows and saves them to Google Sheets when you ask.
 
 An agent that browses and summarizes will sooner or later invent the email it couldn't find. Here the model never writes a row. SpecStream finds every match on the live web and returns each row with its source URL and read time; the agent only reads it back to you.
 
@@ -52,7 +52,7 @@ Empty cells are details the business didn't publish. The agent leaves them empty
 
 1. **Chat Trigger** takes your message.
 2. **Lead list agent** follows a short script: read the request, get a quote, show you the price, and wait for your yes.
-3. **SpecStream MCP** connects to `https://api.specstream.ai/mcp` with six tools: `compile` (read the request), `quote_capacity_work` (price it), `authorize_capacity_work` (start it after your yes), `get_find` (progress), `list_find_rows` (the rows with their sources) and `share_find` (a link anyone can open).
+3. **SpecStream** connects to `https://api.specstream.ai/mcp` with six tools: `compile` (read the request), `quote_capacity_work` (price it), `authorize_capacity_work` (start it after your yes), `get_find` (progress), `list_find_rows` (the rows with their sources) and `share_find` (a link anyone can open).
 4. **add_lead_to_sheet** appends one row per lead to your Google Sheet when you ask to save the list.
 
 The agent never starts paid work on its own. It needs your yes in the chat, it refuses any quote above `max_usd` in **Settings**, and the API key carries its own spending limit that the agent can't raise.
@@ -67,7 +67,7 @@ The agent never starts paid work on its own. It needs your yes in the chat, it r
 ## Set up
 
 1. Sign in at specstream.ai. Open **Agents & API**, create a key and set a spending limit on it.
-2. Open **SpecStream MCP**. Create a **Bearer Auth** credential and paste the key as the token.
+2. Open **SpecStream**. Create a **Bearer Auth** credential and paste the key as the token.
 3. Open **OpenAI Chat Model** and add your OpenAI credential, or replace the node with another chat model.
 4. Create a Google Sheet with the headers Name, Website, Phone, Email, City, Source, Request. Select it in **add_lead_to_sheet**.
 5. Set `max_usd` in **Settings**: the most one list may cost.
@@ -75,7 +75,7 @@ The agent never starts paid work on its own. It needs your yes in the chat, it r
 
 ## Customize it
 
-- **More tools:** add `export_find` to **SpecStream MCP** for a CSV or Excel link, or `create_capacity_schedule` to keep a list current and get new matches on a schedule.
+- **More tools:** add `export_find` to **SpecStream** for a CSV or Excel link, or `create_capacity_schedule` to keep a list up to date and get new matches on a schedule.
 - **Other kinds of lists:** the same agent finds companies, local businesses, open grants, job posts and tenders. Ask in plain words.
 - **Somewhere other than chat:** swap the Chat Trigger for Slack or Telegram so the team can ask from where they already talk.
 

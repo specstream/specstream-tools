@@ -6,7 +6,7 @@ A LangChain agent that connects to the SpecStream MCP server at `https://api.spe
 pip install -r requirements.txt langchain-openai      # or langchain-anthropic
 export SPECSTREAM_API_KEY="ss_live_..."
 export MODEL="openai:<model id>"                      # or "anthropic:<model id>"
-python agent.py "Food banks in Texas, with their annual revenue."
+python agent.py "Open-source vector databases on GitHub with more than 5,000 stars, with their license."
 ```
 
 By default the agent cannot approve a price. The tools that start paid work are left out of its tool list, so it reads the request, quotes it and stops for you. To let it run work, pass `--allow-spend`, and use a key whose spending limit you set on purpose (**Agents & API** in the workspace).

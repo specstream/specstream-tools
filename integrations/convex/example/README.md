@@ -47,13 +47,13 @@ npx convex env set SPECSTREAM_WEBHOOK_SECRET <the secret it printed>
 
 ```sh
 # step one: the price. Nothing runs and nothing is charged.
-npx convex run example:quoteList '{"request":"food banks in Texas","rows":10}'
+npx convex run example:quoteList '{"request":"open-source vector databases on GitHub","rows":10}'
 
 # step two: approve exactly that price
-npx convex run example:approveList '{"quoteId":"<quoteId>","confirmMaxCents":150,"label":"food banks"}'
+npx convex run example:approveList '{"quoteId":"<quoteId>","confirmMaxCents":150,"label":"vector databases"}'
 
 # or one call, capped by the app's own ceiling
-npx convex run example:findListUnderBudget '{"request":"food banks in Texas","rows":10}'
+npx convex run example:findListUnderBudget '{"request":"open-source vector databases on GitHub","rows":10}'
 
 # then, with the listId it printed
 npx convex run example:listProgress '{"listId":"<listId>"}'

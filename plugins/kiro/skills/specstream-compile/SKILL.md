@@ -1,6 +1,6 @@
 ---
 name: specstream-compile
-description: Get the whole list from the live web by asking in plain words (leads, companies, grants, jobs, places). Reads the request back first; nothing runs or costs until a price is approved. Use when someone wants to find, build or monitor a list.
+description: Shows how SpecStream read a plain-words request, its conditions and the fields to bring back, before anything runs or costs. Use when someone wants data from the live web.
 license: MIT
 metadata:
   category: search

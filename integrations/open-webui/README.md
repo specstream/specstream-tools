@@ -1,10 +1,12 @@
 # SpecStream for Open WebUI
 
-Live web data for your model. Ask in plain words and get every match: every roofer in Columbus rated 4.5 or better, every food bank in Texas with its revenue, every company that filed to raise $5M or more this week. SpecStream reads the live web where those things are kept and hands back every match.
+The live web data engine. One platform to build, search, extract, enrich, map, and monitor data across the entire web.
 
-Source URL and read time on every value.
+Ask for any dataset in plain words, and SpecStream builds it from the entire live web: every match found, extracted and enriched into structured records, then monitored for change. With this tool, your model asks SpecStream and the rows come back in the chat.
 
-You see the price before anything runs, and you pay for each result delivered: 5¢, 15¢ or $1 a row. A company left out costs nothing. New accounts start with $10 of work, no card.
+- Source URL and read time on every value.
+- You see the price before anything runs, and you pay for each row delivered: 5¢, 15¢ or $1 a row. A row left out costs nothing.
+- New accounts start with $10 of work, no card.
 
 Two ways to connect it. Pick one.
 
@@ -13,7 +15,7 @@ Two ways to connect it. Pick one.
 | Setup | Import `specstream_tool.py`, paste a key | Add the server URL in Admin settings |
 | Price check | Dialog in the chat, plus a spending cap you set | Your model asks you before it approves |
 | Rows in the chat | Source chips under each answer | Plain tool results |
-| What the model sees | 4 small tools | 97 tools, or the few you allow |
+| What the model sees | 4 small tools | Every SpecStream tool, or the few you allow |
 | Best for | Teams who want a hard cap and one-click approval | Anyone already running MCP servers |
 
 ## Option 1: the tool
@@ -25,9 +27,9 @@ Two ways to connect it. Pick one.
 
 Then ask:
 
-> Find every roofing company in Columbus, Ohio rated 4.5 or better with fewer than 20 Google reviews, with their phone number. Give me 50.
+> Find open tenders on SAM.gov for translation services, with the buyer and the deadline. Give me 50.
 
-The model reads your request back to you with the price, and a dialog asks you to approve it. Rows come back with the page each value was read from, shown as sources under the answer.
+The model tells you how SpecStream read your request and the price, and a dialog asks you to approve it. Rows come back with the source URL and read time on every value, shown as sources under the answer.
 
 ### What the model can do
 

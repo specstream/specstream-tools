@@ -3,7 +3,7 @@ title: SpecStream
 author: SpecStream
 author_url: https://specstream.ai
 git_url: https://github.com/specstream/specstream-tools
-description: Live web data for your model. Describe what you need in plain words and get every match from the live web. See the price first and pay for each result delivered.
+description: The live web data engine. One platform to build, search, extract, enrich, map, and monitor data across the entire web. See the price first and pay for each row delivered.
 required_open_webui_version: 0.6.31
 version: 1.0.1
 license: MIT
@@ -260,9 +260,8 @@ class Tools:
         __event_emitter__: Any = None,
     ) -> dict:
         """
-        Price a list before anything runs. Use this first whenever the person wants a list of many things
-        (every roofer in Columbus rated 4.5 or better, every food bank in Texas with its revenue, every
-        company that filed to raise $5M or more this week) rather than one fact. It spends nothing.
+        Price a request before anything runs. Use this first whenever the person wants data on many
+        things that meet conditions, rather than one fact. It spends nothing.
         Tell the person the maximum price, then call approve_list only after they say yes.
 
         :param request: The list in plain words: what to find, where, and what every row must meet.

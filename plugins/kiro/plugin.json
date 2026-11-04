@@ -2,7 +2,7 @@
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "specstream",
   "version": "1.0.0",
-  "description": "Ask for any list in plain words and get the whole list from the live web: lead lists, company lists, grants, jobs, places. Every row comes with the page behind it, and you pay for each row delivered at a price you approve first.",
+  "description": "The live web data engine. One platform to build, search, extract, enrich, map, and monitor data across the entire web. Source URL and read time on every value, and you pay for each row delivered at a price you approve first.",
   "author": {
     "name": "SpecStream",
     "url": "https://specstream.ai",
@@ -13,11 +13,11 @@
   "license": "MIT",
   "keywords": [
     "specstream",
-    "specstream lists",
-    "lead list",
-    "company list",
-    "grants list",
-    "job board list",
-    "live web data"
+    "live web data",
+    "web data",
+    "datasets",
+    "enrichment",
+    "monitoring",
+    "mcp"
   ]
 }

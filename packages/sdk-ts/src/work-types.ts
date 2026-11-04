@@ -1,4 +1,4 @@
-// Generated from implemented public OpenAPI sha256:c51cad3493d50c62014236c26b5f90bff9508d3c78e84279b2b674059f51dad3; run packages/generate_clients.py.
+// Generated from implemented public OpenAPI sha256:2085ba477a65b6b5ee9f62dac7d78f8826ed63677d03b9dd87a79900f696bc59; run packages/generate_clients.py.
 export interface Schemas {
   "AcceptedRow": { "target_evidence"?: ({ [key: string]: unknown; } | null); "worded_evidence"?: ({ [key: string]: unknown; } | null); "lineage"?: (Schemas["MatchLineage"] | null); "spec_version"?: "accepted_row.v1"; "entity_id": string; "ordinal": number; "cells": Array<Schemas["RowCell"]>; "predicates": Array<Schemas["PredicateEvidence"]>; "match_proof"?: (Schemas["LogicalProof"] | null); "billable": boolean; "contact_visibility": Schemas["ContactVisibility"]; "locked"?: boolean; "details"?: Array<Schemas["RowCell"]>; };
   "AccountData": { "account_id": string; "email": string; "finds": Array<Schemas["Find"]>; };
@@ -320,6 +320,11 @@ export interface Schemas {
   "VocabularyKind": { "kind": Schemas["EntityType"]; "name": string; "plural": string; "types": Array<string>; "details": Array<Schemas["VocabularyDetail"]>; "examples": Array<string>; "suggested": boolean; };
   "WebPushKeys": { "p256dh": string; "auth": string; };
   "WebPushSubscriptionInput": { "endpoint": string; "keys": Schemas["WebPushKeys"]; "expirationTime"?: ((number) | null); "name": string; };
+  "WebSearchHandoff": { "line": string; "request": string; "rows_estimated": number; "rows_basis": "request" | "page" | "seen"; "count_page": (string | null); "next": Schemas["WebSearchNext"]; };
+  "WebSearchNext": { "tool": "compile"; "arguments": { [key: string]: unknown; }; };
+  "WebSearchPage": { "query": string; "columns": Array<string>; "rows": Array<Schemas["WebSearchRow"]>; "answer": (Schemas["WebSearchValue"] | null); "handoff": (Schemas["WebSearchHandoff"] | null); "took_ms": number; "price_usd": number; };
+  "WebSearchRow": { "name": string; "page": string; "snippet": string; "probability": number; "fields": { [key: string]: Schemas["WebSearchValue"]; }; };
+  "WebSearchValue": { "value": string; "page": string; };
   "WebSourceCell": { "source_url": string; "response_sha256": string; "pointer": string; "association": "anchor" | "same_element" | "within_record" | "positional_example"; };
   "WebSourceExplanation": { "example_rows": number; "inferred_rows": number; "left_out"?: Array<string>; "fields": Array<Schemas["WebSourceFieldExplanation"]>; "on_change": string; "page_kept_until"?: (string | null); };
   "WebSourceFieldExplanation": { "column": string; "relationship": "anchor" | "same_element" | "within_record" | "positional_example"; "how": string; "on_change": string; "pattern"?: string; "found"?: number; "missing"?: number; };

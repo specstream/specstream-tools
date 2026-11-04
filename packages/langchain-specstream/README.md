@@ -1,6 +1,10 @@
 # langchain-specstream
 
-Give your LangChain agent any list from the live web. Search tools hand an agent pages to read; SpecStream hands it the finished list. It asks in plain words – "dental clinics in Lisbon with online booking", "US startups that filed a $5M+ Form D this week" – and gets back every matching row, each with the page it was read from. The list starts only within a price you set in code, and the model can't raise it.
+[SpecStream](https://specstream.ai) is the live web data engine. One platform to build, search, extract, enrich, map, and monitor data across the entire web.
+
+Ask for any dataset in plain words, and SpecStream builds it from the entire live web: every match found, extracted and enriched into structured records, then monitored for change. This package gives your LangChain agent two tools and a retriever for it. A run starts only within a price you set in code, and the model can't raise it.
+
+Source URL and read time on every value.
 
 ```bash
 pip install -U langchain-specstream
@@ -9,7 +13,7 @@ export SPECSTREAM_API_KEY=ss_live_...   # Agents & API in your SpecStream worksp
 
 A free account comes with $10 of work to use within 30 days and needs no card: [specstream.ai](https://specstream.ai/signup).
 
-## An agent that can find lists
+## An agent that can find data
 
 ```python
 from langchain.agents import create_agent
@@ -20,31 +24,29 @@ agent = create_agent(
     tools=specstream_tools(max_price_usd=5),
 )
 agent.invoke({"messages": [{"role": "user", "content":
-    "Find US startups that raised $5M or more in a Form D filed after October 8, 2026. Which industries lead?"}]})
+    "Find open-source vector databases on GitHub with more than 5,000 stars. Which licenses are most common?"}]})
 ```
 
 The agent writes the request and picks how many rows. You decide what one list may cost.
 
 ## What comes back
 
-One flat row per match: the list's own columns, then where the row was read. This is a real row from the request above.
+One flat row per match: the request's own columns, then where the row was read. For the request above, each row has this shape:
 
 ```json
 {
-  "list_id": "fnd_gk5y3d0r97bvyz0t08zzh75kr6",
-  "position": 26,
-  "Organization": "RapidCanvas Inc",
-  "Published address": "801 BARTON SPRINGS RD, AUSTIN, TEXAS, 78704",
-  "Source industry classification": "Other Technology",
-  "Amount sold (USD)": "28999988",
-  "Funding filing date": "2026-10-14",
-  "source_url": "https://www.sec.gov/Archives/edgar/data/2052031/000205203126000006/primary_doc.xml",
-  "checked_at": "2026-10-14T19:56:02.016693Z",
-  "list_link": "https://specstream.ai/workspace/collections/fnd_gk5y3d0r97bvyz0t08zzh75kr6"
+  "list_id": "fnd_...",
+  "position": 1,
+  "Repository": "<owner/name>",
+  "Stars": "<star count>",
+  "License": "<license>",
+  "source_url": "https://github.com/<owner>/<name>",
+  "checked_at": "<when SpecStream read the page>",
+  "list_link": "https://specstream.ai/workspace/collections/fnd_..."
 }
 ```
 
-Columns follow the request. Ask for "breweries in Portland, Oregon that host events, with their website" and the rows carry the brewery and its website instead. A fact a source doesn't publish comes back empty, never guessed.
+Columns follow the request, so a different request brings different columns. A fact a source doesn't publish comes back empty, never guessed.
 
 ## The two tools
 

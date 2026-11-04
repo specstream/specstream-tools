@@ -2,14 +2,18 @@
 
 [![npm version](https://img.shields.io/npm/v/@specstream/convex.svg)](https://www.npmjs.com/package/@specstream/convex)
 
-Ask for a list in plain words and get the whole thing in your Convex database: every matching row, each with the page it was read from, arriving while your UI watches. A search tool hands your app ten pages to read. [SpecStream](https://specstream.ai) hands it the finished list.
+[SpecStream](https://specstream.ai) is the live web data engine. One platform to build, search, extract, enrich, map, and monitor data across the entire web.
+
+Ask for any dataset in plain words, and SpecStream builds it from the entire live web: every match found, extracted and enriched into structured records, then monitored for change. This component puts those records in your Convex tables as they arrive, so your UI updates while the run works.
+
+Source URL and read time on every value.
 
 ```ts
 const specstream = new SpecStreamClient(components.specstream);
 
 // One call. The price is capped by your code, and nothing runs above the cap.
 const result = await specstream.findList(ctx, {
-  request: "food banks in Texas, with their annual revenue",
+  request: "open-source vector databases on GitHub with more than 5,000 stars, with their license",
   rows: 100,
   maxPriceUsd: 15,
   onComplete: internal.lists.onFinished,
@@ -22,7 +26,7 @@ const page = await specstream.listRows(ctx, {
 });
 ```
 
-[SpecStream](https://specstream.ai) is the live web data engine for teams and agents. You pay for each result delivered, and a search that finds nothing costs nothing. A free account starts with $10 of work to use within 30 days and needs no card.
+You pay for each row delivered, and a run that finds nothing costs nothing. A free account starts with $10 of work to use within 30 days and needs no card.
 
 ## What you get
 
@@ -93,11 +97,11 @@ import { components } from "./_generated/api";
 
 const specstream = new SpecStreamClient(components.specstream);
 
-export const findFoodBanks = action({
+export const findRepositories = action({
   args: {},
   handler: async (ctx) => {
     const result = await specstream.findList(ctx, {
-      request: "food banks in Texas, with their annual revenue",
+      request: "open-source vector databases on GitHub with more than 5,000 stars, with their license",
       rows: 100,
       maxPriceUsd: 15,
     });
@@ -114,7 +118,7 @@ export const findFoodBanks = action({
 - `needs_edit`: SpecStream couldn't price the request as written. `readAs` is what it understood, so you can show what was missing. Nothing ran.
 - `over_maximum`: the most the list can cost is above `maxPriceUsd`. Nothing ran.
 
-Your request can name its own row count ("50 roofers in Columbus rated 4.5 or better"). `rows` is the count you are pricing for, from 1 to 1000.
+Your request can name its own row count ("50 open-source vector databases on GitHub"). `rows` is the count you are pricing for, from 1 to 1000.
 
 ### Show the price first
 
@@ -233,10 +237,10 @@ SpecStream delivers webhooks only to public `https://` addresses on port 443, so
 
 ## Use it for
 
-- **Prospect lists inside your own app.** A sales tool where a rep types "roofers in Columbus rated 4.5 or better, with a phone number" and watches rows fill in, each linked to its page.
-- **An agent that finds lists.** Wrap `findList` in a tool for your Convex agent. It picks the request and the row count, and your code owns the maximum.
+- **Data inside your own app.** A user types a request in plain words and watches rows fill in, with the source URL and read time on every value.
+- **A tool for your agent.** Wrap `findList` in a tool for your Convex agent. It picks the request and the row count, and your code owns the maximum.
 - **A directory that fills itself.** Start a list per city or category from a scheduled function, store the rows, and render them from your own tables.
-- **Market maps and research dashboards.** "US startups that filed a $5M+ Form D this week", with the filing behind every row, ready for a table or a chart.
+- **Market maps and research dashboards.** Rows ready for a table or a chart, with the page behind every value.
 
 ## Good to know
 
@@ -285,7 +289,7 @@ npm run dev
 Then, from a third terminal:
 
 ```sh
-npx convex run example:quoteList '{"request":"food banks in Texas","rows":10}'
+npx convex run example:quoteList '{"request":"open-source vector databases on GitHub","rows":10}'
 npx convex run example:approveList '{"quoteId":"<quoteId from above>","confirmMaxCents":150}'
 npx convex run example:myLists
 ```

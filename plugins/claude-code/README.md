@@ -1,6 +1,10 @@
 # SpecStream for Claude
 
-Ask for any list in plain words and get every match from the live web: companies, places, people, job posts, repositories, datasets. Each row comes with the page it was read from.
+The live web data engine. One platform to build, search, extract, enrich, map, and monitor data across the entire web.
+
+Ask for any dataset in plain words, and SpecStream builds it from the entire live web: every match found, extracted and enriched into structured records, then monitored for change.
+
+Source URL and read time on every value.
 
 ## What it adds
 

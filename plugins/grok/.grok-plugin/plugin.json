@@ -1,7 +1,7 @@
 {
   "name": "specstream",
   "version": "1.0.0",
-  "description": "Ask for any list in plain words and get the whole list from the live web: lead lists, company lists, grants, jobs, places. Every row comes with the page behind it, and you pay for each row delivered at a price you approve first.",
+  "description": "The live web data engine. One platform to build, search, extract, enrich, map, and monitor data across the entire web. Source URL and read time on every value, and you pay for each row delivered at a price you approve first.",
   "author": {
     "name": "SpecStream",
     "email": "support@specstream.ai",
@@ -12,7 +12,7 @@
   "license": "MIT",
   "keywords": [
     "specstream",
-    "specstream lists",
-    "specstream ai"
+    "specstream ai",
+    "live web data"
   ]
 }

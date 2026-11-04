@@ -1,8 +1,11 @@
 # SpecStream
 
-Live web data for your bot. A user asks for many real things at once (every roofer in Columbus rated 4.5 or better, US companies that filed to raise $5M or more this week, food banks in Texas with their revenue) and your bot answers with every match from the live web as rows. Source URL and read time on every value.
+The live web data engine. One platform to build, search, extract, enrich, map, and monitor data across the entire web.
 
-The user sees the price before anything runs, and pays for each result delivered.
+Ask for any dataset in plain words, and SpecStream builds it from the entire live web: every match found, extracted and enriched into structured records, then monitored for change. With this integration, your bot asks SpecStream and answers the user with rows.
+
+- Source URL and read time on every value.
+- The user sees the price before anything runs, and pays only for rows delivered.
 
 ## Configuration
 
@@ -18,7 +21,7 @@ Three actions, in this order:
 2. **Approve and run**: only after the user says yes to that price, with `quoteId`, `quoteHash` and `approvedCents` = `maximumCents`. Returns `findId`.
 3. **Get rows**: `findId`. Each row has its cells, each cell its value and `sourceUrl`. Call again with `nextCursor` for more; reading is free.
 
-A typical flow: the user asks → Get a price → the bot says "10 coffee roasters in Portland with their websites, up to $1.00. Go ahead?" → on yes, Approve and run → Get rows → the bot lists them with their sources.
+A typical flow: the user asks, and the bot calls Get a price and says "10 open tenders for translation services, up to $1.00. Go ahead?" On yes, it calls Approve and run, then Get rows, and shows the rows with their sources.
 
 ## Limitations
 
@@ -28,5 +31,5 @@ A typical flow: the user asks → Get a price → the bot says "10 coffee roaste
 
 ## Changelog
 
-- 1.0.1: Get a price reads the request back in plain words.
+- 1.0.1: Get a price returns how SpecStream read the request, in plain words.
 - 1.0.0: First release: Get a price, Approve and run, Get rows.

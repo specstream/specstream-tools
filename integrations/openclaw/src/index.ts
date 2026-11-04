@@ -26,7 +26,7 @@ const configSchema = Type.Object(
 export default defineToolPlugin({
   id: "specstream",
   name: "SpecStream",
-  description: "Ask for any list in plain words and get every matching row from the live web, each with its source page, priced per match.",
+  description: "The live web data engine. One platform to build, search, extract, enrich, map, and monitor data across the entire web. Source URL and read time on every value.",
   activation: { onStartup: false },
   configSchema,
   tools: (tool) => [

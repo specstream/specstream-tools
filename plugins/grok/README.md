@@ -1,8 +1,13 @@
 # SpecStream plugin for Grok Build
 
-Ask for any list in plain words and get the whole list from the live web: lead lists, company lists, grants, jobs, places. Every row comes with the page it was read from. You see the price before anything runs and pay for each row delivered, from 5 cents each. A search that finds nothing costs nothing.
+The live web data engine. One platform to build, search, extract, enrich, map, and monitor data across the entire web.
 
-[SpecStream](https://specstream.ai) is the live web data engine for teams and agents. This plugin connects Grok Build to SpecStream's hosted MCP server and adds four skills for the flow: read the request back, get the price, approve it, read and send the rows.
+Ask for any dataset in plain words, and SpecStream builds it from the entire live web: every match found, extracted and enriched into structured records, then monitored for change.
+
+- Source URL and read time on every value.
+- You see the price before anything runs and pay for each row delivered, from 5 cents each. A run that finds nothing costs nothing.
+
+This plugin connects Grok Build to [SpecStream](https://specstream.ai)'s hosted MCP server and adds four skills for the flow: show how the request was read, get the price, approve it, read and send the rows.
 
 Published by SpecStream, the vendor. Source: [specstream/specstream-tools](https://github.com/specstream/specstream-tools), folder `plugins/grok`.
 
@@ -16,23 +21,15 @@ Published by SpecStream, the vendor. Source: [specstream/specstream-tools](https
 
 2. Find **specstream** in the list and press `i` to install it.
 3. Open the MCP servers tab with `/mcp`, select **specstream**, and press `i` to sign in. Your browser opens SpecStream. New accounts get $10 of work free for 30 days.
-4. Once specstream shows **ready**, run the `get-started` command for a guided first list, or just ask for one.
+4. Once specstream shows **ready**, run the `get-started` command for a guided first request, or ask in plain words.
 
 ## Try it
 
 ```text
-Find every independent bookstore in Oregon with a website and a phone number.
+Find open grants for climate research in the EU, with the deadline and the award size.
 ```
 
-```text
-List open grants for food banks in Texas, with the deadline and the award size.
-```
-
-```text
-Every company that filed to raise $5M or more this week, with the filing.
-```
-
-Grok reads the request back first. Nothing runs until you approve a price.
+Grok shows how SpecStream read the request first. Nothing runs until you approve a price.
 
 ## Tools
 
@@ -45,13 +42,13 @@ The hosted server has many tools. These are the ones you will see most:
 | `authorize_capacity_work` | Approve that price and start the list. Spends money, so the agent asks you first |
 | `get_find`, `list_find_rows` | Watch progress and read the rows with the source behind each fact |
 | `export_find`, `send_to_destination` | CSV, Excel, JSON or HTML download, or send to Google Sheets, Excel, Notion, Airtable, HubSpot or Salesforce |
-| `create_capacity_schedule` | Keep a list current and get told when it changes |
+| `create_capacity_schedule` | Keep a request up to date and get told when it changes |
 
 ## Skills
 
 | Skill | What it does |
 |---|---|
-| `specstream-compile` | Reads your request back before anything runs |
+| `specstream-compile` | Shows how SpecStream read your request before anything runs |
 | `specstream-review-work` | Gets the exact price and its expiry |
 | `specstream-approve-work` | Starts the list after you approve that price |
 | `specstream-continue-work` | Reads every row, sends them where you work, brings back more, refreshes or monitors |

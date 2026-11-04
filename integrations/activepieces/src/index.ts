@@ -8,7 +8,7 @@ import { specstreamAuth } from './lib/auth';
 
 export const specstream = createPiece({
   displayName: 'SpecStream',
-  description: 'The live web data engine for teams and agents: ask for any list in plain words and get every match with its source.',
+  description: 'SpecStream is the live web data engine for teams and agents. One platform to build, search, extract, enrich, map, and monitor data across the entire web.',
   auth: specstreamAuth,
   minimumSupportedRelease: '0.88.2',
   logoUrl: 'https://cdn.activepieces.com/pieces/specstream.png',

@@ -1,4 +1,4 @@
-"""SpecStream for LangChain: ask for any list on the live web in plain words, within a price you set."""
+"""SpecStream for LangChain: the live web data engine, within a price you set."""
 
 from langchain_specstream._api import SpecStreamError
 from langchain_specstream.retrievers import SpecStreamRetriever

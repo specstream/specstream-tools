@@ -1,7 +1,7 @@
 """Read a request, show the price, ask, run it, and print the first results.
 
     export SPECSTREAM_API_KEY="ss_live_..."
-    python quickstart.py "Food banks in Texas, with their annual revenue."
+    python quickstart.py "Open-source vector databases on GitHub with more than 5,000 stars, with their license."
 
 Nothing runs until you type yes. The request key is derived from the quote, so running
 this twice on the same quote never pays twice.

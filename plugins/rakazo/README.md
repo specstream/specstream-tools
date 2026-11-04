@@ -1,15 +1,17 @@
 # SpecStream
 
-The live web data engine for teams and agents. One platform to build, search, extract, enrich, map, and monitor data across the entire web.
+The live web data engine.
 
-Ask in plain words for companies, local businesses, grants, tenders, clinical trials, papers, regulations, apps, repositories or packages. You get structured rows from the live web.
+One platform to build, search, extract, enrich, map, and monitor data across the entire web.
+
+Ask for any dataset in plain words, and SpecStream builds it from the entire live web: every match found, extracted and enriched into structured records, then monitored for change. It runs through the API and MCP, and inside Sheets, CRMs, Slack, n8n, Zapier and the other tools teams already use.
 
 Source URL and read time on every value.
 
 ## What it adds
 
 - The SpecStream MCP server at `https://api.specstream.ai/mcp` (Streamable HTTP).
-- `specstream-compile`: reads your request back as the conditions every row must meet and the details to bring back. Nothing runs yet.
+- `specstream-compile`: reads your request into the conditions every row must meet and the details to bring back. Nothing runs yet.
 - `specstream-review-work`: gets the exact price and the maximum for that request. Nothing runs yet.
 - `specstream-approve-work`: starts the run once you approve that exact maximum.
 - `specstream-continue-work`: reads the rows with their sources, sends them to Google Sheets, Excel, Airtable, Notion, HubSpot or Salesforce, and prices more rows, more details or a refresh.
@@ -27,14 +29,6 @@ Press Sign in on the SpecStream connector. Your browser opens SpecStream's sign-
 - A refresh costs half the rate for a new or changed row and 1 cent for an unchanged one.
 
 Full prices: https://specstream.ai/pricing?utm_source=rakazo
-
-## Example requests
-
-- Independent bookstores in Oregon with a website
-- Open grants for community solar projects in New England, with deadline and amount
-- Clinical trials recruiting for type 1 diabetes in Germany
-- Seed-funded software companies in France this year, with the founders' names
-- Open tenders from city governments in Texas for school transport, with due date and link
 
 ## What it sends
 

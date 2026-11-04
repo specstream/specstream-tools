@@ -1,4 +1,4 @@
-"""The SpecStream tool spec: any list from the live web for a LlamaIndex agent, within a price set in code."""
+"""The SpecStream tool spec: live web data for a LlamaIndex agent, within a price set in code."""
 
 # No `from __future__ import annotations`: LlamaIndex reads these signatures at runtime to build the tool schema.
 import json

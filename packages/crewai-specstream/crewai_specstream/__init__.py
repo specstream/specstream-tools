@@ -1,4 +1,4 @@
-"""SpecStream for CrewAI: ask for any list on the live web in plain words, within a price you set."""
+"""SpecStream for CrewAI: the live web data engine, within a price you set."""
 
 from crewai_specstream._api import SpecStreamError
 from crewai_specstream.tools import SpecStreamFindListTool, SpecStreamGetListResultsTool, specstream_tools

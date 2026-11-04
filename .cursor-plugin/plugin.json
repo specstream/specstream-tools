@@ -1,7 +1,7 @@
 {
   "name": "specstream",
   "version": "1.0.0",
-  "description": "Teams and agents get the finished list (companies, people, products and more) from the live web, every row with its source, priced per result. Ask in plain words from Cursor and approve the price before anything runs.",
+  "description": "The live web data engine. One platform to build, search, extract, enrich, map, and monitor data across the entire web. Ask for any dataset in plain words, and SpecStream builds it from the entire live web: every match found, extracted and enriched into structured records, then monitored for change. Source URL and read time on every value. You approve the price before anything runs.",
   "author": {
     "name": "SpecStream",
     "email": "support@specstream.ai"
@@ -14,7 +14,7 @@
     "search",
     "enrichment",
     "monitoring",
-    "lists",
+    "datasets",
     "mcp"
   ],
   "logo": "assets/specstream-mark.svg",
@@ -25,7 +25,7 @@
     "properties": {
       "SPECSTREAM_API_KEY": {
         "type": "string",
-        "title": "SpecStream API key",
+        "title": "API key",
         "description": "Create one under Agents & API in your SpecStream workspace. Keep it in this setting, never in a prompt or a commit. Paid work still needs your approval of the price."
       }
     },

@@ -1,7 +1,7 @@
 {
   "name": "specstream",
-  "displayName": "SpecStream: lead lists and web data for agents",
-  "description": "Ask Copilot or your agent for a lead list, a company list or open grants. Every match comes from the live web, with its source. Priced per match.",
+  "displayName": "SpecStream",
+  "description": "SpecStream is the live web data engine for teams and agents. One platform to build, search, extract, enrich, map, and monitor data across the entire web.",
   "version": "0.1.6",
   "publisher": "specstream",
   "license": "MIT",
@@ -56,12 +56,12 @@
         "id": "specstream.chat",
         "name": "specstream",
         "fullName": "SpecStream",
-        "description": "Ask for the list no one sells. See the price, approve it, get every match with its source.",
+        "description": "Describe the data you need. See the price, approve it, get structured rows.",
         "isSticky": false,
         "commands": [
           {
             "name": "find",
-            "description": "Describe the list you need. You see the price before anything runs."
+            "description": "Describe the data you need. You see the price before anything runs."
           },
           {
             "name": "approve",
@@ -71,9 +71,8 @@
         "disambiguation": [
           {
             "category": "specstream_lists",
-            "description": "The user wants a list of companies, tenders, grants, repositories, filings or other things found on the live web, with a source for each row.",
+            "description": "The user wants data found on the live web, such as companies, tenders, grants, repositories or filings, as structured rows with a source URL on every value.",
             "examples": [
-              "Companies that filed a Form D this week to raise $5M or more, with state and industry",
               "MCP servers on GitHub with more than 500 stars, pushed this month"
             ]
           }
@@ -146,7 +145,7 @@
       {
         "id": "specstream.start",
         "title": "Get your first list with SpecStream",
-        "description": "Connect, ask for a list in plain words, and open it in the workspace.",
+        "description": "Connect, ask for data in plain words, and open it in the workspace.",
         "steps": [
           {
             "id": "connect",

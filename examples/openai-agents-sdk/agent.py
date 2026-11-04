@@ -1,9 +1,9 @@
-"""An OpenAI Agents SDK agent that finds lists with SpecStream.
+"""An OpenAI Agents SDK agent that finds data on the live web with SpecStream.
 
     pip install -r requirements.txt
     export OPENAI_API_KEY=...
     export SPECSTREAM_API_KEY="ss_live_..."
-    python agent.py "Food banks in Texas, with their annual revenue."
+    python agent.py "Open-source vector databases on GitHub with more than 5,000 stars, with their license."
 
 By default the agent can read a request and get a price, but it cannot approve one: the
 tools that spend money or change anything are hidden from it. It shows you the price and
@@ -34,7 +34,7 @@ SPENDS = [
     "request_account_deletion",
 ]
 
-INSTRUCTIONS = """You find lists with SpecStream.
+INSTRUCTIONS = """You find data on the live web with SpecStream.
 1. Call compile with the person's request and say back how it was read.
 2. Call quote_capacity_work and tell the person the most it can cost and when the price expires.
 3. Stop and ask. Call authorize_capacity_work only after the person has said yes to that exact price.
@@ -54,7 +54,7 @@ async def main(request: str, allow_spend: bool) -> None:
         tool_filter=None if allow_spend else create_static_tool_filter(blocked_tool_names=SPENDS),
     ) as server:
         agent = Agent(
-            name="List finder",
+            name="Data finder",
             instructions=INSTRUCTIONS,
             mcp_servers=[server],
         )

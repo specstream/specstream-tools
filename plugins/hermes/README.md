@@ -1,11 +1,16 @@
 # SpecStream for Hermes Agent
 
-SpecStream hands your agent the finished list. Describe it in plain words ("food banks in Texas, with their annual revenue") and get every matching row from the live web, each with the page it was read from. Hermes sees the price before anything runs, you approve a maximum, and you pay for each result delivered. A search that finds nothing costs nothing.
+SpecStream is the live web data engine. One platform to build, search, extract, enrich, map, and monitor data across the entire web.
+
+Ask for any dataset in plain words, and SpecStream builds it from the entire live web: every match found, extracted and enriched into structured records, then monitored for change.
+
+- Source URL and read time on every value.
+- Hermes sees the price before anything runs, you approve a maximum, and you pay for each row delivered. A run that finds nothing costs nothing.
 
 This is a portable [Agent Plugins v1](https://agent-plugins.org) package for [Hermes Agent](https://hermes-agent.nousresearch.com). It ships no code and installs no dependencies:
 
 - `mcp.json`: the hosted SpecStream MCP server, `https://api.specstream.ai/mcp` (streamable HTTP, OAuth 2.1 with dynamic client registration).
-- `skills/`: four skills. `compile` reads the request back, `review-work` gets the price, `approve-work` starts the list once you approve that price, and `continue-work` brings back more rows, refreshes a list or adds details.
+- `skills/`: four skills. `compile` shows how SpecStream read the request, `review-work` gets the price, `approve-work` starts the list once you approve that price, and `continue-work` brings back more rows, refreshes a list or adds details.
 - `plugin.json`: the manifest. It marks the `specstream` server as `untrusted`, so Hermes asks you before any call that is not read-only, including the call that approves spending.
 
 ## Set up SpecStream in Hermes

@@ -4,7 +4,7 @@ export const SERVER_NAME = "specstream";
 export const MCP_URL = "https://api.specstream.ai/mcp";
 
 const DESCRIPTION =
-  "SpecStream: ask for any list in plain words and get every match from the live web, each row with its source. Reads a request back and prices it for free; paid work needs the person's approval of an exact maximum.";
+  "SpecStream, the live web data engine. One platform to build, search, extract, enrich, map, and monitor data across the entire web. Reading and pricing a request are free; paid work needs the person's approval of an exact maximum.";
 
 // The flow that every list goes through stays visible to the model. The rest of the
 // server's tools load on demand through tool_search.

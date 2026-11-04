@@ -258,11 +258,11 @@ export function flattenRow(row: ListRow): FlatRow {
  * ```ts
  * const specstream = new SpecStreamClient(components.specstream);
  *
- * export const findFoodBanks = action({
+ * export const findRepositories = action({
  *   args: {},
  *   handler: (ctx) =>
  *     specstream.findList(ctx, {
- *       request: "food banks in Texas, with their annual revenue",
+ *       request: "open-source vector databases on GitHub with more than 5,000 stars, with their license",
  *       rows: 100,
  *       maxPriceUsd: 15,
  *     }),

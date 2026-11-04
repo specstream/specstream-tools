@@ -1,10 +1,12 @@
 # SpecStream for AnythingLLM
 
-Ask `@agent` for a list and get the whole list. Every roofer in Columbus rated 4.5 or better, every food bank in Texas with its revenue, every company that filed to raise $5M or more this week. SpecStream reads the live web where those things are kept and hands back every matching row.
+The live web data engine. One platform to build, search, extract, enrich, map, and monitor data across the entire web.
 
-Source URL and read time on every value.
+Ask for any dataset in plain words, and SpecStream builds it from the entire live web: every match found, extracted and enriched into structured records, then monitored for change. In AnythingLLM, you ask `@agent` and the rows come back in the chat.
 
-You approve the price before anything runs, and you pay for each result delivered: 5¢, 15¢ or $1 a row. A company left out costs nothing. New accounts start with $10 of work, no card.
+- Source URL and read time on every value.
+- You approve the price before anything runs, and you pay for each row delivered: 5¢, 15¢ or $1 a row. A row left out costs nothing.
+- New accounts start with $10 of work, no card.
 
 Two ways to connect it. Pick one.
 
@@ -23,12 +25,12 @@ The skill is in [`specstream-find-lists/`](specstream-find-lists): `plugin.json`
 2. Get the skill into AnythingLLM, either way:
    - **From the Community Hub:** open the skill, click **Import to AnythingLLM**, and paste the import string into AnythingLLM. On Docker and self-hosted installs an admin has to allow hub imports first (`COMMUNITY_HUB_BUNDLE_DOWNLOADS_ENABLED`).
    - **By hand:** copy the `specstream-find-lists` folder into `plugins/agent-skills` inside your AnythingLLM storage folder, then reload the page.
-3. Open **Agent Skills**, find **SpecStream: find a list**, paste the key, and set the spending cap.
+3. Open **Agent Skills**, find **SpecStream**, paste the key, and set the spending cap.
 4. In a workspace chat, start with `@agent`:
 
-> @agent Find every roofing company in Columbus, Ohio rated 4.5 or better with fewer than 20 Google reviews, with their phone number. Give me 50.
+> @agent Find open tenders on SAM.gov for translation services, with the buyer and the deadline. Give me 50.
 
-The agent reads your request back, shows the most it can cost, and waits for you to approve. Then it returns every row with the pages it came from and a link to the full list in SpecStream.
+The agent shows how SpecStream read your request and the most it can cost, and waits for you to approve. Then it returns the rows, with the source URL and read time on every value, and a link to the full results in SpecStream.
 
 To read a list that's already started, ask for it by ID: `@agent show me the rows of list fnd_1a2b3c4d`. Reading costs nothing.
 
@@ -68,18 +70,18 @@ AnythingLLM reads MCP servers from `anythingllm_mcp_servers.json` in the `plugin
 }
 ```
 
-Then open **Agent Skills**, click **Refresh** (or restart the MCP servers from the MCP management page), and check that **specstream** shows as running with its tools. Ask `@agent` for a list as above.
+Then open **Agent Skills**, click **Refresh** (or restart the MCP servers from the MCP management page), and check that **specstream** shows as running with its tools. Ask `@agent` as above.
 
 The server tells the model to show you the price and wait for your yes before anything runs. The file holds your key, so keep it out of shared folders and git.
 
 ## Pricing
 
-A match costs 5¢, 15¢ or $1 depending on how many facts it carries. No match, no charge. A recheck costs half. The same rates apply on every plan, Free included. See [specstream.ai/pricing](https://specstream.ai/pricing).
+A row costs 5¢, 15¢ or $1 depending on how much it needs, plus 5¢ for a person's email and 15¢ for a phone. A run that finds nothing costs nothing. A refresh costs half the rate for rows that changed and new rows, and 1¢ for each row that comes back unchanged. The same rates apply on every plan, Free included. See [specstream.ai/pricing](https://specstream.ai/pricing).
 
 ## Troubleshooting
 
 - **"SpecStream did not accept this API key."** Paste the key again in the skill's settings. Keys start with `ss_live_`.
-- **The agent answers without calling the skill.** Start the message with `@agent`, and check **SpecStream: find a list** is switched on under Agent Skills.
+- **The agent answers without calling the skill.** Start the message with `@agent`, and check **SpecStream** is switched on under Agent Skills.
 - **"Needs a clearer request."** Add the place, the kind of thing, or what every row must meet.
 - **A list is still running.** It keeps going. Ask the agent to read the list again later by its ID.
 

@@ -1,14 +1,14 @@
-# SpecStream for VS Code
+# SpecStream
 
-**Ask for the list no one sells. Get every match, with its source, without leaving your editor.**
+**The live web data engine.**
 
-SpecStream is the live web data engine for teams and agents. This extension adds it to VS Code two ways: your agent can use it as an MCP server, and you can ask for lists yourself with `@specstream` in chat.
+One platform to build, search, extract, enrich, map, and monitor data across the entire web.
 
-## Ask for a list
+Ask for any dataset in plain words, and SpecStream builds it from the entire live web: every match found, extracted and enriched into structured records, then monitored for change. It runs through the API and MCP, and inside Sheets, CRMs, Slack, n8n, Zapier and the other tools teams already use.
 
-```
-@specstream /find Companies that filed a Form D this week to raise $5M or more, with state and industry
-```
+This extension adds SpecStream to VS Code two ways: your agent can use it as an MCP server, and you can ask for data yourself with `@specstream` in chat.
+
+## Ask in chat
 
 ```
 @specstream /find MCP servers on GitHub with more than 500 stars, pushed this month
@@ -17,12 +17,12 @@ SpecStream is the live web data engine for teams and agents. This extension adds
 1. Say what you need in plain words.
 2. SpecStream shows the price. Nothing runs yet.
 3. Press **Run for up to $X**. You pay for each result delivered, and a search that finds nothing costs nothing.
-4. The matches stream into chat as a table, each with a link to its source.
+4. The matches stream into chat as a table. Source URL and read time on every value.
 5. Press **Open in workspace** to send them to your sheet, CRM or agent, or save the request so new matches arrive on their own.
 
 ## Give your agent the same engine
 
-The extension adds the SpecStream MCP server (`https://api.specstream.ai/mcp`) to VS Code. In agent mode, your agent asks for finished lists instead of reading pages, and it shows you the price before it spends anything.
+The extension adds the SpecStream MCP server (`https://api.specstream.ai/mcp`) to VS Code. In agent mode, your agent asks for structured rows instead of reading pages, and it shows you the price before it spends anything.
 
 Sign-in is VS Code's own: start **SpecStream** from **MCP: List Servers** and approve in the browser. Prefer a key? Run **SpecStream: Use an API Key Instead of Signing In**. The key is kept in VS Code's secret storage.
 

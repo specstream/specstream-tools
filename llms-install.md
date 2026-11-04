@@ -100,10 +100,10 @@ If the server reports `SPECSTREAM_API_KEY is required`, the key is missing from 
 
 ## Use it
 
-1. `compile` reads a request in plain words, like "food banks in Texas, with their annual revenue", into the conditions every row must meet and the facts to bring back. Show the user anything marked ambiguous.
+1. `compile` reads a request in plain words into the conditions every row must meet and the facts to bring back. Show the user anything marked ambiguous.
 2. `quote_capacity_work` prices that exact request. Pricing never spends anything.
 3. Show the user the maximum and get their approval.
 4. `authorize_capacity_work` runs it. Only matching rows are charged, never more than the approved maximum.
-5. `list_find_rows` reads the rows as they arrive, each with its source.
+5. `list_find_rows` reads the rows as they arrive, with the source URL and read time on every value.
 
 More: https://specstream.ai/docs/mcp and https://specstream.ai/agents.md

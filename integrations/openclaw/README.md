@@ -1,8 +1,11 @@
 # @specstream/openclaw-plugin
 
-Ask your OpenClaw agent for a list and get the whole list back. "Dental clinics in Lisbon with online booking, with their website and phone." Every row comes from the live web with the page it was read from, so you can open it and look. You pay for each result delivered, and a search that finds nothing costs nothing.
+[SpecStream](https://specstream.ai) is the live web data engine. One platform to build, search, extract, enrich, map, and monitor data across the entire web.
 
-[SpecStream](https://specstream.ai) is the live web data engine for teams and agents. This plugin gives OpenClaw two tools for it and, if you want the full conversation with SpecStream, four skills.
+Ask for any dataset in plain words, and SpecStream builds it from the entire live web: every match found, extracted and enriched into structured records, then monitored for change. This plugin gives OpenClaw two tools for it and, if you want the full conversation with SpecStream, four skills.
+
+- Source URL and read time on every value.
+- You pay for each row delivered, and a run that finds nothing costs nothing.
 
 ## Install
 
@@ -65,7 +68,7 @@ Reads every row of a list you already own, by `list_id`. Free. Use it when a big
 
 ## Skills and the SpecStream server (optional)
 
-The plugin ships four skills: `specstream-compile` (read the request back), `specstream-review-work` (get the price), `specstream-approve-work` (approve it) and `specstream-continue-work` (read the rows, send them to Sheets, Notion, HubSpot and more, keep them current). They use the hosted SpecStream server and stay hidden until you add it:
+The plugin ships four skills: `specstream-compile` (show how SpecStream read the request), `specstream-review-work` (get the price), `specstream-approve-work` (approve it) and `specstream-continue-work` (read the rows, send them to Sheets, Notion, HubSpot and more, keep them up to date). They use the hosted SpecStream server and stay hidden until you add it:
 
 ```sh
 openclaw mcp set specstream '{"url":"https://api.specstream.ai/mcp","transport":"streamable-http","auth":"oauth"}'
@@ -76,9 +79,9 @@ The tools above work without it.
 
 ## Example
 
-> Find food banks in Texas with their annual revenue. Keep it under $3.
+> Find open tenders on SAM.gov for translation services, with the buyer and the deadline. Keep it under $3.
 
-The agent calls `specstream_find_list` with `max_price_usd: 3`, and you get a table of food banks, each row with its source URL and read time, plus a link to open the list in your workspace.
+The agent calls `specstream_find_list` with `max_price_usd: 3`, and you get a table of tenders, each row with its source URL and read time, plus a link to open the list in your workspace.
 
 ## Develop
 
