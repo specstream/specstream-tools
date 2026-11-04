@@ -1,6 +1,6 @@
 {
   "name": "@specstream/dsh-plugin",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "SpecStream for DeepSeek Harness: live web data as rows with a source URL on every value. Registers the hosted SpecStream MCP server.",
   "type": "module",
   "main": "./src/index.js",
