@@ -255,9 +255,9 @@ describe("specstream_get_list_results", () => {
 });
 
 describe("the model's view of the tools", () => {
-  it("sees two tools and can't set the price", async () => {
+  it("sees four tools and cannot set the price", async () => {
     const { tools } = setup(new FakeSpecStream());
-    expect(Object.keys(tools)).toEqual(["specstream_find_list", "specstream_get_list_results"]);
+    expect(Object.keys(tools)).toEqual(["specstream_web_search", "specstream_extract_pages", "specstream_find_list", "specstream_get_list_results"]);
 
     const find: any = await asSchema(tools.specstream_find_list.inputSchema).jsonSchema;
     expect(Object.keys(find.properties).sort()).toEqual(["maxResults", "request"]);
@@ -291,7 +291,7 @@ describe("the key", () => {
     expect(fake.calls.length).toBeGreaterThan(0);
     for (const call of fake.calls) {
       expect(call.headers.Authorization).toBe(`Bearer ${KEY}`);
-      expect(call.headers["User-Agent"]).toBe("@specstream/ai-sdk/0.1.3");
+      expect(call.headers["User-Agent"]).toBe("@specstream/ai-sdk/0.2.0");
     }
     expect(JSON.stringify(result)).not.toContain(KEY);
   });
