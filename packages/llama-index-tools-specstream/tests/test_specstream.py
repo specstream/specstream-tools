@@ -128,7 +128,7 @@ def test_an_unclear_request_comes_back_with_how_it_was_read(api):
 
 def test_the_model_sees_two_tools_and_cannot_set_the_price():
     found = tools()
-    assert set(found) == {"specstream_find_list", "specstream_get_list_results"}
+    assert set(found) == {"specstream_web_search", "specstream_extract_pages", "specstream_find_list", "specstream_get_list_results"}
     schema = found["specstream_find_list"].metadata.get_parameters_dict()
     assert set(schema["properties"]) == {"request", "max_results"}
     assert schema["required"] == ["request"]
