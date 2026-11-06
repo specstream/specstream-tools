@@ -103,10 +103,10 @@ describe("opencode-specstream", () => {
     });
   });
 
-  it("V2 registers the server and all four skills", async () => {
+  it("V2 registers the server and all six skills", async () => {
     const { mcp, skills } = await runV2();
     assert.deepEqual(mcp.specstream, { type: "remote", url: MCP_URL });
-    assert.deepEqual(Object.keys(skills).sort(), ["approve-work", "compile", "continue-work", "review-work"]);
+    assert.deepEqual(Object.keys(skills).sort(), ["approve-work", "compile", "continue-work", "extract-pages", "review-work", "search-web"]);
     for (const skill of Object.values(skills)) {
       assert.ok(skill.description, `${skill.name} has a description`);
       assert.ok(skill.content.startsWith("# "), `${skill.name} body starts at its heading`);

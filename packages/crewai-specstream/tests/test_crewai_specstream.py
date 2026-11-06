@@ -256,7 +256,7 @@ def test_a_refused_call_raises_with_the_reason(api, monkeypatch):
 
 
 def test_both_tools_share_the_key_and_the_cap(api):
-    find, results = specstream_tools(max_price_usd=5, api_key=KEY, wait_seconds=60)
+    _, _, find, results = specstream_tools(max_price_usd=5, api_key=KEY, wait_seconds=60)
     assert find.name == "specstream_find_list" and results.name == "specstream_get_list_results"
     assert find.max_price_usd == 5 and find.wait_seconds == 60
     assert results.api_key.get_secret_value() == KEY
@@ -269,7 +269,7 @@ def test_the_tools_declare_their_environment_variable():
 
 def test_an_agent_calls_the_tool_through_its_structured_form(api):
     api()
-    find, _ = specstream_tools(max_price_usd=5, api_key=KEY, poll_interval=0)
+    _, _, find, _ = specstream_tools(max_price_usd=5, api_key=KEY, poll_interval=0)
     structured = find.to_structured_tool()
     result = json.loads(structured.invoke({"request": "Dental clinics in Lisbon", "max_results": 10}))
 
@@ -279,7 +279,7 @@ def test_an_agent_calls_the_tool_through_its_structured_form(api):
 
 def test_the_tools_run_without_blocking_an_event_loop(api):
     api()
-    find, results = specstream_tools(max_price_usd=5, api_key=KEY, poll_interval=0)
+    _, _, find, results = specstream_tools(max_price_usd=5, api_key=KEY, poll_interval=0)
 
     async def go():
         found = json.loads(await find._arun("Dental clinics in Lisbon", 25))
@@ -309,7 +309,7 @@ def test_an_agent_accepts_both_tools():
         tools=specstream_tools(max_price_usd=5, api_key=KEY),
         llm=LLM(model="gpt-4o-mini", api_key="sk-test"),
     )
-    assert [tool.name for tool in agent.tools] == ["specstream_find_list", "specstream_get_list_results"]
+    assert [tool.name for tool in agent.tools] == ["specstream_web_search", "specstream_extract_pages", "specstream_find_list", "specstream_get_list_results"]
 
 
 SCRIPTED = []
@@ -340,7 +340,7 @@ def test_a_crew_finds_a_list_end_to_end_with_a_scripted_model(api):
         'Thought: I need the list.\nAction: specstream_find_list\nAction Input: {"request": "Dental clinics in Lisbon", "max_results": 10}',
         "Thought: I have the rows.\nFinal Answer: Found 2 clinics.",
     ]
-    find, results = specstream_tools(max_price_usd=5, api_key=KEY, poll_interval=0)
+    _, _, find, results = specstream_tools(max_price_usd=5, api_key=KEY, poll_interval=0)
     agent = Agent(role="Researcher", goal="Find lists", backstory="Finds lists.", tools=[find, results], llm=Scripted(model="scripted"))
     task = Task(description="Find dental clinics in Lisbon.", expected_output="A short answer.", agent=agent)
     output = Crew(agents=[agent], tasks=[task], verbose=False).kickoff()

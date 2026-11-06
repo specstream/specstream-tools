@@ -3,7 +3,7 @@
 import asyncio
 import json
 import os
-from typing import Any
+from typing import Any, Type
 
 from crewai.tools import BaseTool, EnvVar
 from pydantic import BaseModel, Field, SecretStr, field_validator
