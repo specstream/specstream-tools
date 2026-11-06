@@ -176,7 +176,8 @@ def test_the_retriever_raises_instead_of_spending_above_the_maximum(api):
 
 
 def test_both_tools_share_the_key(api):
-    find, results = specstream_tools(max_price_usd=5, api_key=KEY)
+    search, extract, find, results = specstream_tools(max_price_usd=5, api_key=KEY)
+    assert search.name == "specstream_web_search" and extract.name == "specstream_extract_pages"
     assert find.name == "specstream_find_list" and results.name == "specstream_get_list_results"
     assert results.api_key.get_secret_value() == KEY
 
