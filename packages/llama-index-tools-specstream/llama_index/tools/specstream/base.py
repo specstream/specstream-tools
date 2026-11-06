@@ -32,7 +32,7 @@ class SpecStreamToolSpec(BaseToolSpec):
             agent = FunctionAgent(tools=tools, llm=llm)
     """
 
-    spec_functions = ["specstream_find_list", "specstream_get_list_results"]
+    spec_functions = ["specstream_web_search", "specstream_extract_pages", "specstream_find_list", "specstream_get_list_results"]
 
     def __init__(
         self,
@@ -63,6 +63,22 @@ class SpecStreamToolSpec(BaseToolSpec):
         if not self._client.api_key.strip():
             raise ValueError("Set SPECSTREAM_API_KEY or pass api_key. Create a key under Agents & API in your SpecStream workspace.")
 
+
+    def specstream_web_search(
+        self,
+        q: Annotated[str, Field(description="Search query or question in everyday words (1 to 2,000 characters).")],
+        passages: Annotated[bool, Field(description="Set True to include main text passages from the top matching pages.")] = False,
+    ) -> str:
+        """Search the live web in seconds with the SpecStream Search API (GET /v1/web-search, $5 per 1,000 searches, no quote needed)."""
+        return json.dumps(self._client.web_search(q, passages=passages), ensure_ascii=False)
+
+    def specstream_extract_pages(
+        self,
+        urls: Annotated[list[str], Field(description="1 to 20 http or https URLs (web pages, PDF, Word, Excel) to read live.")],
+        format: Annotated[str, Field(description='Output format: "markdown" (default) or "text".')] = "markdown",
+    ) -> str:
+        """Read the main text, title and published date of 1 to 20 URLs live with the SpecStream Extract API (POST /v1/extract, $0.80 per 1,000 pages)."""
+        return json.dumps(self._client.extract_pages(urls, format=format), ensure_ascii=False)
     def specstream_find_list(
         self,
         request: Annotated[

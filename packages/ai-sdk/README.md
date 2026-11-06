@@ -1,6 +1,6 @@
 # @specstream/ai-sdk
 
-Search tools hand your agent pages to read. SpecStream hands it the finished list: ask in plain words – "dental clinics in Lisbon with online booking", "US startups that filed a $5M+ Form D this week" – and the agent gets back every matching row, each with the page it was read from. The price is set before anything runs, in your code, and the model can't raise it.
+[SpecStream](https://specstream.ai) is the live web data engine for teams and agents. One platform to build, search, extract, enrich, map, and monitor data across the entire web. Ask for any dataset in plain words, and SpecStream builds it from the entire live web: every match found, extracted and enriched into structured records, then monitored for change. Source URL and read time on every value.
 
 ```bash
 npm install @specstream/ai-sdk ai zod
@@ -50,11 +50,13 @@ Columns follow the request. Ask for "breweries in Portland, Oregon that host eve
 
 The tool's result wraps the rows with `status`, `list_id`, `list_link`, `row_count` and `maximum_price_usd`, so the agent can cite the list and hand your user a link to it.
 
-## The two tools
+## The four tools
 
 | Tool | The model gives | What happens | Cost |
 | --- | --- | --- | --- |
-| `specstream_find_list` | `request`, `maxResults` (1 to 1000, default 25) | Reads the request, prices it, starts it only within `maxPriceUsd`, waits up to `waitSeconds` (7 minutes by default) and returns every row | Only the rows that match |
+| `specstream_web_search` | `q`, `passages` | Calls `GET /v1/web-search` and returns the answer, matching rows, ranked sources and optional page passages | $5 per 1,000 searches |
+| `specstream_extract_pages` | `urls`, `format` | Calls `POST /v1/extract` and returns the clean main text, title and published date of 1 to 20 web pages, PDFs, Word or Excel files | $0.80 per 1,000 pages (empty pages free) |
+| `specstream_find_list` | `request`, `maxResults` (1 to 1000, default 25) | Reads the request, prices it, starts it only within `maxPriceUsd`, waits up to `waitSeconds` (7 minutes by default) and returns every row | Only delivered rows |
 | `specstream_get_list_results` | `listId` | Every row found so far, for a list that was still running | Free |
 
 When the price is above your maximum, nothing runs: the tool returns `status: "over_maximum"` and the price, so the agent can ask for fewer rows or tell the user. When a request is too vague to price ("clinics"), it returns `status: "needs_edit"` and how SpecStream read it, so the agent can add the place or the conditions.

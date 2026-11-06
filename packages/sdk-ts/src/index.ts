@@ -250,6 +250,11 @@ export class Client {
     return this.request("GET", path) as Promise<Schemas["WebSearchPage"]>;
   }
 
+  extractPages(request: Schemas["ExtractRequest"]): Promise<Schemas["ExtractPage"]> {
+    let path = `/v1/extract`;
+    return this.request("POST", path, request) as Promise<Schemas["ExtractPage"]>;
+  }
+
   webSearchAnswers(query: { "q"?: string; "limit"?: number; "cursor"?: string; } = {}): Promise<Schemas["WebSearchAnswerPage"]> {
     let path = `/v1/web-search/answers`;
     const queryString = new URLSearchParams();
@@ -1150,7 +1155,7 @@ export class Client {
       Authorization: token,
       Accept: "application/json",
       "Content-Type": "application/json",
-      "User-Agent": "specstream-typescript/1.2.0",
+      "User-Agent": "specstream-typescript/1.3.0",
     };
   }
 

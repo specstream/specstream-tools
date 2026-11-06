@@ -1,6 +1,6 @@
 [project]
 name = "specstream-mcp-stdio"
-version = "1.2.3"
+version = "1.2.4"
 description = "Stdio bridge to SpecStream's MCP server: lead lists, company lists and grants from the live web for your agent."
 readme = "README.md"
 requires-python = ">=3.12"

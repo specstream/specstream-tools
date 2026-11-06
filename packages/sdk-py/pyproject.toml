@@ -1,48 +1,39 @@
 [project]
 name = "specstream-client"
-version = "1.2.0"
+version = "1.3.0"
 description = "Python client for building lead lists and company lists from the live web. Every match comes with its source, priced before it runs."
-readme = "README.md"
+readme = "README.txt"
 requires-python = ">=3.12"
-license = "MIT"
-license-files = ["LICENSE"]
+license = { text = "Proprietary" }
 authors = [{ name = "SpecStream", email = "support@specstream.ai" }]
 keywords = [
   "specstream",
-  "web-data",
-  "live-web",
-  "lead-lists",
-  "enrichment",
-  "monitoring",
-  "mcp",
-  "ai-agents",
-  "api-client",
+  "cross-source",
+  "local_business",
+  "creator",
+  "organization",
+  "storefront_product",
+  "app_listing",
+  "job_posting",
+  "scholarly_work",
+  "tender",
+  "grant",
   "lead-generation",
   "lead-list",
   "company-list",
   "grants",
 ]
 classifiers = [
-  "Development Status :: 5 - Production/Stable",
-  "Environment :: Console",
-  "Intended Audience :: Developers",
-  "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.12",
-  "Programming Language :: Python :: 3.13",
+  "Environment :: Console",
   "Topic :: Internet :: WWW/HTTP",
-  "Typing :: Typed",
 ]
 dependencies = []
 
 [project.urls]
 Homepage = "https://specstream.ai"
-Documentation = "https://specstream.ai/docs/sdk"
 API = "https://api.specstream.ai"
-Changelog = "https://specstream.ai/changelog"
-Repository = "https://github.com/specstream/specstream-tools"
-Issues = "https://github.com/specstream/specstream-tools/issues"
 
 [project.scripts]
 specstream = "specstream_client.cli:main"
@@ -53,6 +44,3 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["specstream_client"]
-
-[tool.hatch.build.targets.sdist]
-include = ["specstream_client", "tests", "README.md", "LICENSE"]

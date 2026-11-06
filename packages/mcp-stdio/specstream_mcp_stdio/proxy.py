@@ -38,7 +38,7 @@ TOOLS_FILE = Path(__file__).with_name("tools.json")
 SERVER_INFO = {
     "name": "specstream",
     "title": "SpecStream",
-    "version": "1.2.3",
+    "version": "1.2.4",
     "websiteUrl": "https://specstream.ai",
 }
 

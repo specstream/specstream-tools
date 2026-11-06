@@ -50,6 +50,16 @@ const getListResultsInput = z.object({
   listId: z.string().min(1).describe('The list_id that specstream_find_list returned, like "fnd_gk5y3d0r97bvyz0t08zzh75kr6".'),
 });
 
+const webSearchInput = z.object({
+  q: z.string().min(1).max(2000).describe("The search question or request in everyday words (1 to 2,000 characters). Quoted phrases are searched as phrases."),
+  passages: z.boolean().optional().describe("Set true to include the main text passages of the top matching pages in the response."),
+});
+
+const extractPagesInput = z.object({
+  urls: z.array(z.string().min(1)).min(1).max(20).describe("1 to 20 http or https URLs (web pages, PDF, Word, Excel) to read live."),
+  format: z.enum(["markdown", "text"]).optional().describe('Output format: "markdown" (default) or "text".'),
+});
+
 const FIND_LIST_DESCRIPTION = [
   "Find a list of real things on the live web and return every matching row, each with the page it was read from.",
   "Use it when the answer is many things that meet conditions: companies in a city, local businesses with a service, funding filings, open grants, tenders, clinical trials, repositories, people in a role.",
@@ -88,6 +98,20 @@ export function specstreamTools(options: SpecStreamToolsOptions) {
   if (!client.hasKey) throw new Error(MISSING_KEY_MESSAGE);
 
   return {
+    specstream_web_search: tool({
+      description:
+        "Search the live web in seconds with the SpecStream Search API (GET /v1/web-search, $5 per 1,000 searches, no quote needed). " +
+        "Returns JSON with kind ('fact' or 'list'), answer (value, page and seen_at), matching rows, ranked sources and optional passages.",
+      inputSchema: webSearchInput,
+      execute: async ({ q, passages }, { abortSignal }) => client.webSearch(q, { passages, abortSignal }),
+    }),
+    specstream_extract_pages: tool({
+      description:
+        "Read the main text, title and published date of 1 to 20 web pages, PDFs, Word or Excel files live with the SpecStream Extract API " +
+        "(POST /v1/extract, $0.80 per 1,000 pages, empty pages free, no quote needed).",
+      inputSchema: extractPagesInput,
+      execute: async ({ urls, format }, { abortSignal }) => client.extractPages(urls, { format, abortSignal }),
+    }),
     specstream_find_list: tool({
       description: FIND_LIST_DESCRIPTION,
       inputSchema: findListInput,

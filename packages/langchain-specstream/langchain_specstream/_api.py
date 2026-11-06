@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from typing import Any, Callable
 
 DEFAULT_BASE_URL = "https://api.specstream.ai"
-USER_AGENT = "langchain-specstream/0.1.4"
+USER_AGENT = "langchain-specstream/0.2.0"
 # A list runs for up to about five minutes, so the tools wait a little longer than that by default.
 DEFAULT_WAIT_SECONDS = 420.0
 FINISHED = {"completed", "partial"}
@@ -112,6 +112,24 @@ class SpecStreamAPI:
             raise SpecStreamError("SpecStream returned a response this package couldn't read.")
         return payload["data"]
 
+
+    def web_search(self, q: str, *, passages: bool = False) -> dict[str, Any]:
+        """Search the live web with GET /v1/web-search ($5 per 1,000 searches, no quote needed)."""
+        query = (q or "").strip()
+        if not query or len(query) > 2000:
+            raise ValueError("q must be between 1 and 2,000 characters.")
+        params: dict[str, str] = {"q": query}
+        if passages:
+            params["passages"] = "true"
+        return self.request("GET", f"/v1/web-search?{urllib.parse.urlencode(params)}") or {}
+
+    def extract_pages(self, urls: list[str], *, format: str = "markdown") -> dict[str, Any]:
+        """Extract the main text of 1 to 20 URLs live with POST /v1/extract ($0.80 per 1,000 pages)."""
+        cleaned = [str(u or "").strip() for u in (urls or []) if str(u or "").strip()]
+        if not 1 <= len(cleaned) <= 20:
+            raise ValueError("Provide 1 to 20 http or https URLs.")
+        fmt = "text" if format == "text" else "markdown"
+        return self.request("POST", "/v1/extract", {"urls": cleaned, "format": fmt}) or {}
     def results(self, find_id: str) -> dict[str, Any]:
         """Every row found so far for a list, following the pages."""
         rows: list[dict[str, Any]] = []

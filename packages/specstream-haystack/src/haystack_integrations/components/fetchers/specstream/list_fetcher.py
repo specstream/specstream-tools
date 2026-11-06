@@ -119,3 +119,86 @@ class SpecStreamListFetcher:
         meta["request"] = request
         meta["fields"] = fields
         return Document(content=json.dumps(fields, ensure_ascii=False, default=str), meta=meta)
+
+
+@component
+class SpecStreamWebSearch:
+    """Searches the live web in seconds with the SpecStream Search API (`GET /v1/web-search`, $5 per 1,000 searches)."""
+
+    def __init__(
+        self,
+        api_key: Secret = Secret.from_env_var("SPECSTREAM_API_KEY"),
+        base_url: str = DEFAULT_BASE_URL,
+    ):
+        self.api_key = api_key
+        self.base_url = base_url
+
+    def to_dict(self) -> dict[str, Any]:
+        return default_to_dict(self, api_key=self.api_key.to_dict(), base_url=self.base_url)
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "SpecStreamWebSearch":
+        deserialize_secrets_inplace(data["init_parameters"], keys=["api_key"])
+        return default_from_dict(cls, data)
+
+    @component.output_types(documents=list[Document], answer=dict[str, Any])
+    def run(self, q: str, passages: bool = False) -> dict[str, Any]:
+        data = SpecStreamAPI(self.api_key.resolve_value() or "", self.base_url).web_search(q, passages=passages)
+        docs: list[Document] = []
+        for row in data.get("rows") or []:
+            if isinstance(row, dict):
+                docs.append(
+                    Document(
+                        content=str(row.get("snippet") or row.get("name") or ""),
+                        meta={"title": row.get("name"), "source_url": row.get("page"), "fields": row.get("fields")},
+                    )
+                )
+        for src in data.get("sources") or []:
+            if isinstance(src, dict):
+                docs.append(
+                    Document(
+                        content=str(src.get("snippet") or src.get("title") or ""),
+                        meta={"title": src.get("title"), "source_url": src.get("url"), "published": src.get("published")},
+                    )
+                )
+        return {"documents": docs, "answer": data.get("answer") or {}}
+
+
+@component
+class SpecStreamExtractor:
+    """Reads the main text of 1 to 20 URLs live with the SpecStream Extract API (`POST /v1/extract`, $0.80 per 1,000 pages)."""
+
+    def __init__(
+        self,
+        api_key: Secret = Secret.from_env_var("SPECSTREAM_API_KEY"),
+        base_url: str = DEFAULT_BASE_URL,
+    ):
+        self.api_key = api_key
+        self.base_url = base_url
+
+    def to_dict(self) -> dict[str, Any]:
+        return default_to_dict(self, api_key=self.api_key.to_dict(), base_url=self.base_url)
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "SpecStreamExtractor":
+        deserialize_secrets_inplace(data["init_parameters"], keys=["api_key"])
+        return default_from_dict(cls, data)
+
+    @component.output_types(documents=list[Document])
+    def run(self, urls: list[str], format: str = "markdown") -> dict[str, Any]:
+        data = SpecStreamAPI(self.api_key.resolve_value() or "", self.base_url).extract_pages(urls, format=format)
+        docs = [
+            Document(
+                content=str(item.get("text") or ""),
+                meta={
+                    "source_url": item.get("url"),
+                    "title": item.get("title"),
+                    "published": item.get("published"),
+                    "status": item.get("status"),
+                    "read_from": item.get("read_from"),
+                },
+            )
+            for item in (data.get("results") or [])
+            if isinstance(item, dict)
+        ]
+        return {"documents": docs}

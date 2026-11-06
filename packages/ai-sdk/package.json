@@ -1,7 +1,7 @@
 {
   "name": "@specstream/ai-sdk",
-  "version": "0.1.4",
-  "description": "Give a Vercel AI SDK agent lead lists, company lists and grants from the live web. Every row comes with its source, priced per match.",
+  "version": "0.2.0",
+  "description": "The live web data engine for the Vercel AI SDK: Search API ($5 per 1,000 searches), Extract API ($0.80 per 1,000 pages) and Deep Search.",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

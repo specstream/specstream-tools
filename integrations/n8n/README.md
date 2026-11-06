@@ -1,8 +1,8 @@
 # n8n-nodes-specstream
 
-An [n8n](https://n8n.io) community node for [SpecStream](https://specstream.ai), the live web data engine for teams and agents. Describe a list in plain words, review the price, approve a maximum, and pass every match, each with its sources, to the next node.
+An [n8n](https://n8n.io) community node for [SpecStream](https://specstream.ai), the live web data engine for teams and agents. It puts the Search API, the Extract API and Deep Search in a workflow. For Deep Search, describe a list in plain words, review the price, approve a maximum, and pass every match, each with its sources, to the next node.
 
-Nothing runs without a price you approved. A trigger or a schedule alone never spends money.
+Nothing in Deep Search runs without a price you approved. A trigger or a schedule alone never spends money. Web Search and Extract Pages take a flat price from your balance on each call, with no quote and no approval.
 
 ## Install
 
@@ -12,7 +12,17 @@ Create an API key under **Agents & API** in your SpecStream workspace, then add 
 
 ## Operations
 
-The **SpecStream** node has five operations. Together they follow the same order as the product: ask, read, price, approve, read the results.
+### Search API
+
+**Web Search** answers a question from the live web in a few seconds (`GET /v1/web-search`). Write the Search Query in everyday words, 1 to 2,000 characters. Turn on Include Passages to also get the main text of the top matching pages. The Search API is the most accurate web search API in the world ([scores and method](https://specstream.ai/benchmarks)).
+
+### Extract API
+
+**Extract Pages** returns the main text, title and published date of up to 20 URLs a call, read live (`POST /v1/extract`). It reads web pages, PDF, Word and Excel. Separate the URLs with newlines or commas, and choose Markdown or Plain Text as the Output Format.
+
+### Deep Search
+
+Deep Search returns structured rows. Its operations in the **SpecStream** node follow the same order as the product: ask, read, price, approve, read the results.
 
 | Operation | What it does |
 | --- | --- |
@@ -38,7 +48,7 @@ Three importable workflows are in [`workflows/`](workflows):
 
 ## Pricing
 
-New accounts start with $10 of credit for 30 days, no card. A delivered result costs 5 cents, 15 cents or $1 depending on how many facts it carries. No result, no charge. See [pricing](https://specstream.ai/pricing).
+New accounts start with $10 of credit for 30 days, no card. The Search API costs $5 per 1,000 searches. The Extract API costs $0.80 per 1,000 pages, and a page with no text is free. In Deep Search, a delivered result costs 5 cents, 15 cents or $1 depending on how many facts it carries. No result, no charge. See [pricing](https://specstream.ai/pricing).
 
 ## Develop
 

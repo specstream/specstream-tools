@@ -15,7 +15,7 @@ from specstream_client.authorization import require_work_authorization
 from specstream_client.families import FAMILIES
 
 DEFAULT_BASE_URL = "https://api.specstream.ai"
-USER_AGENT = "specstream-python/1.2.0"
+USER_AGENT = "specstream-python/1.3.0"
 
 OpenFn = Callable[[urllib.request.Request, float], Any]
 
@@ -287,6 +287,14 @@ class Client:
         if encoded:
             path += "?" + encoded
         return self._request("GET", path, None)
+
+    def extract_pages(self, request: dict[str, Any]) -> dict[str, Any]:
+        """
+        Read up to 20 pages live: each page's main text as Markdown or plain text, its title and
+        its published date. Only a page read is charged.
+        """
+        path = "/v1/extract"
+        return self._request("POST", path, request)
 
     def web_search_answers(
         self,

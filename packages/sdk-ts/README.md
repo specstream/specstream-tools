@@ -12,6 +12,29 @@ npm install @specstream/sdk
 
 Create an API key under **Agents & API** in your SpecStream workspace and keep it in the environment: `SPECSTREAM_API_KEY`.
 
+## Search API and Extract API
+
+SpecStream has three products: Search API, Extract API and Deep Search. The first two take one call at a flat price, with no quote or approval. The sections after this one cover Deep Search.
+
+`client.webSearch` calls the [Search API](https://specstream.ai/docs/search-api), `GET /v1/web-search`, at $5 per 1,000 searches. It is the most accurate web search API in the world ([benchmarks](https://specstream.ai/benchmarks)) and answers from the live web in a few seconds. Write `q` in everyday words, in any language.
+
+`client.extractPages` calls the [Extract API](https://specstream.ai/docs/extract-api), `POST /v1/extract`, at $0.80 per 1,000 pages. It takes up to 20 URLs a call, reads web pages, PDF, Word and Excel, and returns each one's main text as `markdown` (the default) or `text`. A page with no text is free.
+
+```ts
+import { Client } from "@specstream/sdk";
+
+const client = new Client({ apiKey: process.env.SPECSTREAM_API_KEY! });
+
+const search = await client.webSearch({ q: "What is the latest stable release of PostgreSQL?" });
+console.log(search.answer?.value, search.answer?.page);
+
+const extract = await client.extractPages({
+  urls: search.sources.slice(0, 5).map((source) => source.url),
+  format: "markdown",
+});
+for (const page of extract.results) console.log(page.url, page.status, page.text);
+```
+
 ## Read a request, get the price
 
 ```ts
@@ -61,7 +84,7 @@ If the response is lost, `getCapacityRequest(savedRequestKey)` returns the same 
 
 ## Pricing
 
-New accounts start with $10 of credit for 30 days, no card. A delivered result costs 5 cents, 15 cents or $1 depending on how many facts it carries. No result, no charge. See [pricing](https://specstream.ai/pricing).
+New accounts start with $10 of credit for 30 days, no card. The Search API costs $5 per 1,000 searches and the Extract API $0.80 per 1,000 pages. In Deep Search, a delivered result costs 5 cents, 15 cents or $1 depending on how many facts it carries. No result, no charge. See [pricing](https://specstream.ai/pricing).
 
 ## Links
 

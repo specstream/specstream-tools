@@ -1,7 +1,7 @@
 [project]
 name = "langchain-specstream"
-version = "0.1.4"
-description = "Give a LangChain agent lead lists, company lists and grants from the live web. Every row comes with its source, priced per match in code."
+version = "0.2.0"
+description = "The live web data engine for LangChain: Search API ($5 per 1,000 searches), Extract API ($0.80 per 1,000 pages) and Deep Search."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"

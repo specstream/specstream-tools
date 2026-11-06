@@ -1,7 +1,6 @@
 # crewai-specstream
 
-Most web tools for CrewAI hand your agent pages to read, and the agent builds the list itself, one search and one scrape at a time. This one hands it the finished list. The agent asks in plain words – "dental clinics in Lisbon with online booking", "US startups that filed a $5M+ Form D after October 8, 2026" – and gets back every matching row, each with the page it was read from. The list starts only within a price you set in code, and the model can't raise it.
-
+[SpecStream](https://specstream.ai) is the live web data engine for teams and agents. One platform to build, search, extract, enrich, map, and monitor data across the entire web. Ask for any dataset in plain words, and SpecStream builds it from the entire live web: every match found, extracted and enriched into structured records, then monitored for change. Source URL and read time on every value.
 ```bash
 pip install -U crewai-specstream
 export SPECSTREAM_API_KEY=ss_live_...   # Agents & API in your SpecStream workspace
@@ -57,11 +56,13 @@ One flat row per match: the list's own columns, then where the row was read. Thi
 
 Columns follow the request. Ask for "breweries in Portland, Oregon that host events, with their website" and the rows carry the brewery and its website instead. A fact a source doesn't publish comes back empty, never guessed.
 
-## The two tools
+## The four tools
 
 | Tool | The model gives | What happens | Cost |
 | --- | --- | --- | --- |
-| `specstream_find_list` | `request`, `max_results` (1 – 1000, default 25) | Reads the request, prices it, starts it only within `max_price_usd`, waits up to `wait_seconds` (7 minutes by default) and returns every row | Only the rows that match |
+| `specstream_web_search` | `q`, `passages` | Calls `GET /v1/web-search` and returns the answer, matching rows, ranked sources and optional page passages | $5 per 1,000 searches |
+| `specstream_extract_pages` | `urls`, `format` | Calls `POST /v1/extract` and returns the clean main text, title and published date of 1 to 20 web pages, PDFs, Word or Excel files | $0.80 per 1,000 pages (empty pages free) |
+| `specstream_find_list` | `request`, `max_results` (1 to 1000, default 25) | Reads the request, prices it, starts it only within `max_price_usd`, waits up to `wait_seconds` (7 minutes by default) and returns every row | Only delivered rows |
 | `specstream_get_list_results` | `list_id` | Every row found so far, for a list that was still running | Free |
 
 When the price is above your maximum, nothing runs: the tool returns the price, so the agent can ask for fewer rows or tell the user. When a request is too vague to price ("clinics"), it returns how SpecStream read it, so the agent can add the place or the conditions.

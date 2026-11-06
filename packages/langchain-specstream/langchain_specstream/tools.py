@@ -29,6 +29,15 @@ class GetListResultsInput(BaseModel):
     list_id: str = Field(description="The list_id returned by specstream_find_list.")
 
 
+class WebSearchInput(BaseModel):
+    q: str = Field(min_length=1, max_length=2000, description="Search query or question in everyday words.")
+    passages: bool = Field(default=False, description="Include main text passages from the top matching pages.")
+
+
+class ExtractPagesInput(BaseModel):
+    urls: list[str] = Field(min_length=1, max_length=20, description="1 to 20 http or https URLs to read live.")
+    format: str = Field(default="markdown", description='Output format: "markdown" or "text".')
+
 class _SpecStreamTool(BaseTool):
     api_key: SecretStr = Field(default_factory=secret_from_env("SPECSTREAM_API_KEY"))
     """A SpecStream API key. Read from SPECSTREAM_API_KEY when not passed."""
@@ -96,7 +105,39 @@ class SpecStreamGetListResults(_SpecStreamTool):
         return json.dumps(self._api().results(list_id), ensure_ascii=False, default=str)
 
 
+class SpecStreamWebSearch(_SpecStreamTool):
+    """Search the live web in seconds with the SpecStream Search API (GET /v1/web-search, $5 per 1,000 searches)."""
+
+    name: str = "specstream_web_search"
+    description: str = (
+        "Search the live web in seconds with the SpecStream Search API ($5 per 1,000 searches, no quote needed). "
+        "Returns JSON with kind ('fact' or 'list'), answer (value, page and seen_at), matching rows, ranked sources and optional passages."
+    )
+    args_schema: type[BaseModel] = WebSearchInput
+
+    def _run(self, q: str, passages: bool = False, run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
+        return json.dumps(self._api().web_search(q, passages=passages), ensure_ascii=False, default=str)
+
+
+class SpecStreamExtractPages(_SpecStreamTool):
+    """Read the main text, title and published date of 1 to 20 web pages, PDFs, Word or Excel files live ($0.80 per 1,000 pages)."""
+
+    name: str = "specstream_extract_pages"
+    description: str = (
+        "Read the main text, title and published date of 1 to 20 URLs (web pages, PDF, Word, Excel) live with the SpecStream Extract API "
+        "($0.80 per 1,000 pages, empty pages free, no quote needed)."
+    )
+    args_schema: type[BaseModel] = ExtractPagesInput
+
+    def _run(self, urls: list[str], format: str = "markdown", run_manager: Optional[CallbackManagerForToolRun] = None) -> str:
+        return json.dumps(self._api().extract_pages(urls, format=format), ensure_ascii=False, default=str)
+
 def specstream_tools(max_price_usd: float, **kwargs: Any) -> list[BaseTool]:
-    """Both tools, sharing one key and base URL: the usual way to give an agent SpecStream."""
+    """All four SpecStream tools (Search API, Extract API, Deep Search and row reader), sharing one key and base URL."""
     shared = {key: kwargs.pop(key) for key in ("api_key", "base_url") if key in kwargs}
-    return [SpecStreamFindList(max_price_usd=max_price_usd, **shared, **kwargs), SpecStreamGetListResults(**shared)]
+    return [
+        SpecStreamWebSearch(**shared),
+        SpecStreamExtractPages(**shared),
+        SpecStreamFindList(max_price_usd=max_price_usd, **shared, **kwargs),
+        SpecStreamGetListResults(**shared),
+    ]
