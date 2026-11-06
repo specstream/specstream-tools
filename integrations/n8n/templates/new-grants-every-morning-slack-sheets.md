@@ -63,7 +63,7 @@ Each row in the sheet also has the opportunity number, the posted date, the assi
 
 ## What you need
 
-- A SpecStream API key. New accounts get $10 of work free, no card: [specstream.ai](https://specstream.ai)
+- A SpecStream API key. New accounts get $10 of credit, no card: [specstream.ai](https://specstream.ai)
 - Google Sheets and Slack connected in n8n
 - Nothing to install: the workflow uses only core nodes (HTTP Request, Code, Google Sheets, Slack), so it runs on n8n Cloud and self-hosted n8n.
 

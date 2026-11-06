@@ -64,7 +64,7 @@ Every row in the sheet also has **Source** (the source URL), **Read at** (when) 
 
 ## What you need
 
-- A SpecStream API key. New accounts get $10 of work free, no card: [specstream.ai](https://specstream.ai)
+- A SpecStream API key. New accounts get $10 of credit, no card: [specstream.ai](https://specstream.ai)
 - Google Sheets connected in n8n
 - Nothing to install: the workflow uses only core nodes, so it runs on n8n Cloud and self-hosted n8n.
 

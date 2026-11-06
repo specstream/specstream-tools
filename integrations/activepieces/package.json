@@ -1,6 +1,6 @@
 {
   "name": "@specstream/piece-specstream",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "description": "SpecStream is the live web data engine for teams and agents. One platform to build, search, extract, enrich, map, and monitor data across the entire web.",
   "license": "MIT",
   "homepage": "https://specstream.ai/docs/integrations",

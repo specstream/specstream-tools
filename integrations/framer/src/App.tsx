@@ -487,7 +487,7 @@ function Connect({
 					<a href={API_KEYS_URL} target="_blank" rel="noreferrer">
 						SpecStream workspace
 					</a>
-					. New accounts get $10 of work free. The key stays in this browser.
+					. New accounts get $10 of credit. The key stays in this browser.
 				</p>
 				<Disclosure />
 				</section>

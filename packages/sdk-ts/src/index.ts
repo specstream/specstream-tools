@@ -241,6 +241,29 @@ export class Client {
     return this.request("GET", path) as Promise<Schemas["WorkspaceSearchPage"]>;
   }
 
+  webSearch(query: { "q": string; "passages"?: boolean; }): Promise<Schemas["WebSearchPage"]> {
+    let path = `/v1/web-search`;
+    const queryString = new URLSearchParams();
+    for (const [key, value] of Object.entries(query))
+      if (value !== undefined && value !== null) queryString.set(key, String(value));
+    if (queryString.size) path += "?" + queryString.toString();
+    return this.request("GET", path) as Promise<Schemas["WebSearchPage"]>;
+  }
+
+  webSearchAnswers(query: { "q"?: string; "limit"?: number; "cursor"?: string; } = {}): Promise<Schemas["WebSearchAnswerPage"]> {
+    let path = `/v1/web-search/answers`;
+    const queryString = new URLSearchParams();
+    for (const [key, value] of Object.entries(query))
+      if (value !== undefined && value !== null) queryString.set(key, String(value));
+    if (queryString.size) path += "?" + queryString.toString();
+    return this.request("GET", path) as Promise<Schemas["WebSearchAnswerPage"]>;
+  }
+
+  webSearchAnswer(answerId: string): Promise<Schemas["WebSearchAnswer"]> {
+    let path = `/v1/web-search/answers/${encodeURIComponent(answerId)}`;
+    return this.request("GET", path) as Promise<Schemas["WebSearchAnswer"]>;
+  }
+
   workspaceListNotifications(query: { "tab"?: "all" | "unread" | "archived"; "limit"?: number; "cursor"?: string; } = {}): Promise<Schemas["WorkspaceNotificationPage"]> {
     let path = `/v1/workspace/notifications`;
     const queryString = new URLSearchParams();
@@ -522,13 +545,13 @@ export class Client {
     return this.request("GET", path) as Promise<{ [key: string]: unknown; }>;
   }
 
-  getCapacityRequestRows(requestKey: string, query: { "project_id"?: string; "cursor"?: string; "limit"?: number; } = {}): Promise<{ [key: string]: unknown; }> {
+  getCapacityRequestRows(requestKey: string, query: { "project_id"?: string; "cursor"?: string; "limit"?: number; "format"?: "json" | "markdown" | "csv"; } = {}): Promise<({ [key: string]: unknown; } | { "format": "markdown" | "csv"; "columns": Array<{ "column_id": string; "label": string; }>; "table": string; "find_id"?: (string | null); "accepted_count"?: number; "next_cursor"?: (string | null); })> {
     let path = `/v1/capacity/requests/${encodeURIComponent(requestKey)}/rows`;
     const queryString = new URLSearchParams();
     for (const [key, value] of Object.entries(query))
       if (value !== undefined && value !== null) queryString.set(key, String(value));
     if (queryString.size) path += "?" + queryString.toString();
-    return this.request("GET", path) as Promise<{ [key: string]: unknown; }>;
+    return this.request("GET", path) as Promise<({ [key: string]: unknown; } | { "format": "markdown" | "csv"; "columns": Array<{ "column_id": string; "label": string; }>; "table": string; "find_id"?: (string | null); "accepted_count"?: number; "next_cursor"?: (string | null); })>;
   }
 
   getCapacityExecution(findId: string): Promise<Schemas["CommerceData"]> {

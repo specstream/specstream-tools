@@ -19,7 +19,7 @@ export class Specstream implements INodeType {
     group: ["transform"],
     version: 1,
     subtitle: '={{$parameter["operation"]}}',
-    description: "Ask for a list in plain words and get every match from the live web, each with its source. Priced before it runs.",
+    description: "The live web data engine. Search API, Extract API and Deep Search with a source URL and read time on every value.",
     defaults: { name: "SpecStream" },
     usableAsTool: true,
     inputs: [NodeConnectionTypes.Main],
@@ -33,12 +33,54 @@ export class Specstream implements INodeType {
         noDataExpression: true,
         options: [
           { name: "Approve Quoted Work", value: "confirmAndRun", action: "Approve quoted work" },
-          { name: "Find a List", value: "findList", action: "Find a list", description: "Ask for a list in plain words and start it if the price is within your maximum" },
+          { name: "Extract Pages", value: "extractPages", action: "Extract pages", description: "Read the main text, title and published date of 1 to 20 web pages, PDFs, Word or Excel files live ($0.80 per 1,000 pages)" },
+          { name: "Find a List", value: "findList", action: "Find a list", description: "Ask for a dataset in plain words and start it if the price is within your maximum" },
           { name: "Get List Results", value: "getListRows", action: "Get the rows of a list", description: "One item per matching row, each with the page it was read from" },
           { name: "Read Request", value: "compile", action: "Read a request" },
           { name: "Review Quote", value: "quoteWork", action: "Review a quote" },
+          { name: "Web Search", value: "webSearch", action: "Search the web", description: "Answer a question from the live web in seconds with the Search API ($5 per 1,000 searches)" },
         ],
         default: "findList",
+      },
+      {
+        displayName: "Search Query",
+        name: "search_query",
+        type: "string",
+        default: "",
+        required: true,
+        description: "The question or search query in everyday words (1 to 2,000 characters)",
+        displayOptions: { show: { operation: ["webSearch"] } },
+      },
+      {
+        displayName: "Include Passages",
+        name: "passages",
+        type: "boolean",
+        default: false,
+        description: "Whether to include the main text passages of the top matching pages in the response",
+        displayOptions: { show: { operation: ["webSearch"] } },
+      },
+      {
+        displayName: "URLs",
+        name: "urls",
+        type: "string",
+        typeOptions: { rows: 3 },
+        default: "",
+        required: true,
+        placeholder: "https://example.com/page-1\nhttps://example.com/page-2",
+        description: "1 to 20 http or https URLs separated by newlines or commas",
+        displayOptions: { show: { operation: ["extractPages"] } },
+      },
+      {
+        displayName: "Output Format",
+        name: "extract_format",
+        type: "options",
+        options: [
+          { name: "Markdown", value: "markdown" },
+          { name: "Plain Text", value: "text" },
+        ],
+        default: "markdown",
+        description: "Whether to return Markdown (keeps headings, lists and links) or plain text",
+        displayOptions: { show: { operation: ["extractPages"] } },
       },
       {
         displayName: "What to Find",
@@ -47,7 +89,7 @@ export class Specstream implements INodeType {
         typeOptions: { rows: 3 },
         default: "",
         required: true,
-        placeholder: "Roofing companies in Columbus, Ohio with their website and phone",
+        placeholder: "Open federal tenders for translation services with buyer and deadline",
         description: "Describe the list in plain words, with what every row must meet and the details to bring back",
         displayOptions: { show: { operation: ["findList"] } },
       },
@@ -270,6 +312,29 @@ export class Specstream implements INodeType {
         }
         return data;
       };
+
+      if (operation === "webSearch") {
+        const q = String(this.getNodeParameter("search_query", i) || "").trim();
+        if (!q || q.length > 2000) throw fail("Search Query must be 1 to 2,000 characters");
+        const passages = Boolean(this.getNodeParameter("passages", i, false));
+        const query = `q=${encodeURIComponent(q)}${passages ? "&passages=true" : ""}`;
+        const data = await call("GET", `/v1/web-search?${query}`);
+        out.push({ json: data, pairedItem: { item: i } });
+        continue;
+      }
+
+      if (operation === "extractPages") {
+        const rawUrls = String(this.getNodeParameter("urls", i) || "");
+        const urls = rawUrls
+          .split(/[\r\n,]+/)
+          .map((u) => u.trim())
+          .filter(Boolean);
+        if (urls.length < 1 || urls.length > 20) throw fail("Provide 1 to 20 http or https URLs");
+        const format = String(this.getNodeParameter("extract_format", i, "markdown") || "markdown") === "text" ? "text" : "markdown";
+        const data = await call("POST", "/v1/extract", { urls, format });
+        out.push({ json: data, pairedItem: { item: i } });
+        continue;
+      }
 
       if (operation === "findList") {
         const q = String(this.getNodeParameter("request", i) || "").trim();

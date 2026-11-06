@@ -18,7 +18,7 @@ credentials_for_provider:
     placeholder:
       en_US: ss_live_...
     help:
-      en_US: Create a key in SpecStream under Agents & API. New accounts get $10 of work free.
+      en_US: Create a key in SpecStream under Agents & API. New accounts get $10 of credit.
     url: https://specstream.ai/workspace/settings
 tools:
   - tools/find_list.yaml

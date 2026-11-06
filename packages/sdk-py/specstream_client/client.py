@@ -268,6 +268,56 @@ class Client:
             path += "?" + encoded
         return self._request("GET", path, None)
 
+    def web_search(self, *, q: str, passages: bool | None = None) -> dict[str, Any]:
+        """
+        Fast search: answer a question from the live web in seconds, each value with its source.
+        """
+        path = "/v1/web-search"
+        query: dict[str, Any] = {
+            "q": q,
+            "passages": passages,
+        }
+        encoded = urlencode(
+            {
+                key: str(value).lower() if isinstance(value, bool) else value
+                for key, value in query.items()
+                if value is not None
+            }
+        )
+        if encoded:
+            path += "?" + encoded
+        return self._request("GET", path, None)
+
+    def web_search_answers(
+        self,
+        *,
+        q: str | None = None,
+        limit: int | None = None,
+        cursor: str | None = None,
+    ) -> dict[str, Any]:
+        """List your web search history: each question, its answer and its sources, newest first."""
+        path = "/v1/web-search/answers"
+        query: dict[str, Any] = {
+            "q": q,
+            "limit": limit,
+            "cursor": cursor,
+        }
+        encoded = urlencode(
+            {
+                key: str(value).lower() if isinstance(value, bool) else value
+                for key, value in query.items()
+                if value is not None
+            }
+        )
+        if encoded:
+            path += "?" + encoded
+        return self._request("GET", path, None)
+
+    def web_search_answer(self, answer_id: str) -> dict[str, Any]:
+        """Open one kept web search answer as it was given."""
+        path = f"/v1/web-search/answers/{quote_path(answer_id, safe='')}"
+        return self._request("GET", path, None)
+
     def workspace_list_notifications(
         self,
         *,
@@ -710,6 +760,7 @@ class Client:
         project_id: str | None = None,
         cursor: str | None = None,
         limit: int | None = None,
+        format: str | None = None,
     ) -> dict[str, Any]:
         """Read where the request asked with this key stands and the rows it found so far."""
         path = f"/v1/capacity/requests/{quote_path(request_key, safe='')}/rows"
@@ -717,6 +768,7 @@ class Client:
             "project_id": project_id,
             "cursor": cursor,
             "limit": limit,
+            "format": format,
         }
         encoded = urlencode(
             {

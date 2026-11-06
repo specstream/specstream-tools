@@ -3,7 +3,7 @@ import { HttpMethod } from '@activepieces/pieces-common';
 import { specstreamApi } from './common/client';
 
 const markdownDescription = `
-Create a key in SpecStream under [Agents & API](https://specstream.ai/workspace/settings). Keys start with \`ss_live_\`. New accounts get $10 of work free.
+Create a key in SpecStream under [Agents & API](https://specstream.ai/workspace/settings). Keys start with \`ss_live_\`. New accounts get $10 of credit.
 `;
 
 export const specstreamAuth = PieceAuth.SecretText({

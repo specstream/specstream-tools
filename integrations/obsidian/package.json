@@ -1,7 +1,7 @@
 {
 	"name": "specstream-obsidian",
-	"version": "1.0.0",
-	"description": "SpecStream for Obsidian: ask for a list in plain words, see the price first, and insert the rows with their source pages as a Markdown table.",
+	"version": "1.0.2",
+	"description": "SpecStream for Obsidian: pull live web data into your notes, see the price first, and insert each record with the page it came from.",
 	"main": "main.js",
 	"type": "module",
 	"scripts": {

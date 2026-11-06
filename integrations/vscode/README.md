@@ -28,7 +28,7 @@ Sign-in is VS Code's own: start **SpecStream** from **MCP: List Servers** and ap
 
 ## Get started
 
-Open the **Get your first list with SpecStream** walkthrough from the Command Palette (**Welcome: Open Walkthrough**). Your account starts with $10 of work free, no card.
+Open the **Get your first list with SpecStream** walkthrough from the Command Palette (**Welcome: Open Walkthrough**). Your account starts with $10 of credit, no card.
 
 ## Settings
 

@@ -148,7 +148,7 @@ function Settings({ apiKey, canSet, onSaved }: { apiKey: string; canSet: boolean
 		<Box padding={3}>
 			<Heading size="small">Connect SpecStream</Heading>
 			<Text textColor="light" marginBottom={3}>
-				Paste an API key from your SpecStream workspace. New accounts get $10 of work free.{" "}
+				Paste an API key from your SpecStream workspace. New accounts get $10 of credit.{" "}
 				<Link href={API_KEYS_URL} target="_blank">
 					Create a key
 				</Link>

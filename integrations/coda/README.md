@@ -14,7 +14,7 @@ Live web data in your Coda doc. Sync any SpecStream list into a table, with ever
 
 ## Connect
 
-Sign in at [specstream.ai](https://specstream.ai) (new accounts get $10 of work free, no card), open **Agents & API**, create a key, and paste it when Coda asks. The tables and Price only read, so a key with a $0 spending limit is enough for them.
+Sign in at [specstream.ai](https://specstream.ai) (new accounts get $10 of credit, no card), open **Agents & API**, create a key, and paste it when Coda asks. The tables and Price only read, so a key with a $0 spending limit is enough for them.
 
 ## Build and test locally
 

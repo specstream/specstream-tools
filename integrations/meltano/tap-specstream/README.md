@@ -21,7 +21,7 @@ A value SpecStream couldn't find is null.
 | `start_date` | no | Read only lists created after this time. |
 | `api_url` | no | Defaults to `https://api.specstream.ai`. |
 
-New SpecStream accounts get $10 of work free, no card.
+New SpecStream accounts get $10 of credit, no card.
 
 ## Use it with Meltano
 

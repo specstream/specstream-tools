@@ -1,7 +1,9 @@
 import { createPiece } from '@activepieces/pieces-framework';
 import { PieceCategory } from '@activepieces/shared';
+import { extractPagesAction } from './lib/actions/extract-pages';
 import { findListAction } from './lib/actions/find-list';
 import { getListResultsAction } from './lib/actions/get-list-results';
+import { webSearchAction } from './lib/actions/web-search';
 import { specstreamCustomApiCallAction } from './lib/actions/custom-api-call';
 import { newRowTrigger, newWatchedRowTrigger } from './lib/triggers/row-triggers';
 import { specstreamAuth } from './lib/auth';
@@ -14,6 +16,6 @@ export const specstream = createPiece({
   logoUrl: 'https://cdn.activepieces.com/pieces/specstream.png',
   categories: [PieceCategory.SALES_AND_CRM, PieceCategory.ARTIFICIAL_INTELLIGENCE],
   authors: ['specstream'],
-  actions: [findListAction, getListResultsAction, specstreamCustomApiCallAction],
+  actions: [webSearchAction, extractPagesAction, findListAction, getListResultsAction, specstreamCustomApiCallAction],
   triggers: [newRowTrigger, newWatchedRowTrigger],
 });

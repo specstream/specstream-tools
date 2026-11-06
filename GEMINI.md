@@ -9,4 +9,4 @@ SpecStream is the live web data engine for teams and agents. It turns a plain-En
 
 Requests that work well: local businesses with ratings, companies from registries, companies that use a tool, funding and new-executive signals, grants, tenders, clinical trials, papers, datasets, regulations, vulnerabilities, apps, repositories, packages, podcasts and books. `list_request_templates` returns requests that already work.
 
-Set `SPECSTREAM_API_KEY` to a key from **Agents & API** in the SpecStream workspace (https://specstream.ai/workspace/settings). Never ask for the key in chat. New accounts get $10 of work free.
+Set `SPECSTREAM_API_KEY` to a key from **Agents & API** in the SpecStream workspace (https://specstream.ai/workspace/settings). Never ask for the key in chat. New accounts get $10 of credit.

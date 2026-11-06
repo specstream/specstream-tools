@@ -16,7 +16,7 @@ In Kiro, open the Powers panel, choose **Add Custom Power**, then either:
 - **Import power from GitHub** and enter `https://github.com/specstream/specstream-tools/tree/main/plugins/kiro`, or
 - clone [specstream/specstream-tools](https://github.com/specstream/specstream-tools) and choose **Import power from a folder**, pointing at `plugins/kiro`.
 
-The first time Kiro calls SpecStream it opens your browser to sign in (OAuth 2.1 with dynamic client registration). There is no key to paste. New accounts get $10 of work free for 30 days.
+The first time Kiro calls SpecStream it opens your browser to sign in (OAuth 2.1 with dynamic client registration). There is no key to paste. New accounts get $10 of credit for 30 days.
 
 ## Try it
 

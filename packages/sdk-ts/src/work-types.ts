@@ -1,6 +1,6 @@
-// Generated from implemented public OpenAPI sha256:2085ba477a65b6b5ee9f62dac7d78f8826ed63677d03b9dd87a79900f696bc59; run packages/generate_clients.py.
+// Generated from implemented public OpenAPI sha256:0af00bc9a1e034a669e12bf28d995e1bafaa661a90c90e3f07bb2089f5b4532c; run packages/generate_clients.py.
 export interface Schemas {
-  "AcceptedRow": { "target_evidence"?: ({ [key: string]: unknown; } | null); "worded_evidence"?: ({ [key: string]: unknown; } | null); "lineage"?: (Schemas["MatchLineage"] | null); "spec_version"?: "accepted_row.v1"; "entity_id": string; "ordinal": number; "cells": Array<Schemas["RowCell"]>; "predicates": Array<Schemas["PredicateEvidence"]>; "match_proof"?: (Schemas["LogicalProof"] | null); "billable": boolean; "contact_visibility": Schemas["ContactVisibility"]; "locked"?: boolean; "details"?: Array<Schemas["RowCell"]>; };
+  "AcceptedRow": { "target_evidence"?: ({ [key: string]: unknown; } | null); "worded_evidence"?: ({ [key: string]: unknown; } | null); "unconfirmed"?: (Array<string> | null); "lineage"?: (Schemas["MatchLineage"] | null); "spec_version"?: "accepted_row.v1"; "entity_id": string; "ordinal": number; "cells": Array<Schemas["RowCell"]>; "predicates": Array<Schemas["PredicateEvidence"]>; "match_proof"?: (Schemas["LogicalProof"] | null); "billable": boolean; "contact_visibility": Schemas["ContactVisibility"]; "locked"?: boolean; "details"?: Array<Schemas["RowCell"]>; };
   "AccountData": { "account_id": string; "email": string; "finds": Array<Schemas["Find"]>; };
   "AccountDeleteData": { "account_id": string; "access_revoked"?: true; "private_work_erased"?: true; "recoverable"?: false; "grace_days"?: (number | null); };
   "AccountPhotoData": { "version": number; "url": (string | null); };
@@ -69,6 +69,7 @@ export interface Schemas {
   "ContactBadge": "Phone on file" | "Email published" | "Email not published" | "Site on file";
   "ContactVisibility": "full" | "badge" | "hidden";
   "CopyCollectionInput": { "request_id": string; "name": string; "project_id"?: (string | null); };
+  "CoreEntity": { "name": string; "url": string; "description": string; "request": string; };
   "CountComparison": { "op": "gte" | "gt" | "lte" | "lt" | "eq" | "ne"; "value": number; };
   "CountMatches": { "condition"?: (Schemas["MemberExpression"] | Schemas["MemberPredicate"] | null); "count": Schemas["CountComparison"]; };
   "CustomerWebhookData": { "hook_id": string; "event_name": string; "events": Array<"find.completed" | "monitor.found" | "collection.records_added">; "secret": string; };
@@ -97,6 +98,9 @@ export interface Schemas {
   "ExportData": { "download_url": string; "filename": string; "expires_in_s"?: number; "single_use"?: boolean; };
   "ExportFormat": "xlsx" | "csv" | "json" | "html" | "kml" | "geojson";
   "ExportRequest": { "format": Schemas["ExportFormat"]; };
+  "ExtractPage": { "request_id": string; "results": Array<Schemas["ExtractedPage"]>; "took_ms": number; "price_usd": number; };
+  "ExtractRequest": { "urls": Array<string>; "format"?: "markdown" | "text"; };
+  "ExtractedPage": { "url": string; "status": "ok" | "blocked" | "not_found" | "empty" | "unsupported" | "invalid_url" | "failed"; "title": (string | null); "text": string; "published": (string | null); "read_from"?: ("live" | "site" | "archive" | null); "captured_at"?: (string | null); };
   "FieldObservation": { "entity_id": string; "field_id": string; "value": (unknown | null); "normalized_value": (string | null); "source": string; "source_url": (string | null); "observed_at": string; "observation_id": string; "request_hash": string; "join_method": (Schemas["JoinMethod"] | null); "join_confidence"?: (number | null); "null_reason": (Schemas["NullReason"] | null); "selected"?: boolean; "value_complete"?: (boolean | null); "source_record_id"?: (string | null); "source_pointer"?: (string | null); "source_response_sha256"?: (string | null); "source_time"?: (Schemas["EvidenceTime"] | null); "source_raw"?: ({ [key: string]: unknown; } | null); "capability_id"?: (string | null); };
   "FileImportCommand": { "import_id": string; "name": string; "format": string; "project_id"?: (string | null); "sheet"?: (string | null); "content"?: (string | null); "content_base64"?: (string | null); "mapping"?: ({ [key: string]: string; } | null); };
   "FileImportInput": { "import_id": string; "name": string; "format": "csv" | "xlsx"; "project_id"?: (string | null); "sheet"?: (string | null); };
@@ -168,7 +172,7 @@ export interface Schemas {
   "OutputField": { "field_id": string; "required"?: boolean; };
   "ParseFromChipsRequest": { "ast": Schemas["QueryAst"]; "operations": Array<Schemas["ChipOperation"]>; };
   "ParseRequest": { "retained"?: (Schemas["RetainedRequest"] | null); "q": string; "kind"?: (Schemas["EntityType"] | null); "locale"?: string; "expected_source_hash"?: (string | null); };
-  "ParseResult": { "retained"?: (Schemas["RetainedRequest"] | null); "grading"?: (Schemas["ReadingGrade"] | null); "understanding"?: (Schemas["Understanding"] | null); "decision_id"?: (string | null); "status": Schemas["CompilerStatus"]; "ast": (Schemas["QueryAst"] | null); "chips": Array<Schemas["Chip"]>; "unsupported": Array<Schemas["UnsupportedClause"]>; "compiler_version": string; "ast_hash": (string | null); "canonical_sentence": (string | null); "notice"?: (string | null); "read_back"?: (string | null); };
+  "ParseResult": { "retained"?: (Schemas["RetainedRequest"] | null); "core_entity"?: (Schemas["CoreEntity"] | null); "grading"?: (Schemas["ReadingGrade"] | null); "understanding"?: (Schemas["Understanding"] | null); "decision_id"?: (string | null); "status": Schemas["CompilerStatus"]; "ast": (Schemas["QueryAst"] | null); "chips": Array<Schemas["Chip"]>; "unsupported": Array<Schemas["UnsupportedClause"]>; "compiler_version": string; "ast_hash": (string | null); "canonical_sentence": (string | null); "notice"?: (string | null); "read_back"?: (string | null); };
   "PasskeyComplete": { "challenge_id": string; "credential": { [key: string]: unknown; }; };
   "PasskeyData": { "id": string; "label": string; "created_at": string; "last_used_at"?: (string | null); };
   "PasskeyLabel": { "label": string; };
@@ -320,11 +324,22 @@ export interface Schemas {
   "VocabularyKind": { "kind": Schemas["EntityType"]; "name": string; "plural": string; "types": Array<string>; "details": Array<Schemas["VocabularyDetail"]>; "examples": Array<string>; "suggested": boolean; };
   "WebPushKeys": { "p256dh": string; "auth": string; };
   "WebPushSubscriptionInput": { "endpoint": string; "keys": Schemas["WebPushKeys"]; "expirationTime"?: ((number) | null); "name": string; };
+  "WebSearchAnswer": { "id"?: (string | null); "request_id": string; "query": string; "kind": "list" | "fact"; "columns": Array<string>; "answer": (Schemas["WebSearchValue"] | null); "rows": Array<Schemas["WebSearchRow"]>; "sources": Array<Schemas["WebSearchSource"]>; "handoff": (Schemas["WebSearchHandoff"] | null); "took_ms": number; "price_usd": number; "passages"?: (Array<Schemas["WebSearchPassage"]> | null); "request": string; "created_at": string; };
+  "WebSearchAnswerPage": { "results": Array<Schemas["WebSearchAnswerSummary"]>; "next_cursor": (string | null); };
+  "WebSearchAnswerSummary": { "id": string; "request": string; "created_at": string; "rows": number; "answer": (string | null); "source"?: (string | null); "sources"?: Array<Schemas["WebSearchCited"]>; "list": boolean; "kind": "list" | "fact"; };
+  "WebSearchBatchPage": { "results": Array<Schemas["WebSearchBatchResult"]>; "took_ms": number; "price_usd": number; };
+  "WebSearchBatchRequest": { "questions": Array<Schemas["WebSearchQuestion"]>; };
+  "WebSearchBatchResult": { "request_id": string; "status": number; "data": (Schemas["WebSearchPage"] | null); "error": (Schemas["ErrorBody"] | null); "retry_after_s"?: (number | null); };
+  "WebSearchCall": { "method": "POST"; "path": "/v1/parse"; "body": { [key: string]: unknown; }; };
+  "WebSearchCited": { "url": string; "title": string; "site": string; };
   "WebSearchHandoff": { "line": string; "request": string; "rows_estimated": number; "rows_basis": "request" | "page" | "seen"; "count_page": (string | null); "next": Schemas["WebSearchNext"]; };
-  "WebSearchNext": { "tool": "compile"; "arguments": { [key: string]: unknown; }; };
-  "WebSearchPage": { "query": string; "columns": Array<string>; "rows": Array<Schemas["WebSearchRow"]>; "answer": (Schemas["WebSearchValue"] | null); "handoff": (Schemas["WebSearchHandoff"] | null); "took_ms": number; "price_usd": number; };
-  "WebSearchRow": { "name": string; "page": string; "snippet": string; "probability": number; "fields": { [key: string]: Schemas["WebSearchValue"]; }; };
-  "WebSearchValue": { "value": string; "page": string; };
+  "WebSearchNext": { "tool": "compile"; "arguments": { [key: string]: unknown; }; "http": Schemas["WebSearchCall"]; };
+  "WebSearchPage": { "id"?: (string | null); "request_id": string; "query": string; "kind": "list" | "fact"; "columns": Array<string>; "answer": (Schemas["WebSearchValue"] | null); "rows": Array<Schemas["WebSearchRow"]>; "sources": Array<Schemas["WebSearchSource"]>; "handoff": (Schemas["WebSearchHandoff"] | null); "took_ms": number; "price_usd": number; "passages"?: (Array<Schemas["WebSearchPassage"]> | null); };
+  "WebSearchPassage": { "url": string; "title": string; "text": string; };
+  "WebSearchQuestion": { "q": string; "id"?: (string | null); };
+  "WebSearchRow": { "name": string; "page": string; "snippet": string; "probability": number; "fields": { [key: string]: Schemas["WebSearchValue"]; }; "sources"?: Array<number>; };
+  "WebSearchSource": { "url": string; "title": string; "site": string; "snippet": string; "cited": boolean; "published"?: (string | null); };
+  "WebSearchValue": { "value": string; "page": string; "seen_at"?: (string | null); "confirmed"?: (boolean | null); };
   "WebSourceCell": { "source_url": string; "response_sha256": string; "pointer": string; "association": "anchor" | "same_element" | "within_record" | "positional_example"; };
   "WebSourceExplanation": { "example_rows": number; "inferred_rows": number; "left_out"?: Array<string>; "fields": Array<Schemas["WebSourceFieldExplanation"]>; "on_change": string; "page_kept_until"?: (string | null); };
   "WebSourceFieldExplanation": { "column": string; "relationship": "anchor" | "same_element" | "within_record" | "positional_example"; "how": string; "on_change": string; "pattern"?: string; "found"?: number; "missing"?: number; };

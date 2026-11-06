@@ -95,3 +95,23 @@ class ClientTests(unittest.TestCase):
         self.assertEqual(client.authorize_capacity_work(approval)["find_id"], "fnd_fixture")
         self.assertEqual(client.get_capacity_request("stable-review-001")["find_id"], "fnd_fixture")
         self.assertFalse(any("/funding" in path or "/run" in path for _, path, _ in calls))
+
+    def test_web_search_returns_the_answers_kind_and_sources(self):
+        page = {
+            "request_id": "call-1",
+            "kind": "list",
+            "answer": None,
+            "rows": [{"name": "A", "page": "https://example.org/a", "sources": [0]}],
+            "sources": [{"url": "https://example.org/a", "cited": True}],
+        }
+        urls = []
+
+        def opener(request, timeout):
+            urls.append((request.get_method(), request.full_url))
+            return _FakeResponse(page)
+
+        found = Client("fixture-key", opener=opener).web_search(q="roasters in Lyon")
+        self.assertEqual(urls, [("GET", urls[0][1])])
+        self.assertTrue(urls[0][1].endswith("/v1/web-search?q=roasters+in+Lyon"))
+        self.assertEqual((found["kind"], found["sources"]), (page["kind"], page["sources"]))
+        self.assertEqual(found["rows"][0]["sources"], [0])

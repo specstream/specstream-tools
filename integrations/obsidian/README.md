@@ -34,7 +34,7 @@ Before that, or to try a build by hand: download `main.js`, `manifest.json` and 
 
 ## Set up
 
-1. Create a free account at [specstream.ai](https://specstream.ai). New accounts start with $10 of work free for 30 days, once, no card.
+1. Create a free account at [specstream.ai](https://specstream.ai). New accounts start with $10 of credit for 30 days, once, no card.
 2. In your [workspace](https://specstream.ai/workspace/agents), open **Agents & API** and select **Create API key**. Give it read results and their sources, prepare work and follow-ups, authorize paid work, and read account and balance. Set a spending limit on the key too if you like. It stacks with the plugin's own limit.
 3. In Obsidian, open **Settings → SpecStream**, choose the API key field, and add your key as a secret. Press **Check** to see which account it belongs to and what is left to spend.
 
@@ -69,7 +69,7 @@ This plugin needs the internet and a SpecStream account. Here is exactly what it
 - **Network use.** The plugin talks only to `https://api.specstream.ai`, with Obsidian's own `requestUrl`. It sends the request text you type, the row count, and your API key as an authorization header. It reads back prices, run status, rows and the names of your lists. The source links in your table are plain links. The plugin never opens them.
 - **What stays in your vault.** The plugin never reads your notes. It only writes the table at your cursor. It touches no files outside your vault.
 - **Account required.** You need a SpecStream account and an API key to use it. Creating an account is free and takes no card.
-- **Payment.** Lists cost money after the free $10 of work, priced per match as described above. You approve every price in the plugin before anything runs.
+- **Payment.** Lists cost money after the free $10 of credit, priced per match as described above. You approve every price in the plugin before anything runs.
 - **Telemetry and ads.** The plugin has no analytics, no tracking and no ads. SpecStream's server handles the requests you send it under its [privacy policy](https://specstream.ai/privacy).
 - **Open source, hosted service.** The plugin is MIT licensed and all of its source is here. The SpecStream service it calls is a hosted product and is not open source.
 

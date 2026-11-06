@@ -67,3 +67,17 @@ test("continuation quote is not execution and pages expose the real cursor", asy
   for(const bad of [0,101,true,1.5,'2']) assert.throws(()=>client.rows('fnd/a',null,bad));
   assert.equal(calls.length,2);
 });
+
+test("webSearch returns the answer's kind and sources", async () => {
+  const urls: string[] = [];
+  const page = {request_id:"call-1",kind:"fact",answer:{value:"2006",page:"https://example.org/a"},rows:[],
+    sources:[{url:"https://example.org/a",title:"A",site:"example.org",snippet:"",cited:true}]};
+  const client = new Client({apiKey:"fixture-key",fetch:async(url)=>{
+    urls.push(String(url));
+    return new Response(JSON.stringify({data:page}),{status:200});
+  }});
+  const found = await client.webSearch({q:"when was A founded"});
+  assert.ok(urls[0].endsWith("/v1/web-search?q=when+was+A+founded"));
+  assert.equal(found.kind,"fact");
+  assert.deepEqual(found.sources,page.sources);
+});

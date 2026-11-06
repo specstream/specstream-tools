@@ -9,7 +9,7 @@ Ask for any dataset in plain words, and SpecStream builds it from the entire liv
 
 ## Configuration
 
-1. Create a SpecStream account at [specstream.ai](https://specstream.ai). New accounts start with $10 of work, no card.
+1. Create a SpecStream account at [specstream.ai](https://specstream.ai). New accounts start with $10 of credit, no card.
 2. Open **Agents & API** and create an API key (it starts with `ss_live_`).
 3. Paste it into **API key** and set **Most one list may cost (USD)**. Approve and run refuses any price above it.
 

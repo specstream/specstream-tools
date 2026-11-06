@@ -6,7 +6,7 @@ Source: https://github.com/specstream/specstream-tools/tree/main/integrations/di
 
 ## Setup
 
-1. Create a SpecStream account at https://specstream.ai. New accounts get $10 of work free, no card.
+1. Create a SpecStream account at https://specstream.ai. New accounts get $10 of credit, no card.
 2. In the SpecStream workspace, open **Agents & API** and create an API key (it starts with `ss_live_`).
 3. In Dify, install the SpecStream plugin and paste the key into its authorization.
 

@@ -337,3 +337,38 @@ pack.addFormula({
     };
   },
 });
+
+pack.addFormula({
+  name: "WebSearch",
+  description:
+    "Searches the live web in seconds with the SpecStream Search API ($5 per 1,000 searches) and returns the answer or top matching row.",
+  parameters: [
+    coda.makeParameter({ type: coda.ParameterType.String, name: "question", description: "The question in everyday words (1 to 2,000 characters)." }),
+  ],
+  resultType: coda.ValueType.String,
+  execute: async function ([question], context) {
+    const q = String(question || "").trim();
+    if (!q || q.length > 2000) throw new coda.UserVisibleError("Write the question in 1 to 2,000 characters.");
+    const data = await call(context, "GET", coda.withQueryParams("/v1/web-search", { q }));
+    if (data?.answer?.value != null && data.answer.value !== "") return String(data.answer.value);
+    const rows = data?.rows || [];
+    return rows.length ? String(rows[0].name || "") : "";
+  },
+});
+
+pack.addFormula({
+  name: "ExtractPage",
+  description:
+    "Reads the main text of a web page, PDF, Word or Excel file live with the SpecStream Extract API ($0.80 per 1,000 pages, empty pages free).",
+  parameters: [
+    coda.makeParameter({ type: coda.ParameterType.String, name: "url", description: "The http or https URL to read live." }),
+  ],
+  resultType: coda.ValueType.String,
+  execute: async function ([url], context) {
+    const cleaned = String(url || "").trim();
+    if (!cleaned) throw new coda.UserVisibleError("Enter a URL to read.");
+    const data = await call(context, "POST", "/v1/extract", { urls: [cleaned], format: "markdown" });
+    const first = (data?.results || [])[0];
+    return String(first?.text || "");
+  },
+});

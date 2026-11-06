@@ -6,7 +6,7 @@ Ask for any dataset in plain words, and SpecStream builds it from the entire liv
 
 - Source URL and read time on every value.
 - You approve the price before anything runs, and you pay for each row delivered: 5¢, 15¢ or $1 a row, depending on how much it needs. A run that finds nothing costs nothing.
-- New accounts start with $10 of work, no card.
+- New accounts start with $10 of credit, no card.
 
 ## Set up
 

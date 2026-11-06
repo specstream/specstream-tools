@@ -17,7 +17,7 @@ Your request and your answers to the price go to SpecStream's API over HTTPS. Re
 
 ## Price
 
-Reading a request and getting a price are free. A list runs only after you approve its maximum price, and you pay for each row delivered, from 5 cents each. New accounts get $10 of work free. [Pricing](https://specstream.ai/pricing) · [API docs](https://specstream.ai/docs/api) · support@specstream.ai
+Reading a request and getting a price are free. A list runs only after you approve its maximum price, and you pay for each row delivered, from 5 cents each. New accounts get $10 of credit. [Pricing](https://specstream.ai/pricing) · [API docs](https://specstream.ai/docs/api) · support@specstream.ai
 
 ## License
 

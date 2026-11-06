@@ -25,7 +25,7 @@ hermes gateway restart   # only if you run the messaging gateway
 
 Once the plugin is in the Hermes plugin catalog you can use `hermes plugins install specstream` instead.
 
-On the first SpecStream tool call Hermes prints an authorization link. Open it, sign in to SpecStream, and approve access. Hermes stores the token and refreshes it. To sign in again later, run `hermes mcp login specstream`. New accounts get $10 of work free.
+On the first SpecStream tool call Hermes prints an authorization link. Open it, sign in to SpecStream, and approve access. Hermes stores the token and refreshes it. To sign in again later, run `hermes mcp login specstream`. New accounts get $10 of credit.
 
 ### Option 2: only the MCP server, in `config.yaml`
 

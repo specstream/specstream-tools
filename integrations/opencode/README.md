@@ -42,7 +42,7 @@ The server uses OAuth, so you do not paste a key. Run:
 opencode mcp auth specstream
 ```
 
-Your browser opens, you sign in to SpecStream, and OpenCode keeps the token. New accounts start with $10 of work free for 30 days, no card.
+Your browser opens, you sign in to SpecStream, and OpenCode keeps the token. New accounts start with $10 of credit for 30 days, no card.
 
 To use an API key instead, for example on a machine with no browser, create one under **Agents & API** in the [workspace](https://specstream.ai/workspace) and set it where OpenCode starts:
 

@@ -17,7 +17,7 @@
         "type": "password",
         "default": "",
         "placeholder": "ss_live_...",
-        "hint": "Create a key under Agents & API in your SpecStream workspace at specstream.ai. New accounts start with $10 of work, no card."
+        "hint": "Create a key under Agents & API in your SpecStream workspace at specstream.ai. New accounts start with $10 of credit, no card."
       },
       "value": ""
     },

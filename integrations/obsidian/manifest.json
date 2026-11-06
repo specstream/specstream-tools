@@ -1,9 +1,9 @@
 {
 	"id": "specstream",
 	"name": "SpecStream",
-	"version": "1.0.0",
+	"version": "1.0.2",
 	"minAppVersion": "1.14.4",
-	"description": "Find a list from the live web in plain words, see the price first, and insert the rows with their source pages as a Markdown table.",
+	"description": "Pull live web data into your notes as Markdown tables. Describe what you need in plain words and approve the price before it runs. Source URL and read time on every value.",
 	"author": "SpecStream",
 	"authorUrl": "https://specstream.ai",
 	"isDesktopOnly": false

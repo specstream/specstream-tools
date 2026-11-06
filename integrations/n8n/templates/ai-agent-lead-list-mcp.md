@@ -59,7 +59,7 @@ The agent never starts paid work on its own. It needs your yes in the chat, it r
 
 ## What you need
 
-- A SpecStream API key. New accounts get $10 of work free, no card: [specstream.ai](https://specstream.ai)
+- A SpecStream API key. New accounts get $10 of credit, no card: [specstream.ai](https://specstream.ai)
 - An OpenAI API key, or any chat model n8n supports
 - Google Sheets connected in n8n
 - Nothing to install: MCP Client Tool is a core node, so this runs on n8n Cloud and self-hosted n8n.

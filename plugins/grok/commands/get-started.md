@@ -8,7 +8,7 @@ Walk the user through their first request, one short step at a time. Keep every 
 
 ## Step 1: Check the connection
 
-Confirm the specstream MCP server is connected. If it is not ready, tell the user to open `/mcp`, select **specstream**, and press `i` to sign in. The sign-in opens SpecStream in the browser. New accounts get $10 of work free for 30 days.
+Confirm the specstream MCP server is connected. If it is not ready, tell the user to open `/mcp`, select **specstream**, and press `i` to sign in. The sign-in opens SpecStream in the browser. New accounts get $10 of credit for 30 days.
 
 ## Step 2: Ask what they need
 

@@ -11,7 +11,7 @@ pip install -U llama-index-tools-specstream
 export SPECSTREAM_API_KEY=ss_live_...   # Agents & API in your SpecStream workspace
 ```
 
-A free account comes with $10 of work to use within 30 days and needs no card: [specstream.ai](https://specstream.ai/signup).
+A free account comes with $10 of credit to use within 30 days and needs no card: [specstream.ai](https://specstream.ai/signup).
 
 ## An agent that can find data
 

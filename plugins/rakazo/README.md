@@ -18,7 +18,7 @@ Source URL and read time on every value.
 
 ## Sign in
 
-Press Sign in on the SpecStream connector. Your browser opens SpecStream's sign-in page, where you sign in or create an account. There is no key to paste. A new account gets $10 of work with no card, to use within 30 days.
+Press Sign in on the SpecStream connector. Your browser opens SpecStream's sign-in page, where you sign in or create an account. There is no key to paste. A new account gets $10 of credit with no card, to use within 30 days.
 
 ## Prices
 

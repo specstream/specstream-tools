@@ -124,7 +124,7 @@ class Tools:
     class Valves(BaseModel):
         api_key: str = Field(
             default="",
-            description="SpecStream API key (starts with ss_live_). Create one under Agents & API in your SpecStream workspace. New accounts start with $10 of work, no card.",
+            description="SpecStream API key (starts with ss_live_). Create one under Agents & API in your SpecStream workspace. New accounts start with $10 of credit, no card.",
             json_schema_extra={"input": {"type": "password"}},
         )
         max_price_usd: float = Field(
