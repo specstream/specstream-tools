@@ -31,7 +31,7 @@ export const webSearchAction = createAction({
       params.set('passages', 'true');
     }
     return specstreamApi.call({
-      apiKey: context.auth,
+      apiKey: context.auth.secret_text,
       method: HttpMethod.GET,
       path: `/v1/web-search?${params.toString()}`,
     });

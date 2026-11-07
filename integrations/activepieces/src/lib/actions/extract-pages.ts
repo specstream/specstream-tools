@@ -37,7 +37,7 @@ export const extractPagesAction = createAction({
     }
     const format = context.propsValue.format === 'text' ? 'text' : 'markdown';
     return specstreamApi.call({
-      apiKey: context.auth,
+      apiKey: context.auth.secret_text,
       method: HttpMethod.POST,
       path: '/v1/extract',
       body: { urls, format },

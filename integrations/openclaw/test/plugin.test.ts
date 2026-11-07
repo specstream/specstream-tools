@@ -137,7 +137,7 @@ describe("tools", () => {
       registerWebFetchProvider: (p: Record<string, unknown>) => {
         fetchProvider = p;
       },
-    } as Parameters<typeof entry.register>[0]);
+    } as unknown as Parameters<typeof entry.register>[0]);
 
     expect(searchProvider).toMatchObject({ id: "specstream", label: "SpecStream Search" });
     expect(fetchProvider).toMatchObject({ id: "specstream", label: "SpecStream Extract" });
@@ -147,5 +147,20 @@ describe("tools", () => {
       "specstream_find_list",
       "specstream_get_list_rows",
     ]);
+
+    const search = searchProvider as any;
+    const target: Record<string, unknown> = {};
+    search.setCredentialValue(target, "ss_live_new");
+    expect(search.getCredentialValue(target)).toBe("ss_live_new");
+    const config = { plugins: { entries: { specstream: { config: { apiKey: "ss_live_host" } } } } };
+    const urls: string[] = [];
+    vi.stubGlobal("fetch", async (input: unknown) => {
+      urls.push(String(input));
+      return new Response(JSON.stringify({ data: { results: [] } }), { status: 200, headers: { "content-type": "application/json" } });
+    });
+    await search.createTool({ config }).execute({ query: "who runs example.com" });
+    expect(urls.at(-1)).toContain("/v1/web-search");
+    await (fetchProvider as any).createTool({ config }).execute({ url: "https://example.com", extractMode: "text" });
+    expect(urls.at(-1)).toContain("/v1/extract");
   });
 });

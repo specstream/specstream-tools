@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import { HttpMethod, httpClient } from '@activepieces/pieces-common';
 import { specstreamApi, specstreamRows } from '../src/lib/common/client';
 import { newRowTrigger } from '../src/lib/triggers/row-triggers';
+import { webSearchAction } from '../src/lib/actions/web-search';
+import { extractPagesAction } from '../src/lib/actions/extract-pages';
 
 type Req = { method: string; url: string };
 function stub(handler: (req: Req) => unknown) {
@@ -137,4 +139,15 @@ test('enabling again deletes the stored webhook first, and a missing one is fine
   };
   await (newRowTrigger as any).onEnable(context);
   assert.equal((store.get('specstream_webhook') as { hook_id: string }).hook_id, 'hk_3');
+});
+
+test('web search and extract send the key from the connection and call the flat-price endpoints', async () => {
+  const calls = stub(() => ({ data: { ok: true } }));
+  const auth = { secret_text: 'key' };
+  await (webSearchAction as any).run({ auth, propsValue: { q: 'who runs example.com', passages: false } });
+  await (extractPagesAction as any).run({ auth, propsValue: { urls: ['https://example.com'], format: 'markdown' } });
+  assert.deepEqual(
+    calls.map((c) => `${c.method} ${c.url.replace('https://api.specstream.ai', '').split('?')[0]}`),
+    ['GET /v1/web-search', 'POST /v1/extract'],
+  );
 });

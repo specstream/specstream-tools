@@ -148,18 +148,28 @@ const entry = defineToolPlugin({
   ],
 });
 
-type ProviderContext = { pluginConfig?: PluginConfig };
-type PluginRegistrationApi = Parameters<typeof entry.register>[0] & {
-  pluginConfig?: PluginConfig;
-  registerWebSearchProvider?: (provider: Record<string, unknown>) => void;
-  registerWebFetchProvider?: (provider: Record<string, unknown>) => void;
+type RegistrationApi = Parameters<typeof entry.register>[0];
+type SearchProvider = Parameters<RegistrationApi["registerWebSearchProvider"]>[0];
+type FetchProvider = Parameters<RegistrationApi["registerWebFetchProvider"]>[0];
+
+/** The plugin config a provider sees: the host passes the whole config, and the plugin entry holds ours. */
+function providerConfig(host: unknown, fallback: unknown): PluginConfig | undefined {
+  const entries = (host as { plugins?: { entries?: Record<string, { config?: PluginConfig }> } } | undefined)?.plugins?.entries;
+  return entries?.specstream?.config ?? (fallback as PluginConfig | undefined);
+}
+
+const credentialAccess = {
+  getCredentialValue: (config?: Record<string, unknown>) => config?.apiKey,
+  setCredentialValue: (target: Record<string, unknown>, value: unknown) => {
+    target.apiKey = value;
+  },
 };
 
 const baseRegister = entry.register.bind(entry);
-entry.register = (api: PluginRegistrationApi) => {
+entry.register = (api: RegistrationApi) => {
   baseRegister(api);
   if (typeof api?.registerWebSearchProvider === "function") {
-    api.registerWebSearchProvider({
+    const search: SearchProvider = {
       id: "specstream",
       label: "SpecStream Search",
       hint: "The most accurate web search API in the world ($5 per 1,000 searches, source URL and read time on every value)",
@@ -171,7 +181,8 @@ entry.register = (api: PluginRegistrationApi) => {
       docsUrl: "https://specstream.ai/docs/api?utm_source=openclaw",
       autoDetectOrder: 55,
       credentialPath: "plugins.entries.specstream.config.apiKey",
-      createTool: (ctx?: ProviderContext) => ({
+      ...credentialAccess,
+      createTool: (ctx) => ({
         description:
           "Search the live web with the SpecStream Search API. Returns an answer with its source URL and read time, matching rows, ranked sources and optional page passages.",
         parameters: {
@@ -185,7 +196,7 @@ entry.register = (api: PluginRegistrationApi) => {
         },
         execute: async (args: Record<string, unknown>, context?: { signal?: AbortSignal }) => {
           context?.signal?.throwIfAborted();
-          const settings = resolveConfig(ctx?.pluginConfig ?? api?.pluginConfig);
+          const settings = resolveConfig(providerConfig(ctx?.config, api?.pluginConfig));
           const client = new SpecStreamClient({ apiKey: settings.apiKey });
           return client.webSearch(String(args?.query ?? ""), {
             passages: args?.passages === true,
@@ -193,10 +204,11 @@ entry.register = (api: PluginRegistrationApi) => {
           });
         },
       }),
-    });
+    };
+    api.registerWebSearchProvider(search);
   }
   if (typeof api?.registerWebFetchProvider === "function") {
-    api.registerWebFetchProvider({
+    const fetchProvider: FetchProvider = {
       id: "specstream",
       label: "SpecStream Extract",
       hint: "Read the main text of web pages, PDFs, Word and Excel files live ($0.80 per 1,000 pages, empty pages free)",
@@ -206,7 +218,8 @@ entry.register = (api: PluginRegistrationApi) => {
       signupUrl: "https://specstream.ai/extract-api?utm_source=openclaw",
       docsUrl: "https://specstream.ai/docs/api?utm_source=openclaw",
       credentialPath: "plugins.entries.specstream.config.apiKey",
-      createTool: (ctx?: ProviderContext) => ({
+      ...credentialAccess,
+      createTool: (ctx) => ({
         description: "Extract the clean main text, title and published date of a URL using the SpecStream Extract API.",
         parameters: {
           type: "object",
@@ -219,7 +232,7 @@ entry.register = (api: PluginRegistrationApi) => {
         },
         execute: async (args: Record<string, unknown>, context?: { signal?: AbortSignal }) => {
           context?.signal?.throwIfAborted();
-          const settings = resolveConfig(ctx?.pluginConfig ?? api?.pluginConfig);
+          const settings = resolveConfig(providerConfig(ctx?.config, api?.pluginConfig));
           const client = new SpecStreamClient({ apiKey: settings.apiKey });
           return client.extractPages([String(args?.url ?? "")], {
             format: args?.extractMode === "text" ? "text" : "markdown",
@@ -227,7 +240,8 @@ entry.register = (api: PluginRegistrationApi) => {
           });
         },
       }),
-    });
+    };
+    api.registerWebFetchProvider(fetchProvider);
   }
 };
 export default entry;
