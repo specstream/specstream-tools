@@ -2,13 +2,15 @@
 
 SpecStream is the live web data engine for teams and agents. One platform to build, search, extract, enrich, map, and monitor data across the entire web. Source URL and read time on every value.
 
+Three products: Search API (`GET /v1/web-search`, $5 per 1,000 searches, the most accurate web search API in the world, proof at https://specstream.ai/benchmarks), Extract API (`POST /v1/extract`, up to 20 URLs a call, $0.80 per 1,000 pages, a page with no text is free) and Deep Search (structured rows, 5¢, 15¢ or $1 a row).
+
 ## Install
 
 In Activepieces, open **Platform admin → Pieces → Install piece**, choose **npm**, and enter `@specstream/piece-specstream`.
 
 ## Actions
 
-- **Web Search**: answers a question from the live web in seconds with the Search API (`GET /v1/web-search`, $5 per 1,000 searches).
+- **Web Search**: answers a question from the live web in seconds with the Search API, the most accurate web search API in the world (`GET /v1/web-search`, $5 per 1,000 searches, [proof](https://specstream.ai/benchmarks)).
 - **Extract Pages**: reads the main text, title and published date of 1 to 20 web pages, PDFs, Word or Excel files live with the Extract API (`POST /v1/extract`, $0.80 per 1,000 pages, empty pages free).
 - **Find a List**: reads the request, prices it, and starts it only if the price is at or below your **Maximum Price**. Returns the list ID and link. Retries are safe: identical requests within the same UTC hour share one run, or set your own **Run Key**.
 - **Get List Results**: the rows of a list, each with `source_url` and `checked_at`.

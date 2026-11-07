@@ -7,6 +7,14 @@ Ask for any dataset in plain words, and SpecStream builds it from the entire liv
 - Source URL and read time on every value.
 - The user sees the price before anything runs, and pays only for rows delivered.
 
+## Three products
+
+| Product | What it does | Price |
+| --- | --- | --- |
+| Search API | `GET /v1/web-search`. The most accurate web search API in the world ([scores and method](https://specstream.ai/benchmarks)). | $5 per 1,000 searches |
+| Extract API | `POST /v1/extract`. The main text of up to 20 web pages, PDF, Word or Excel files a call. | $0.80 per 1,000 pages. A page with no text is not charged. |
+| Deep Search | Ask in plain words. Get every match on the live web, in structured rows. This integration runs Deep Search. | 5¢, 15¢ or $1 a row |
+
 ## Configuration
 
 1. Create a SpecStream account at [specstream.ai](https://specstream.ai). New accounts start with $10 of credit, no card.

@@ -1,7 +1,7 @@
 {
   "name": "@specstream/piece-specstream",
-  "version": "0.2.0",
-  "description": "SpecStream is the live web data engine for teams and agents. One platform to build, search, extract, enrich, map, and monitor data across the entire web.",
+  "version": "0.2.1",
+  "description": "The live web data engine. Search API: the most accurate web search API in the world, $5 per 1,000 searches (specstream.ai/benchmarks). Extract API: $0.80 per 1,000 pages. Deep Search: structured rows.",
   "license": "MIT",
   "homepage": "https://specstream.ai/docs/integrations",
   "repository": {

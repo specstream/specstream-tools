@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "tap-specstream"
-version = "0.1.0"
-description = "Singer tap for SpecStream: your live web data lists and records, each value with the page it was read from."
+version = "0.1.1"
+description = "The live web data engine. Search API: the most accurate web search API in the world, $5 per 1,000 searches (specstream.ai/benchmarks). Extract API: $0.80 per 1,000 pages. Deep Search: structured rows."
 readme = "README.md"
 license = "MIT"
 authors = [{ name = "SpecStream", email = "support@specstream.ai" }]
