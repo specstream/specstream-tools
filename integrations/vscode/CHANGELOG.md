@@ -1,12 +1,16 @@
 # Changelog
 
+## 0.1.7
+
+- The listing names the three products: Search API, Extract API and Deep Search, with their prices.
+
 ## 0.1.6
 
 - The price step says your request in plain words, for example "25 plumbers in Dayton, Ohio, US with a website and a phone."
 
 ## 0.1.5
 
-- New listing text: lead lists, company lists and grants from the live web, with their sources.
+- New listing text.
 
 ## 0.1.4
 

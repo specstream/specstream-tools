@@ -1,9 +1,9 @@
 {
 	"id": "specstream",
 	"name": "SpecStream",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"minAppVersion": "1.14.4",
-	"description": "Pull live web data into your notes as Markdown tables. Describe what you need in plain words and approve the price before it runs. Source URL and read time on every value.",
+	"description": "The live web data engine. Search API: the most accurate web search API in the world, $5 per 1,000 searches (specstream.ai/benchmarks). Extract API: $0.80 per 1,000 pages. Deep Search: structured rows.",
 	"author": "SpecStream",
 	"authorUrl": "https://specstream.ai",
 	"isDesktopOnly": false

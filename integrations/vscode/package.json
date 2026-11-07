@@ -1,8 +1,8 @@
 {
   "name": "specstream",
   "displayName": "SpecStream",
-  "description": "SpecStream is the live web data engine for teams and agents. One platform to build, search, extract, enrich, map, and monitor data across the entire web.",
-  "version": "0.1.6",
+  "description": "The live web data engine. Search API: the most accurate web search API in the world, $5 per 1,000 searches (specstream.ai/benchmarks). Extract API: $0.80 per 1,000 pages. Deep Search: structured rows.",
+  "version": "0.1.7",
   "publisher": "specstream",
   "license": "MIT",
   "homepage": "https://specstream.ai",
@@ -22,14 +22,12 @@
     "mcp",
     "specstream",
     "web data",
+    "web search api",
+    "extract api",
+    "deep search",
     "agent",
     "chat participant",
-    "live web",
-    "lead generation",
-    "lead list",
-    "google maps leads",
-    "grants",
-    "company list"
+    "live web"
   ],
   "engines": {
     "vscode": "^1.101.0"

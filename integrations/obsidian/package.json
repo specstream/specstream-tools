@@ -1,6 +1,6 @@
 {
 	"name": "specstream-obsidian",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"description": "SpecStream for Obsidian: pull live web data into your notes, see the price first, and insert each record with the page it came from.",
 	"main": "main.js",
 	"type": "module",
