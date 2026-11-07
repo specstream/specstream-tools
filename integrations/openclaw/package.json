@@ -1,6 +1,6 @@
 {
   "name": "@specstream/openclaw-plugin",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "The live web data engine. One platform to build, search, extract, enrich, map, and monitor data across the entire web.",
   "type": "module",
   "files": [

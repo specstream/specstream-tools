@@ -1,7 +1,7 @@
 /** The SpecStream REST calls the tools share: read a request, price it, start it within a maximum, read its rows. */
 
 export const DEFAULT_BASE_URL = "https://api.specstream.ai";
-export const USER_AGENT = "@specstream/ai-sdk/0.2.0";
+export const USER_AGENT = "@specstream/ai-sdk/0.2.1";
 /** A list runs for up to about five minutes, so the tools wait a little longer than that by default. */
 export const DEFAULT_WAIT_SECONDS = 420;
 export const DEFAULT_POLL_INTERVAL_SECONDS = 3;

@@ -59,7 +59,7 @@ The tool's result wraps the rows with `status`, `list_id`, `list_link`, `row_cou
 | `specstream_find_list` | `request`, `maxResults` (1 to 1000, default 25) | Reads the request, prices it, starts it only within `maxPriceUsd`, waits up to `waitSeconds` (7 minutes by default) and returns every row | Only delivered rows |
 | `specstream_get_list_results` | `listId` | Every row found so far, for a list that was still running | Free |
 
-When the price is above your maximum, nothing runs: the tool returns `status: "over_maximum"` and the price, so the agent can ask for fewer rows or tell the user. When a request is too vague to price ("clinics"), it returns `status: "needs_edit"` and how SpecStream read it, so the agent can add the place or the conditions.
+When the price is above your maximum, nothing runs: the tool returns `status: "over_maximum"` and the price, so the agent can ask for fewer rows or tell the user. When a request is too vague to price, it returns `status: "needs_edit"` and how SpecStream read it, so the agent can add the place or the conditions.
 
 Settings, all optional except the price:
 
@@ -102,7 +102,7 @@ else console.log(list.message); // "over_maximum" or "needs_edit": nothing ran
 
 ## When to reach for it
 
-When the answer is many things that meet conditions: companies in a city, clinics with a service, funding filings, open grants, tenders, repositories, people in a role. For a single fact or a summary of one page, a search tool fits better.
+When the answer is many things that meet conditions. For a single fact or a summary of one page, a search tool fits better.
 
 ## Versions
 

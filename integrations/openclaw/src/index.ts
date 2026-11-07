@@ -87,7 +87,7 @@ const entry = defineToolPlugin({
       label: "Find a list",
       description: [
         "Find a list of real things on the live web and return every matching row, each with the page it was read from.",
-        "Use it when the answer is many things that meet conditions: companies in a city, local businesses with a service, funding filings, open grants, tenders, clinical trials, repositories, people in a role.",
+        "Use it when the answer is many things that meet conditions.",
         "For one fact or a summary of one page, use a search tool instead.",
         "It is priced per match. Rows that could not be confirmed are left out and not charged. The run starts only if the quoted maximum is within the user's price ceiling.",
         "Returns JSON with state, list_id, list_link and rows (one object per match: its columns, source_url and checked_at).",
@@ -99,8 +99,7 @@ const entry = defineToolPlugin({
         request: Type.String({
           minLength: 1,
           description:
-            "The list in plain words: what to find, where, what every row must meet, and the facts to bring back. " +
-            'Example: "Dental clinics in Lisbon with online booking, with their website and phone".',
+            "The list in plain words: what to find, where, what every row must meet, and the facts to bring back.",
         }),
         max_results: Type.Optional(
           Type.Integer({

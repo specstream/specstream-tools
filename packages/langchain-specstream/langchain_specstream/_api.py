@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from typing import Any, Callable
 
 DEFAULT_BASE_URL = "https://api.specstream.ai"
-USER_AGENT = "langchain-specstream/0.2.0"
+USER_AGENT = "langchain-specstream/0.2.1"
 # A list runs for up to about five minutes, so the tools wait a little longer than that by default.
 DEFAULT_WAIT_SECONDS = 420.0
 FINISHED = {"completed", "partial"}

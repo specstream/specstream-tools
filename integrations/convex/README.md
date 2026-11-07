@@ -332,7 +332,7 @@ To use the real service, remove `SPECSTREAM_API_URL` and set a real key. See the
 
 **Where do I see the list outside Convex?** Every list has a `link` that opens it in your SpecStream workspace, where it can be sent to Sheets or a CRM.
 
-**Which requests work?** Anything you can say in a sentence that has a place or a condition every row must meet: "dentists in Lisbon that take new patients". A request that is too loose comes back as `needs_edit` with what SpecStream read.
+**Which requests work?** Anything you can say in a sentence that has a place or a condition every row must meet. A request that is too loose comes back as `needs_edit` with what SpecStream read.
 
 ## Development
 

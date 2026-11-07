@@ -1,6 +1,6 @@
 [project]
 name = "crewai-specstream"
-version = "0.2.0"
+version = "0.2.1"
 description = "The live web data engine for CrewAI: Search API ($5 per 1,000 searches), Extract API ($0.80 per 1,000 pages) and Deep Search."
 readme = "README.md"
 requires-python = ">=3.10,<3.14"

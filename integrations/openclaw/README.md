@@ -101,12 +101,6 @@ openclaw mcp login specstream
 
 The tools above work without it.
 
-## Example
-
-> Find open tenders on SAM.gov for translation services, with the buyer and the deadline. Keep it under $3.
-
-The agent calls `specstream_find_list` with `max_price_usd: 3`, and you get a table of tenders, each row with its source URL and read time, plus a link to open the list in your workspace.
-
 ## Develop
 
 ```sh

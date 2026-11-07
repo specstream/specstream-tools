@@ -65,7 +65,7 @@ Columns follow the request. Ask for "breweries in Portland, Oregon that host eve
 | `specstream_find_list` | `request`, `max_results` (1 to 1000, default 25) | Reads the request, prices it, starts it only within `max_price_usd`, waits up to `wait_seconds` (7 minutes by default) and returns every row | Only delivered rows |
 | `specstream_get_list_results` | `list_id` | Every row found so far, for a list that was still running | Free |
 
-When the price is above your maximum, nothing runs: the tool returns the price, so the agent can ask for fewer rows or tell the user. When a request is too vague to price ("clinics"), it returns how SpecStream read it, so the agent can add the place or the conditions.
+When the price is above your maximum, nothing runs: the tool returns the price, so the agent can ask for fewer rows or tell the user. When a request is too vague to price, it returns how SpecStream read it, so the agent can add the place or the conditions.
 
 Use the classes directly when you want different settings per tool:
 
@@ -106,7 +106,7 @@ The tools also implement CrewAI's async hook (`_arun`) and run their requests in
 
 ## When to reach for it
 
-When the answer is many things that meet conditions: companies in a city, clinics with a service, funding filings, open grants, tenders, repositories, people in a role. For a single fact or a summary of one page, a search tool fits better.
+When the answer is many things that meet conditions. For a single fact or a summary of one page, a search tool fits better.
 
 ## More
 
