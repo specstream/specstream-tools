@@ -1,0 +1,77 @@
+{
+  "name": "@specstream/langchain",
+  "version": "0.1.0",
+  "description": "The live web data engine for LangChain.js: Search API ($5 per 1,000 searches), Extract API ($0.80 per 1,000 pages) and Deep Search.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "main": "./dist/cjs/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.json && tsc -p tsconfig.cjs.json && node -e \"require('fs').writeFileSync('dist/cjs/package.json','{\\\"type\\\":\\\"commonjs\\\"}\\n')\"",
+    "typecheck": "tsc -p tsconfig.test.json",
+    "test": "vitest run",
+    "prepack": "npm run build"
+  },
+  "dependencies": {
+    "zod": "^3.25.76 || ^4"
+  },
+  "peerDependencies": {
+    "@langchain/core": "^1.0.0"
+  },
+  "devDependencies": {
+    "@langchain/core": "^1.0.0",
+    "@types/node": "^22.0.0",
+    "typescript": "5.9.3",
+    "vitest": "^3.2.4"
+  },
+  "keywords": [
+    "langchain",
+    "langchainjs",
+    "specstream",
+    "search-api",
+    "extract-api",
+    "web-search",
+    "web-data",
+    "live-web",
+    "agents"
+  ],
+  "author": {
+    "name": "SpecStream",
+    "email": "support@specstream.ai",
+    "url": "https://specstream.ai"
+  },
+  "license": "MIT",
+  "homepage": "https://specstream.ai/docs/langchain",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/specstream/specstream-tools.git",
+    "directory": "packages/langchain-js"
+  },
+  "bugs": {
+    "url": "https://github.com/specstream/specstream-tools/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

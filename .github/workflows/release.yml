@@ -23,17 +23,20 @@ on:
           - crewai
           - haystack
           - ai-sdk
+          - langchain-js
+          - gpt-researcher
+          - pydantic-ai
 
 jobs:
   npm:
-    if: ${{ contains(fromJSON('["sdk-ts","ai-sdk"]'), inputs.package) }}
+    if: ${{ contains(fromJSON('["sdk-ts","ai-sdk","langchain-js"]'), inputs.package) }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
       id-token: write
     defaults:
       run:
-        working-directory: ${{ fromJSON('{"sdk-ts":"packages/sdk-ts","ai-sdk":"packages/ai-sdk"}')[inputs.package] }}
+        working-directory: ${{ fromJSON('{"sdk-ts":"packages/sdk-ts","ai-sdk":"packages/ai-sdk","langchain-js":"packages/langchain-js"}')[inputs.package] }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -49,14 +52,14 @@ jobs:
         run: npm publish --access public --provenance
 
   pypi:
-    if: ${{ contains(fromJSON('["sdk-py","mcp-stdio","langchain","llamaindex","crewai","haystack"]'), inputs.package) }}
+    if: ${{ contains(fromJSON('["sdk-py","mcp-stdio","langchain","llamaindex","crewai","haystack","gpt-researcher","pydantic-ai"]'), inputs.package) }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
       id-token: write
     defaults:
       run:
-        working-directory: ${{ fromJSON('{"sdk-py":"packages/sdk-py","mcp-stdio":"packages/mcp-stdio","langchain":"packages/langchain-specstream","llamaindex":"packages/llama-index-tools-specstream","crewai":"packages/crewai-specstream","haystack":"packages/specstream-haystack"}')[inputs.package] }}
+        working-directory: ${{ fromJSON('{"sdk-py":"packages/sdk-py","mcp-stdio":"packages/mcp-stdio","langchain":"packages/langchain-specstream","llamaindex":"packages/llama-index-tools-specstream","crewai":"packages/crewai-specstream","haystack":"packages/specstream-haystack","gpt-researcher":"packages/gpt-researcher-specstream","pydantic-ai":"packages/pydantic-ai-specstream"}')[inputs.package] }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
