@@ -284,6 +284,36 @@ export class SpecStreamClient {
     });
   }
 
+  /**
+   * Search the live web with the Search API (`GET /v1/web-search`, $5 per 1,000
+   * searches). No quote is needed.
+   */
+  async webSearch(
+    ctx: ActionCtx,
+    q: string,
+    options: { passages?: boolean } = {},
+  ): Promise<any> {
+    return await ctx.runAction(this.component.lib.webSearch, {
+      q,
+      passages: options.passages,
+    });
+  }
+
+  /**
+   * Read 1 to 20 web pages, PDFs, Word or Excel files with the Extract API
+   * (`POST /v1/extract`, $0.80 per 1,000 pages; a page with no text is free).
+   */
+  async extractPages(
+    ctx: ActionCtx,
+    urls: string[],
+    options: { format?: "markdown" | "text" } = {},
+  ): Promise<any> {
+    return await ctx.runAction(this.component.lib.extractPages, {
+      urls,
+      format: options.format,
+    });
+  }
+
   /** Who the API key belongs to and what is left to spend. */
   async account(
     ctx: ActionCtx,

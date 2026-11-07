@@ -8,7 +8,7 @@ const DESCRIPTION =
 
 // The flow that every list goes through stays visible to the model. The rest of the
 // server's tools load on demand through tool_search.
-const DIRECT_TOOLS = ["compile", "quote_capacity_work", "authorize_capacity_work", "get_find", "list_find_rows"];
+const DIRECT_TOOLS = ["search_web", "read_pages", "compile", "quote_capacity_work", "authorize_capacity_work", "get_find", "list_find_rows"];
 
 /**
  * The server entry registered with Pi. Without a key Pi signs in with OAuth (`/mcp login specstream`).

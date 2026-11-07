@@ -7,7 +7,7 @@ Ask for any dataset in plain words, and SpecStream builds it from the entire liv
 - Source URL and read time on every value.
 - You see the price before anything runs and pay for each row delivered, from 5 cents each.
 
-This is a [Pi package](https://pi.dev/packages). It adds the hosted [SpecStream](https://specstream.ai) MCP server and four skills, so Pi shows how SpecStream read your request, gets the price, asks you to approve it, and returns the rows.
+This is a [Pi package](https://pi.dev/packages). It adds the hosted [SpecStream](https://specstream.ai) MCP server and six skills. Search the web and read pages work with no quote. For lists, Pi shows how SpecStream read your request, gets the price, asks you to approve it, and returns the rows.
 
 ## Install
 
@@ -22,11 +22,13 @@ Try it for one run without installing: `pi -e npm:@specstream/pi-package`.
 
 ## What you get
 
-- **The SpecStream MCP server** at `https://api.specstream.ai/mcp`, registered by a small extension (`extensions/specstream.ts`). It uses Pi's built-in MCP support, OAuth 2.1 with dynamic client registration, and no stored credentials. Five tools stay in view (`compile`, `quote_capacity_work`, `authorize_capacity_work`, `get_find`, `list_find_rows`); the rest load on demand through `tool_search`. In Pi they are named `mcp__specstream__<tool>`.
-- **Four skills**, loaded when the task calls for them or by name:
+- **The SpecStream MCP server** at `https://api.specstream.ai/mcp`, registered by a small extension (`extensions/specstream.ts`). It uses Pi's built-in MCP support, OAuth 2.1 with dynamic client registration, and no stored credentials. Seven tools stay in view (`search_web`, `read_pages`, `compile`, `quote_capacity_work`, `authorize_capacity_work`, `get_find`, `list_find_rows`); the rest load on demand through `tool_search`. In Pi they are named `mcp__specstream__<tool>`.
+- **Six skills**, loaded when the task calls for them or by name:
 
 | Skill | What it does |
 |---|---|
+| `/skill:specstream-search-web` | Answers a question from the live web with sources ($5 per 1,000 searches) |
+| `/skill:specstream-extract-pages` | Reads up to 20 web pages, PDFs, Word or Excel files ($0.80 per 1,000 pages) |
 | `/skill:specstream-compile` | Shows how SpecStream read your request before anything runs |
 | `/skill:specstream-review-work` | Gets the exact price and its expiry |
 | `/skill:specstream-approve-work` | Starts the list after you approve that price |

@@ -7,7 +7,8 @@ import specstream, { MCP_URL, SERVER_NAME, serverConfig } from "../extensions/sp
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const pkg = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
-const NAMES = ["compile", "review-work", "approve-work", "continue-work"].map((n) => `specstream-${n}`);
+const WORK = ["compile", "review-work", "approve-work", "continue-work"].map((n) => `specstream-${n}`);
+const NAMES = [...WORK, "specstream-search-web", "specstream-extract-pages"];
 
 const body = (text: string) => text.replace(/^---\n[\s\S]*?\n---\n/, "");
 
@@ -46,7 +47,7 @@ describe("@specstream/pi-package", () => {
     }
   });
 
-  it("ships the four skills, named after their folders", () => {
+  it("ships the six skills, named after their folders", () => {
     const dirs = readdirSync(join(root, "skills")).sort();
     assert.deepEqual(dirs, [...NAMES].sort());
     for (const name of NAMES) {
@@ -60,7 +61,7 @@ describe("@specstream/pi-package", () => {
   it("matches the Kilo skills it is copied from", () => {
     const kilo = join(root, "..", "kilo", "skills");
     if (!existsSync(kilo)) return;
-    for (const name of NAMES) {
+    for (const name of WORK) {
       const ours = readFileSync(join(root, "skills", name, "SKILL.md"), "utf8");
       const theirs = readFileSync(join(kilo, name, "SKILL.md"), "utf8");
       assert.equal(body(ours), body(theirs), `${name} drifted from integrations/kilo`);

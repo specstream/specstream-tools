@@ -84,6 +84,32 @@ npx convex dev
 
 Give the key a spending limit in the workspace too. It stacks with the cap in your code.
 
+## Search the web and read pages
+
+Two calls need no quote and no list. Both are charged to your API key when they run, so keep them behind your own sign-in check like any spending action.
+
+```ts
+// convex/web.ts
+import { v } from "convex/values";
+import { SpecStreamClient } from "@specstream/convex";
+import { action } from "./_generated/server";
+import { components } from "./_generated/api";
+
+const specstream = new SpecStreamClient(components.specstream);
+
+export const search = action({
+  args: { q: v.string() },
+  handler: async (ctx, args) => await specstream.webSearch(ctx, args.q, { passages: true }),
+});
+
+export const readPages = action({
+  args: { urls: v.array(v.string()) },
+  handler: async (ctx, args) => await specstream.extractPages(ctx, args.urls),
+});
+```
+
+`webSearch` calls the Search API (`GET /v1/web-search`, $5 per 1,000 searches). `extractPages` calls the Extract API (`POST /v1/extract`, up to 20 URLs a call, web pages, PDF, Word and Excel, $0.80 per 1,000 pages, a page with no text is free). Pass `{ format: "text" }` for plain text instead of markdown.
+
 ## Find a list
 
 Call the component from your own actions. Authentication, authorization and rate limiting belong in your app: components can't see `ctx.auth`. The [example app](example/convex/example.ts) shows the full pattern, with a `requireUser` gate on every spending endpoint and an app-owned list to user table checked before any list can be read, canceled or deleted.

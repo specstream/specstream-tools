@@ -104,6 +104,36 @@ describe("read", () => {
   });
 });
 
+describe("webSearch and extractPages", () => {
+  test("search sends the question and passes the data through", async () => {
+    const t = initConvexTest();
+    const { calls } = fakeSpecStream({
+      "GET /v1/web-search": { body: { data: { answer: "42", sources: [] } } },
+    });
+    const out = await t.action(api.lib.webSearch, { q: " height of K2 ", passages: true });
+    expect(out.answer).toBe("42");
+    expect(calls[0].url).toContain("q=height+of+K2");
+    expect(calls[0].url).toContain("passages=true");
+    await expect(t.action(api.lib.webSearch, { q: "  " })).rejects.toThrow(/between 1 and 2,000/);
+  });
+
+  test("extract posts 1 to 20 trimmed URLs", async () => {
+    const t = initConvexTest();
+    const { calls } = fakeSpecStream({
+      "POST /v1/extract": { body: { data: { pages: [{ url: "https://a.test" }] } } },
+    });
+    const out = await t.action(api.lib.extractPages, {
+      urls: [" https://a.test ", ""],
+      format: "text",
+    });
+    expect(out.pages).toHaveLength(1);
+    expect(calls[0].body).toEqual({ urls: ["https://a.test"], format: "text" });
+    await expect(t.action(api.lib.extractPages, { urls: [] })).rejects.toThrow(/1 to 20/);
+    const many = Array.from({ length: 21 }, (_, i) => `https://x${i}.test`);
+    await expect(t.action(api.lib.extractPages, { urls: many })).rejects.toThrow(/1 to 20/);
+  });
+});
+
 describe("account", () => {
   test("returns the email and the balance", async () => {
     const t = initConvexTest();

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.0
+
+- Search the web and read pages: `webSearch` (Search API) and `extractPages` (Extract API) on the component and on `SpecStreamClient`. No quote is needed.
+
 ## 0.1.1
 
 - Published from GitHub Actions with a provenance statement. No code changes.

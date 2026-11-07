@@ -1,7 +1,7 @@
 {
   "name": "@specstream/pi-package",
-  "version": "0.1.2",
-  "description": "SpecStream for Pi. The live web data engine. One platform to build, search, extract, enrich, map, and monitor data across the entire web. Adds the SpecStream MCP server and four agent skills.",
+  "version": "0.2.0",
+  "description": "SpecStream for Pi. The live web data engine. One platform to build, search, extract, enrich, map, and monitor data across the entire web. Adds the SpecStream MCP server and six agent skills.",
   "type": "module",
   "keywords": [
     "pi-package",

@@ -31,6 +31,13 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
         { availableCents: number | null; email?: string },
         Name
       >;
+      extractPages: FunctionReference<
+        "action",
+        "internal",
+        { format?: "markdown" | "text"; urls: Array<string> },
+        any,
+        Name
+      >;
       read: FunctionReference<
         "action",
         "internal",
@@ -50,6 +57,13 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
         "internal",
         { url: string },
         { hookId: string; secret: string },
+        Name
+      >;
+      webSearch: FunctionReference<
+        "action",
+        "internal",
+        { passages?: boolean; q: string },
+        any,
         Name
       >;
     };

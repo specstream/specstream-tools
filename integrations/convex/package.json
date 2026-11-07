@@ -1,7 +1,7 @@
 {
   "name": "@specstream/convex",
-  "version": "0.1.1",
-  "description": "SpecStream component for Convex: ask for a list in plain words, approve the price in your code, and get every row with the page behind it, kept in your database.",
+  "version": "0.2.0",
+  "description": "The live web data engine for Convex: Search API ($5 per 1,000 searches), Extract API ($0.80 per 1,000 pages) and Deep Search.",
   "keywords": [
     "convex",
     "component",
