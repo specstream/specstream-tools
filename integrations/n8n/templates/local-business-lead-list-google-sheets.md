@@ -85,7 +85,7 @@ Every row in the sheet also has **Source** (the source URL), **Read at** (when) 
 
 ## What it costs
 
-5¢ a business for a plain list with phone and website, 15¢ when every business has to meet a condition such as a rating. The quote shows the exact maximum before anything runs: $2.50 for the 25 HVAC companies above. You pay only for the matches, and a run that finds nothing is free.
+5¢ a business for a plain list with phone and website, 15¢ when every business has to meet a condition such as a rating. The quote shows the exact maximum before anything runs: $2.50 for the 25 HVAC companies above. You pay for the rows delivered, and a run that finds nothing is free.
 
 ## Screenshots (if the Creator Portal asks)
 

@@ -24,8 +24,13 @@ afterEach(() => {
 });
 
 describe("manifest metadata", () => {
-  it("declares the two tools", () => {
-    expect(getToolPluginMetadata(entry)?.tools.map((tool) => tool.name)).toEqual(["specstream_find_list", "specstream_get_list_rows"]);
+  it("declares the four tools", () => {
+    expect(getToolPluginMetadata(entry)?.tools.map((tool) => tool.name)).toEqual([
+      "specstream_web_search",
+      "specstream_extract_pages",
+      "specstream_find_list",
+      "specstream_get_list_rows",
+    ]);
   });
 });
 
@@ -113,5 +118,34 @@ describe("tools", () => {
     expect(result.details).toMatchObject({ list_id: "fnd_new", row_count: 1, state: "completed" });
     expect(server.calls.map((call) => call.method)).toEqual(["GET"]);
     expect(server.calls[0].path).toContain("/v1/finds/fnd_new/rows");
+  });
+
+  it("runs web_search and extract_pages tools and registers web search and fetch providers", async () => {
+    const server = listServer();
+    vi.stubGlobal("fetch", server.fetch);
+    let searchProvider: Record<string, unknown> | undefined;
+    let fetchProvider: Record<string, unknown> | undefined;
+    const tools: Record<string, Tool> = {};
+    entry.register({
+      pluginConfig: { apiKey: "ss_live_cfg" },
+      registerTool: (tool: Tool) => {
+        tools[tool.name] = tool;
+      },
+      registerWebSearchProvider: (p: Record<string, unknown>) => {
+        searchProvider = p;
+      },
+      registerWebFetchProvider: (p: Record<string, unknown>) => {
+        fetchProvider = p;
+      },
+    } as Parameters<typeof entry.register>[0]);
+
+    expect(searchProvider).toMatchObject({ id: "specstream", label: "SpecStream Search" });
+    expect(fetchProvider).toMatchObject({ id: "specstream", label: "SpecStream Extract" });
+    expect(Object.keys(tools)).toEqual([
+      "specstream_web_search",
+      "specstream_extract_pages",
+      "specstream_find_list",
+      "specstream_get_list_rows",
+    ]);
   });
 });

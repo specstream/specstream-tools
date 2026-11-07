@@ -1,7 +1,7 @@
 /** The SpecStream REST calls the tools share: read a request, price it, start it within a maximum, read its rows. */
 
 export const BASE_URL = "https://api.specstream.ai";
-export const USER_AGENT = "@specstream/openclaw-plugin/0.1.1";
+export const USER_AGENT = "@specstream/openclaw-plugin/0.2.0";
 /** A list runs for up to about five minutes, so the default wait is just under that. */
 export const DEFAULT_WAIT_SECONDS = 300;
 export const DEFAULT_POLL_INTERVAL_SECONDS = 3;
@@ -71,6 +71,16 @@ export type FindListOptions = {
   pollIntervalSeconds?: number;
   locale?: string;
   /** Stops waiting for the list. The list keeps running and can be read later. */
+  abortSignal?: AbortSignal;
+};
+
+export type WebSearchOptions = {
+  passages?: boolean;
+  abortSignal?: AbortSignal;
+};
+
+export type ExtractPagesOptions = {
+  format?: "markdown" | "text";
   abortSignal?: AbortSignal;
 };
 
@@ -225,6 +235,28 @@ export class SpecStreamClient {
     const data = isObject(payload) ? payload.data : undefined;
     if (!isObject(data)) throw new SpecStreamError("SpecStream returned a response this plugin could not read.");
     return data;
+  }
+
+  /** Search the live web with GET /v1/web-search ($5 per 1,000 searches, no quote needed). */
+  async webSearch(query: string, options: WebSearchOptions = {}): Promise<Record<string, unknown>> {
+    const q = (query ?? "").trim();
+    if (!q) throw new Error("Provide a search query in q.");
+    if (q.length > 2000) throw new Error("q must be at most 2,000 characters.");
+    const params = new URLSearchParams({ q });
+    if (options.passages) params.set("passages", "true");
+    return (await this.request("GET", `/v1/web-search?${params}`, undefined, { abortSignal: options.abortSignal })) ?? {};
+  }
+
+  /** Extract the main text of up to 20 URLs live with POST /v1/extract ($0.80 per 1,000 pages, empty pages free). */
+  async extractPages(urls: string[], options: ExtractPagesOptions = {}): Promise<Record<string, unknown>> {
+    const cleaned = (Array.isArray(urls) ? urls : []).map((u) => String(u ?? "").trim()).filter(Boolean);
+    if (cleaned.length < 1 || cleaned.length > 20) {
+      throw new Error("Provide 1 to 20 http or https URLs in urls.");
+    }
+    const format = options.format === "text" ? "text" : "markdown";
+    return (
+      (await this.request("POST", "/v1/extract", { urls: cleaned, format }, { abortSignal: options.abortSignal })) ?? {}
+    );
   }
 
   /** Every row found so far for a list, following the pages. Reading is free. */

@@ -2,11 +2,17 @@
 
 [SpecStream](https://specstream.ai) is the live web data engine. One platform to build, search, extract, enrich, map, and monitor data across the entire web.
 
-Ask for any dataset in plain words, and SpecStream builds it from the entire live web: every match found, extracted and enriched into structured records, then monitored for change. This plugin gives OpenClaw two tools for it and, if you want the full conversation with SpecStream, four skills.
+Ask for any dataset in plain words, and SpecStream builds it from the entire live web: every match found, extracted and enriched into structured records, then monitored for change. It runs through the API and MCP, and inside Sheets, CRMs, Slack, n8n, Zapier and the other tools teams already use.
 
-- Source URL and read time on every value.
-- You pay for each row delivered, and a run that finds nothing costs nothing.
+Source URL and read time on every value.
 
+Three products:
+
+1. Search API: `GET /v1/web-search`, $5 per 1,000 searches. The most accurate web search API in the world (scores and method: https://specstream.ai/benchmarks).
+2. Extract API: `POST /v1/extract`, up to 20 URLs a call (web pages, PDF, Word, Excel), $0.80 per 1,000 pages. A page with no text is not charged.
+3. Deep Search: ask in plain words and get every match on the live web, in structured rows, priced per row (5 cents, 15 cents or $1 a row, plus 5 cents for a person's email and 15 cents for a phone). A run that finds nothing costs nothing.
+
+This plugin gives OpenClaw four tools (`specstream_web_search`, `specstream_extract_pages`, `specstream_find_list`, `specstream_get_list_rows`), registers SpecStream as an OpenClaw web search and web fetch provider, and ships six skills for the hosted MCP server.
 ## Install
 
 From ClawHub:
@@ -50,6 +56,24 @@ Give the key only what the task needs: its scope, projects, an expiry and a spen
 
 ## The tools
 
+### `specstream_web_search`
+
+| Input | |
+| --- | --- |
+| `q` | The search question or request in everyday words (1 to 2,000 characters). Quoted phrases are searched as phrases |
+| `passages` | Optional. Set `true` to include the main text passages of the top matching pages |
+
+Calls `GET /v1/web-search` ($5 per 1,000 searches, no quote needed). Returns `kind` (`fact` or `list`), `answer` (with `value`, `page` and `seen_at`), `rows`, ranked `sources` and optional `passages`.
+
+### `specstream_extract_pages`
+
+| Input | |
+| --- | --- |
+| `urls` | 1 to 20 `http` or `https` URLs (web pages, PDF, Word, Excel) |
+| `format` | Optional. `"markdown"` (default) or `"text"` |
+
+Calls `POST /v1/extract` ($0.80 per 1,000 pages, a page with no text is free, no quote needed). Returns `results` with `url`, `status`, `title`, `published`, `read_from` and `text` for each URL.
+
 ### `specstream_find_list`
 
 | Input | |
@@ -68,7 +92,7 @@ Reads every row of a list you already own, by `list_id`. Free. Use it when a big
 
 ## Skills and the SpecStream server (optional)
 
-The plugin ships four skills: `specstream-compile` (show how SpecStream read the request), `specstream-review-work` (get the price), `specstream-approve-work` (approve it) and `specstream-continue-work` (read the rows, send them to Sheets, Notion, HubSpot and more, keep them up to date). They use the hosted SpecStream server and stay hidden until you add it:
+The plugin ships six skills: `specstream-web-search` (Search API), `specstream-extract-pages` (Extract API), `specstream-compile` (show how SpecStream read a dataset request), `specstream-review-work` (get the price), `specstream-approve-work` (approve it) and `specstream-continue-work` (read the rows, send them to Sheets, Notion, HubSpot and more, keep them up to date). They use the hosted SpecStream server and stay hidden until you add it:
 
 ```sh
 openclaw mcp set specstream '{"url":"https://api.specstream.ai/mcp","transport":"streamable-http","auth":"oauth"}'

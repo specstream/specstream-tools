@@ -162,3 +162,27 @@ describe("results", () => {
     expect(server.calls.every((call) => call.method === "GET")).toBe(true);
   });
 });
+
+describe("webSearch and extractPages", () => {
+  it("calls GET /v1/web-search with q and optional passages", async () => {
+    const server = mockFetch((call) =>
+      call.path.startsWith("/v1/web-search?")
+        ? { data: { kind: "fact", answer: { value: "Paris", page: "https://example.org", seen_at: "2026-11-05T12:00:00Z" }, rows: [], sources: [] } }
+        : undefined,
+    );
+    const res = await client(server.fetch).webSearch("capital of France", { passages: true });
+    expect(res).toMatchObject({ kind: "fact", answer: { value: "Paris" } });
+    expect(server.calls[0]).toMatchObject({ method: "GET", path: "/v1/web-search?q=capital+of+France&passages=true" });
+  });
+
+  it("calls POST /v1/extract with urls and format", async () => {
+    const server = mockFetch((call) =>
+      call.path === "/v1/extract"
+        ? { data: { request_id: "r1", results: [{ url: "https://example.org", status: "ok", text: "Hello", title: "Example" }], price_usd: 0.0008 } }
+        : undefined,
+    );
+    const res = await client(server.fetch).extractPages([" https://example.org "], { format: "markdown" });
+    expect(res).toMatchObject({ request_id: "r1", price_usd: 0.0008 });
+    expect(server.calls[0]).toMatchObject({ method: "POST", path: "/v1/extract", body: { urls: ["https://example.org"], format: "markdown" } });
+  });
+});
