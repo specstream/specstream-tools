@@ -29,7 +29,12 @@ def endpoint():
             status, body = cases.get(
                 self.path.rsplit("/", 1)[-1], (200, '{"data":{"status":"completed"}}')
             )
+            busy = self.path.endswith("/busy") and seen.count(self.path) == 1
+            if busy:
+                status, body = 503, '{"error":{"code":"capacity"}}'
             self.send_response(status)
+            if busy:
+                self.send_header("Retry-After", "0")
             self.end_headers()
             self.wfile.write(body.encode())
 
@@ -48,7 +53,7 @@ def endpoint():
 
 
 def test_error_envelopes_and_malformed_successes_are_not_deliveries(endpoint):
-    origin, _ = endpoint
+    origin, seen = endpoint
     client = Client("offline", base_url=origin)
     for case in ("error", "null", "array", "empty"):
         with pytest.raises(SpecstreamError) as failed:
@@ -59,6 +64,9 @@ def test_error_envelopes_and_malformed_successes_are_not_deliveries(endpoint):
     assert unavailable.value.status == 503
     assert unavailable.value.body == "<html>unavailable</html>"
     assert client.get_find("valid")["status"] == "completed"
+    assert client.get_find("busy")["status"] == "completed"
+    assert seen.count("/v1/finds/html") == 1
+    assert seen.count("/v1/finds/busy") == 2
 
 
 def test_redirect_does_not_forward_account_authority(endpoint):

@@ -67,6 +67,17 @@ export function assertFamily(entityType: string): EntityType {
 
 export type FetchFn = (input: string, init?: RequestInit) => Promise<Response>;
 
+const RETRY_AFTER_MAX_MS = 10_000;
+
+/** Milliseconds to wait before the one retry of a 503 that names its Retry-After, or null. */
+function retryAfterMs(response: Response): number | null {
+  if (response.status !== 503) return null;
+  const value = (response.headers?.get("retry-after") || "").trim();
+  if (!value) return null;
+  const ms = /^\d+(\.\d+)?$/.test(value) ? Number(value) * 1000 : Date.parse(value) - Date.now();
+  return Number.isFinite(ms) && ms >= 0 && ms <= RETRY_AFTER_MAX_MS ? ms : null;
+}
+
 export type ClientOptions = {
   apiKey: string;
   baseUrl?: string;
@@ -1155,22 +1166,30 @@ export class Client {
       Authorization: token,
       Accept: "application/json",
       "Content-Type": "application/json",
-      "User-Agent": "specstream-typescript/1.3.0",
+      "User-Agent": "specstream-typescript/1.3.2",
     };
   }
 
   private async request(method: string, path: string, body?: JsonMap): Promise<JsonMap> {
     const url = this.baseUrl + path;
+    const send = () => this.fetchFn(url, {
+      method,
+      headers: this.headers(),
+      redirect: "error",
+      signal: AbortSignal.timeout(this.timeoutMs),
+      body: body === undefined ? undefined : JSON.stringify(body),
+    });
     let response: Response;
     let text: string;
     try {
-      response = await this.fetchFn(url, {
-        method,
-        headers: this.headers(),
-        redirect: "error",
-        signal: AbortSignal.timeout(this.timeoutMs),
-        body: body === undefined ? undefined : JSON.stringify(body),
-      });
+      response = await send();
+      const wait = retryAfterMs(response);
+      if (wait !== null) {
+        // The server did nothing and names when to ask again: ask once more.
+        await response.body?.cancel();
+        await new Promise((resolve) => setTimeout(resolve, wait));
+        response = await send();
+      }
       text = await response.text();
     } catch (error) {
       throw new SpecstreamError(method + " " + path + " transport failed", null, error);

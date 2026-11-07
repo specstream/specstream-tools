@@ -4,9 +4,12 @@ from __future__ import annotations
 
 import json
 import re
+import time
 import urllib.error
 import urllib.request
 from collections.abc import Callable
+from datetime import UTC, datetime
+from email.utils import parsedate_to_datetime
 from typing import Any, cast
 from urllib.parse import quote as quote_path
 from urllib.parse import urlencode, urljoin, urlsplit
@@ -15,7 +18,7 @@ from specstream_client.authorization import require_work_authorization
 from specstream_client.families import FAMILIES
 
 DEFAULT_BASE_URL = "https://api.specstream.ai"
-USER_AGENT = "specstream-python/1.3.0"
+USER_AGENT = "specstream-python/1.3.2"
 
 OpenFn = Callable[[urllib.request.Request, float], Any]
 
@@ -25,6 +28,29 @@ class _NoRedirect(urllib.request.HTTPRedirectHandler):
         self, req: Any, fp: Any, code: int, msg: str, headers: Any, newurl: str
     ) -> None:
         return None
+
+
+RETRY_AFTER_MAX_S = 10.0
+
+
+def _retry_after(exc: urllib.error.HTTPError) -> float | None:
+    """Seconds to wait before the one retry of a 503 that names its Retry-After, or None."""
+    if exc.code != 503 or exc.headers is None:
+        return None
+    value = (exc.headers.get("Retry-After") or "").strip()
+    try:
+        seconds = float(value)
+    except ValueError:
+        try:
+            when = parsedate_to_datetime(value)
+        except (TypeError, ValueError):
+            return None
+        if when.tzinfo is None:
+            return None
+        seconds = (when - datetime.now(UTC)).total_seconds()
+    if not 0 <= seconds <= RETRY_AFTER_MAX_S:
+        return None
+    return seconds
 
 
 class SpecstreamError(RuntimeError):
@@ -1595,9 +1621,20 @@ class Client:
         payload = None if body is None else json.dumps(body, separators=(",", ":")).encode("utf-8")
         req = urllib.request.Request(url, data=payload, method=method, headers=self._headers())
         try:
-            with self._opener(req, self.timeout) as resp:
-                status = getattr(resp, "status", 200)
-                text = resp.read().decode("utf-8", "replace")
+            try:
+                with self._opener(req, self.timeout) as resp:
+                    status = getattr(resp, "status", 200)
+                    text = resp.read().decode("utf-8", "replace")
+            except urllib.error.HTTPError as busy:
+                wait = _retry_after(busy)
+                if wait is None:
+                    raise
+                # The server did nothing and names when to ask again: ask once more.
+                busy.close()
+                time.sleep(wait)
+                with self._opener(req, self.timeout) as resp:
+                    status = getattr(resp, "status", 200)
+                    text = resp.read().decode("utf-8", "replace")
         except urllib.error.HTTPError as exc:
             text = exc.read().decode("utf-8", "replace") if exc.fp else ""
             try:

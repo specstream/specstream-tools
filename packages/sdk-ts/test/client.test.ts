@@ -68,16 +68,20 @@ test("continuation quote is not execution and pages expose the real cursor", asy
   assert.equal(calls.length,2);
 });
 
-test("webSearch returns the answer's kind and sources", async () => {
+test("webSearch returns the answer's kind and sources, once more after a busy 503", async () => {
   const urls: string[] = [];
   const page = {request_id:"call-1",kind:"fact",answer:{value:"2006",page:"https://example.org/a"},rows:[],
     sources:[{url:"https://example.org/a",title:"A",site:"example.org",snippet:"",cited:true}]};
   const client = new Client({apiKey:"fixture-key",fetch:async(url)=>{
     urls.push(String(url));
+    if (urls.length === 1) {
+      return new Response(JSON.stringify({error:{code:"capacity",message:"busy"}}),{status:503,headers:{"Retry-After":"0"}});
+    }
     return new Response(JSON.stringify({data:page}),{status:200});
   }});
   const found = await client.webSearch({q:"when was A founded"});
-  assert.ok(urls[0].endsWith("/v1/web-search?q=when+was+A+founded"));
+  assert.equal(urls.length,2);
+  assert.ok(urls[1].endsWith("/v1/web-search?q=when+was+A+founded"));
   assert.equal(found.kind,"fact");
   assert.deepEqual(found.sources,page.sources);
 });
