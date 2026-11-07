@@ -25,11 +25,7 @@ Two ways to connect it. Pick one.
 3. Open the tool's **Valves** (the gear icon), paste the key, and set the spending cap.
 4. In a chat, turn the tool on under **+ > Integrations > Tools**. Use a model with **Function Calling: native** (Model settings > Advanced Params).
 
-Then ask:
-
-> Find open tenders on SAM.gov for translation services, with the buyer and the deadline. Give me 50.
-
-The model tells you how SpecStream read your request and the price, and a dialog asks you to approve it. Rows come back with the source URL and read time on every value, shown as sources under the answer.
+Then ask in plain words. The model tells you how SpecStream read your request and the price, and a dialog asks you to approve it. Rows come back with the source URL and read time on every value, shown as sources under the answer.
 
 ### What the model can do
 

@@ -2,7 +2,7 @@
 
 A [Singer](https://www.singer.io/) tap for [SpecStream](https://specstream.ai), built with the [Meltano Singer SDK](https://sdk.meltano.com).
 
-SpecStream is a live web data engine. You ask in plain words for companies, local businesses, people at companies, job posts, SEC filings, tenders or grants, and it returns every match as structured data, each value with the page it was read from. Each request becomes a list in your SpecStream workspace.
+SpecStream is a live web data engine. You ask in plain words for the data you need, and it returns every match as structured data, each value with the page it was read from. Each request becomes a list in your SpecStream workspace.
 
 This tap reads those lists into any Singer target or Meltano project. It only reads: it never starts a request or spends from your SpecStream balance.
 

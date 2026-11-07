@@ -1,7 +1,7 @@
 {
   "name": "opencode-specstream",
-  "version": "0.1.1",
-  "description": "SpecStream plugin for OpenCode: adds the SpecStream MCP server and four agent skills, so your agent can ask for a list in plain words and get every matching row with its source.",
+  "version": "0.1.4",
+  "description": "The live web data engine. One platform to build, search, extract, enrich, map, and monitor data across the entire web.",
   "type": "module",
   "main": "index.ts",
   "files": [

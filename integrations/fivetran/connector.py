@@ -1,5 +1,4 @@
-"""This connector syncs your SpecStream lists of live web data (companies, local businesses, people, job posts,
-filings, tenders and grants) into your destination, with the page each value was read from.
+"""This connector syncs your SpecStream lists of live web data into your destination, with the page each value was read from.
 See the Technical Reference documentation (https://fivetran.com/docs/connectors/connector-sdk/technical-reference)
 and the Best Practices documentation (https://fivetran.com/docs/connectors/connector-sdk/best-practices) for details
 """

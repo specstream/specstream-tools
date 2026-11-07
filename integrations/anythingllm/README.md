@@ -28,9 +28,7 @@ The skill is in [`specstream-find-lists/`](specstream-find-lists): `plugin.json`
 3. Open **Agent Skills**, find **SpecStream**, paste the key, and set the spending cap.
 4. In a workspace chat, start with `@agent`:
 
-> @agent Find open tenders on SAM.gov for translation services, with the buyer and the deadline. Give me 50.
-
-The agent shows how SpecStream read your request and the most it can cost, and waits for you to approve. Then it returns the rows, with the source URL and read time on every value, and a link to the full results in SpecStream.
+Say what you need in plain words after `@agent`. The agent shows how SpecStream read your request and the most it can cost, and waits for you to approve. Then it returns the rows, with the source URL and read time on every value, and a link to the full results in SpecStream.
 
 To read a list that's already started, ask for it by ID: `@agent show me the rows of list fnd_1a2b3c4d`. Reading costs nothing.
 

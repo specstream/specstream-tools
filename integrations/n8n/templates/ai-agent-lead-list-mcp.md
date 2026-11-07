@@ -76,7 +76,6 @@ The agent never starts paid work on its own. It needs your yes in the chat, it r
 ## Customize it
 
 - **More tools:** add `export_find` to **SpecStream** for a CSV or Excel link, or `create_capacity_schedule` to keep a list up to date and get new matches on a schedule.
-- **Other kinds of lists:** the same agent finds companies, local businesses, open grants, job posts and tenders. Ask in plain words.
 - **Somewhere other than chat:** swap the Chat Trigger for Slack or Telegram so the team can ask from where they already talk.
 
 ## What it costs

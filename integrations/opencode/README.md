@@ -10,7 +10,7 @@ Ask for any dataset in plain words, and SpecStream builds it from the entire liv
 The plugin does two things when OpenCode starts:
 
 - adds the hosted SpecStream MCP server, `https://api.specstream.ai/mcp`, to your config as `specstream`
-- adds four agent skills: `compile` (show how SpecStream read the request), `review-work` (get the price), `approve-work` (approve it) and `continue-work` (read the rows, send them on, keep them up to date)
+- adds six agent skills: `search-web` (Search API), `extract-pages` (Extract API), `compile` (show how SpecStream read the request), `review-work` (get the price), `approve-work` (approve it) and `continue-work` (read the rows, send them on, keep them up to date)
 
 ## Install
 
@@ -54,11 +54,7 @@ With the variable set, the plugin sends it as a bearer header and turns the brow
 
 ## Use it
 
-Ask in plain words:
-
-> Find open tenders on SAM.gov for translation services, with the buyer and the deadline.
-
-The agent shows how SpecStream read the request and the quoted ceiling, and starts only after you say yes. Rows come back with their source pages, ready to export as CSV, Excel or JSON or to send to Google Sheets, Notion, Airtable, HubSpot or Salesforce.
+Ask in plain words. The agent shows how SpecStream read the request and the quoted ceiling, and starts only after you say yes. Rows come back with their source pages, ready to export as CSV, Excel or JSON or to send to Google Sheets, Notion, Airtable, HubSpot or Salesforce.
 
 ## Options
 

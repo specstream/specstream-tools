@@ -72,8 +72,6 @@ If the response is lost, `get_capacity_request(saved_request_key)` returns the s
 - `export` and `download_export` give CSV, XLSX, JSON or HTML. `create_customer_webhook` sends signed events.
 - Projects, members, shares and starred items have their own methods.
 
-Kinds of thing include local businesses, companies, people, creators, products, apps, job postings, papers, clinical trials, grants, tenders, regulations, vulnerabilities, software packages, repositories, datasets, books and podcasts.
-
 ## Command line
 
 ```sh
