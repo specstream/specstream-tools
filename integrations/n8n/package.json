@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-specstream",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "The live web data engine. One platform to build, search, extract, enrich, map, and monitor data across the entire web.",
   "license": "MIT",
   "homepage": "https://specstream.ai/docs/integrations",

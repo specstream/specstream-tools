@@ -104,7 +104,10 @@ export class SpecstreamTrigger implements INodeType {
         if (!result.hook_id || !result.secret) {
           throw new NodeOperationError(this.getNode(), "Webhook registration was not confirmed");
         }
-        Object.assign(this.getWorkflowStaticData("node"), result, { event: this.getNodeParameter("event") as string });
+        const staticData = this.getWorkflowStaticData("node");
+        staticData.hook_id = result.hook_id;
+        staticData.secret = result.secret;
+        staticData.event = this.getNodeParameter("event") as string;
         return true;
       },
       async delete(this: IHookFunctions): Promise<boolean> {
