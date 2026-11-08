@@ -1,0 +1,66 @@
+{
+  "$schema": "https://raw.githubusercontent.com/grafana/grafana/main/docs/sources/developers/plugins/plugin.schema.json",
+  "type": "datasource",
+  "name": "SpecStream",
+  "id": "specstream-specstream-datasource",
+  "metrics": false,
+  "info": {
+    "description": "Live web data from SpecStream in Grafana: Search API results or the rows of a saved list as a table, with the source page on each row.",
+    "author": {
+      "name": "SpecStream",
+      "url": "https://specstream.ai"
+    },
+    "keywords": [
+      "web data",
+      "search",
+      "datasource",
+      "specstream"
+    ],
+    "logos": {
+      "small": "img/logo.svg",
+      "large": "img/logo.svg"
+    },
+    "links": [
+      {
+        "name": "Website",
+        "url": "https://specstream.ai"
+      },
+      {
+        "name": "Documentation",
+        "url": "https://specstream.ai/docs"
+      }
+    ],
+    "screenshots": [
+      {
+        "name": "Query editor with a saved list",
+        "path": "img/query-editor.png"
+      },
+      {
+        "name": "Table panel with the source page on each row",
+        "path": "img/dashboard-panel.png"
+      },
+      {
+        "name": "Editing a panel with SpecStream data",
+        "path": "img/panel-editor.png"
+      }
+    ],
+    "version": "%VERSION%",
+    "updated": "%TODAY%"
+  },
+  "dependencies": {
+    "grafanaDependency": ">=13.2.0",
+    "plugins": []
+  },
+  "routes": [
+    {
+      "path": "specstream",
+      "url": "https://api.specstream.ai",
+      "headers": [
+        {
+          "name": "Authorization",
+          "content": "Bearer {{ .SecureJsonData.apiKey }}"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+apiVersion: 1
+
+datasources:
+  - name: 'SpecStream'
+    type: 'specstream-specstream-datasource'
+    access: proxy
+    isDefault: false
+    orgId: 1
+    version: 1
+    editable: true
+    jsonData: {}
+    secureJsonData:
+      apiKey: 'api-key'
