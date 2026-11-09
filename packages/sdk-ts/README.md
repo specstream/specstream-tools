@@ -84,7 +84,7 @@ If the response is lost, `getCapacityRequest(savedRequestKey)` returns the same 
 
 ## Pricing
 
-New accounts start with $10 of credit for 30 days, no card. The Search API costs $5 per 1,000 searches and the Extract API $0.80 per 1,000 pages. In Deep Search, a delivered result costs 5 cents, 15 cents or $1 depending on how many facts it carries. No result, no charge. See [pricing](https://specstream.ai/pricing).
+New accounts start with $10 of credit, no card. The Search API costs $5 per 1,000 searches and the Extract API $0.80 per 1,000 pages. In Deep Search, a delivered result costs 5 cents, 15 cents or $1 depending on how many facts it carries. No result, no charge. See [pricing](https://specstream.ai/pricing).
 
 ## Links
 

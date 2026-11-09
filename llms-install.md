@@ -47,7 +47,7 @@ Ask the user for their SpecStream API key. It starts with `ss_live_`.
 
 If they don't have one yet, tell them:
 
-1. Sign in at https://specstream.ai/workspace (new accounts start with $10 of credit for 30 days, no card).
+1. Sign in at https://specstream.ai/workspace (new accounts start with $10 of credit, no card).
 2. Open **Agents & API** and create a key.
 3. Give it only what the work needs: read, prepare or execute, the projects it may use, an expiry and a spending limit.
 

@@ -162,7 +162,7 @@ The MCP server is `https://api.specstream.ai/mcp` (Streamable HTTP). Your agent 
 
 Clients that support MCP sign-in can connect without a key. Each guide at [specstream.ai/docs/mcp](https://specstream.ai/docs/mcp) shows the current steps.
 
-New accounts start with $10 of credit for 30 days, no card.
+New accounts start with $10 of credit, no card.
 
 ### Claude
 

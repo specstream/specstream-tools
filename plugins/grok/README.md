@@ -20,7 +20,7 @@ Published by SpecStream, the vendor. Source: [specstream/specstream-tools](https
    ```
 
 2. Find **specstream** in the list and press `i` to install it.
-3. Open the MCP servers tab with `/mcp`, select **specstream**, and press `i` to sign in. Your browser opens SpecStream. New accounts get $10 of credit for 30 days.
+3. Open the MCP servers tab with `/mcp`, select **specstream**, and press `i` to sign in. Your browser opens SpecStream. New accounts get $10 of credit.
 4. Once specstream shows **ready**, run the `get-started` command for a guided first request, or ask in plain words.
 
 ## Try it

@@ -48,7 +48,7 @@ Three importable workflows are in [`workflows/`](workflows):
 
 ## Pricing
 
-New accounts start with $10 of credit for 30 days, no card. The Search API costs $5 per 1,000 searches. The Extract API costs $0.80 per 1,000 pages, and a page with no text is free. In Deep Search, a delivered result costs 5 cents, 15 cents or $1 depending on how many facts it carries. No result, no charge. See [pricing](https://specstream.ai/pricing).
+New accounts start with $10 of credit, no card. The Search API costs $5 per 1,000 searches. The Extract API costs $0.80 per 1,000 pages, and a page with no text is free. In Deep Search, a delivered result costs 5 cents, 15 cents or $1 depending on how many facts it carries. No result, no charge. See [pricing](https://specstream.ai/pricing).
 
 ## Develop
 

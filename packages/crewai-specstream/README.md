@@ -6,7 +6,7 @@ pip install -U crewai-specstream
 export SPECSTREAM_API_KEY=ss_live_...   # Agents & API in your SpecStream workspace
 ```
 
-A free account comes with $10 of credit to use within 30 days and needs no card: [specstream.ai](https://specstream.ai/signup). Works with CrewAI 1.x on Python 3.10 – 3.13.
+A free account comes with $10 of credit and needs no card: [specstream.ai](https://specstream.ai/signup). Works with CrewAI 1.x on Python 3.10 – 3.13.
 
 ## A crew that can find lists
 

@@ -16,7 +16,7 @@ pi install npm:@specstream/pi-package
 pi mcp login specstream
 ```
 
-The second command opens SpecStream in your browser. Sign in and approve access; Pi stores the token and refreshes it. New accounts get $10 of credit for 30 days. Inside a session, `/mcp` shows the connection and lets you sign in or out.
+The second command opens SpecStream in your browser. Sign in and approve access; Pi stores the token and refreshes it. New accounts get $10 of credit. Inside a session, `/mcp` shows the connection and lets you sign in or out.
 
 Try it for one run without installing: `pi -e npm:@specstream/pi-package`.
 

@@ -31,7 +31,7 @@ Needs OpenClaw 2026.10.3 or newer.
 
 ## Set it up
 
-Create an API key under **Agents & API** in your [SpecStream workspace](https://specstream.ai/workspace). New accounts start with $10 of credit for 30 days, no card.
+Create an API key under **Agents & API** in your [SpecStream workspace](https://specstream.ai/workspace). New accounts start with $10 of credit, no card.
 
 The plugin reads the key from `SPECSTREAM_API_KEY`. To keep it in your OpenClaw config instead, store a SecretRef that points at the variable:
 

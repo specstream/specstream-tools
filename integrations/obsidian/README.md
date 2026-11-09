@@ -42,7 +42,7 @@ Before that, or to try a build by hand: download `main.js`, `manifest.json` and 
 
 ## Set up
 
-1. Create a free account at [specstream.ai](https://specstream.ai). New accounts start with $10 of work free for 30 days, once, no card.
+1. Create a free account at [specstream.ai](https://specstream.ai). New accounts start with $10 of credit, once, no card.
 2. In your [workspace](https://specstream.ai/workspace/agents), open **Agents & API** and select **Create API key**. Give it read results and their sources, prepare work and follow-ups, authorize paid work, and read account and balance. Set a spending limit on the key too if you like. It stacks with the plugin's own limit.
 3. In Obsidian, open **Settings → SpecStream**, choose the API key field, and add your key as a secret. Press **Check** to see which account it belongs to and what is left to spend.
 

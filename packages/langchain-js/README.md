@@ -19,7 +19,7 @@ npm install @specstream/langchain @langchain/core
 export SPECSTREAM_API_KEY=ss_live_...   # Agents & API in your SpecStream workspace
 ```
 
-A free account comes with $10 of credit to use within 30 days and needs no card: [specstream.ai](https://specstream.ai/signup).
+A free account comes with $10 of credit and needs no card: [specstream.ai](https://specstream.ai/signup).
 
 ## Tools
 

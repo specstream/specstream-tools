@@ -116,7 +116,7 @@ specstream rows --find-id FIND_ID
 
 ## Pricing
 
-New accounts start with $10 of credit for 30 days, no card. A delivered result costs 5 cents, 15 cents or $1 depending on how many facts it carries. No result, no charge. Rechecks cost half. People and agents share one balance. See [pricing](https://specstream.ai/pricing).
+New accounts start with $10 of credit, no card. A delivered result costs 5 cents, 15 cents or $1 depending on how many facts it carries. No result, no charge. Rechecks cost half. People and agents share one balance. See [pricing](https://specstream.ai/pricing).
 
 ## Links
 

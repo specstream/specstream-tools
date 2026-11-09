@@ -38,7 +38,7 @@ export class SpecStreamSettingTab extends PluginSettingTab {
 		const keyHelp = new DocumentFragment();
 		keyHelp.append("Create a key in your workspace under ");
 		keyHelp.createEl("a", { text: "Agents & API", href: API_KEYS_URL });
-		keyHelp.append(". New accounts start with $10 of credit for 30 days, no card.");
+		keyHelp.append(". New accounts start with $10 of credit, no card.");
 
 		return [
 			{

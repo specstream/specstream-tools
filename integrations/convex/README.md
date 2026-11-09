@@ -26,7 +26,7 @@ const page = await specstream.listRows(ctx, {
 });
 ```
 
-You pay for each row delivered, and a run that finds nothing costs nothing. A free account starts with $10 of credit to use within 30 days and needs no card.
+You pay for each row delivered, and a run that finds nothing costs nothing. A free account starts with $10 of credit and needs no card.
 
 ## What you get
 
