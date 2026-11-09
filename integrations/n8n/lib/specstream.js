@@ -78,4 +78,14 @@ function flattenRow(listId, record, flat) {
   return row;
 }
 
-module.exports = { DEFAULT_BASE, columnName, flatRowsById, flattenRow, resolveBase, runKey };
+// True only when the API answered 404. n8n wraps the HTTP error, so the status is read from the error
+// and from the errors it wraps.
+function isNotFound(error) {
+  for (let current = error, depth = 0; current && depth < 5; current = current.cause, depth++) {
+    const status = current.httpCode ?? current.statusCode ?? current.status ?? (current.response && current.response.status);
+    if (status != null) return String(status) === "404";
+  }
+  return false;
+}
+
+module.exports = { DEFAULT_BASE, columnName, flatRowsById, flattenRow, isNotFound, resolveBase, runKey };

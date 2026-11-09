@@ -17,6 +17,7 @@
         0
       ],
       "parameters": {
+        "resource": "quote",
         "operation": "compile",
         "q": "={{$json.request}}",
         "readOptions": {
@@ -34,6 +35,7 @@
         0
       ],
       "parameters": {
+        "resource": "quote",
         "operation": "quoteWork",
         "ast_hash": "={{$json.ast_hash}}",
         "requested_units": "={{$json.ast.limit.max}}",
@@ -50,6 +52,7 @@
         0
       ],
       "parameters": {
+        "resource": "quote",
         "operation": "confirmAndRun",
         "quote_id": "={{$json.quote_id}}",
         "quote_hash": "={{$json.quote_hash}}",
@@ -67,8 +70,10 @@
         0
       ],
       "parameters": {
-        "operation": "getMatchingRows",
-        "find_id": "={{$json.find_id}}"
+        "resource": "list",
+        "operation": "getListRows",
+        "list_id": "={{$json.find_id}}",
+        "returnAll": true
       }
     }
   ],

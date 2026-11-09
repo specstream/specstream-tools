@@ -19,20 +19,6 @@
       "parameters": {}
     },
     {
-      "id": "status",
-      "name": "Get Status",
-      "type": "n8n-nodes-specstream.specstream",
-      "typeVersion": 1,
-      "position": [
-        220,
-        0
-      ],
-      "parameters": {
-        "operation": "getStatus",
-        "find_id": "={{$json.find_id}}"
-      }
-    },
-    {
       "id": "rows",
       "name": "Get results",
       "type": "n8n-nodes-specstream.specstream",
@@ -42,8 +28,10 @@
         0
       ],
       "parameters": {
-        "operation": "getMatchingRows",
-        "find_id": "={{$json.find_id}}"
+        "resource": "list",
+        "operation": "getListRows",
+        "list_id": "={{$json.find_id}}",
+        "returnAll": true
       }
     },
     {
@@ -78,17 +66,6 @@
   ],
   "connections": {
     "Request finished": {
-      "main": [
-        [
-          {
-            "node": "Get Status",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Get Status": {
       "main": [
         [
           {

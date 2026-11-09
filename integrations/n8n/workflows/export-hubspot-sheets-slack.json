@@ -28,8 +28,10 @@
         0
       ],
       "parameters": {
-        "operation": "getMatchingRows",
-        "find_id": "={{$json.find_id}}"
+        "resource": "list",
+        "operation": "getListRows",
+        "list_id": "={{$json.find_id}}",
+        "returnAll": true
       }
     },
     {

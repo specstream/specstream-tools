@@ -5,11 +5,12 @@ import type {
   INodeExecutionData,
   INodeType,
   INodeTypeDescription,
+  JsonObject,
 } from "n8n-workflow";
-import { NodeConnectionTypes, NodeOperationError } from "n8n-workflow";
+import { NodeApiError, NodeConnectionTypes, NodeOperationError } from "n8n-workflow";
 
 import { requireConfirmMaxUsd } from "../../lib/confirm_max_usd.js";
-import { flatRowsById, flattenRow, resolveBase, runKey } from "../../lib/specstream.js";
+import { flatRowsById, flattenRow, isNotFound, resolveBase, runKey } from "../../lib/specstream.js";
 
 export class Specstream implements INodeType {
   description: INodeTypeDescription = {
@@ -18,7 +19,7 @@ export class Specstream implements INodeType {
     icon: { light: "file:specstream.svg", dark: "file:specstream.dark.svg" },
     group: ["transform"],
     version: 1,
-    subtitle: '={{$parameter["operation"]}}',
+    subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
     description: "The live web data engine. Search API, Extract API and Deep Search with a source URL and read time on every value.",
     defaults: { name: "SpecStream" },
     usableAsTool: true,
@@ -27,20 +28,55 @@ export class Specstream implements INodeType {
     credentials: [{ name: "specstreamApi", required: true }],
     properties: [
       {
+        displayName: "Resource",
+        name: "resource",
+        type: "options",
+        noDataExpression: true,
+        options: [
+          { name: "List", value: "list", description: "A dataset found by Deep Search, one row per match" },
+          { name: "Quote", value: "quote", description: "The price of Deep Search work, reviewed and approved before anything runs" },
+          { name: "Web", value: "web", description: "Live answers and page text from the Search API and the Extract API" },
+        ],
+        default: "list",
+      },
+      // Operation values are unique across resources, and every field below is shown by its operation,
+      // so a workflow saved before 1.3.0 (no resource) still runs as it was built.
+      {
         displayName: "Operation",
         name: "operation",
         type: "options",
         noDataExpression: true,
+        displayOptions: { show: { resource: ["list"] } },
         options: [
-          { name: "Approve Quoted Work", value: "confirmAndRun", action: "Approve quoted work" },
-          { name: "Extract Pages", value: "extractPages", action: "Extract pages", description: "Read the main text, title and published date of 1 to 20 web pages, PDFs, Word or Excel files live ($0.80 per 1,000 pages)" },
           { name: "Find a List", value: "findList", action: "Find a list", description: "Ask for a dataset in plain words and start it if the price is within your maximum" },
           { name: "Get List Results", value: "getListRows", action: "Get the rows of a list", description: "One item per matching row, each with the page it was read from" },
-          { name: "Read Request", value: "compile", action: "Read a request" },
-          { name: "Review Quote", value: "quoteWork", action: "Review a quote" },
-          { name: "Web Search", value: "webSearch", action: "Search the web", description: "Answer a question from the live web in seconds with the Search API ($5 per 1,000 searches)" },
         ],
         default: "findList",
+      },
+      {
+        displayName: "Operation",
+        name: "operation",
+        type: "options",
+        noDataExpression: true,
+        displayOptions: { show: { resource: ["quote"] } },
+        options: [
+          { name: "Approve Quoted Work", value: "confirmAndRun", action: "Approve quoted work" },
+          { name: "Read Request", value: "compile", action: "Read a request" },
+          { name: "Review Quote", value: "quoteWork", action: "Review a quote" },
+        ],
+        default: "compile",
+      },
+      {
+        displayName: "Operation",
+        name: "operation",
+        type: "options",
+        noDataExpression: true,
+        displayOptions: { show: { resource: ["web"] } },
+        options: [
+          { name: "Extract Pages", value: "extractPages", action: "Extract pages", description: "Read the main text, title and published date of 1 to 20 web pages, PDFs, Word or Excel files live ($0.80 per 1,000 pages)" },
+          { name: "Web Search", value: "webSearch", action: "Search the web", description: "Answer a question from the live web in seconds with the Search API ($5 per 1,000 searches of up to 10 results)" },
+        ],
+        default: "webSearch",
       },
       {
         displayName: "Search Query",
@@ -66,7 +102,7 @@ export class Specstream implements INodeType {
         typeOptions: { rows: 3 },
         default: "",
         required: true,
-        placeholder: "https://example.com/page-1\nhttps://example.com/page-2",
+        placeholder: "e.g. https://example.com/page-1",
         description: "1 to 20 http or https URLs separated by newlines or commas",
         displayOptions: { show: { operation: ["extractPages"] } },
       },
@@ -89,7 +125,7 @@ export class Specstream implements INodeType {
         typeOptions: { rows: 3 },
         default: "",
         required: true,
-        placeholder: "Open federal tenders for translation services with buyer and deadline",
+        placeholder: "e.g. Open federal tenders for translation services with buyer and deadline",
         description: "Describe the list in plain words, with what every row must meet and the details to bring back",
         displayOptions: { show: { operation: ["findList"] } },
       },
@@ -137,7 +173,7 @@ export class Specstream implements INodeType {
         type: "string",
         default: "",
         required: true,
-        placeholder: "fnd_...",
+        placeholder: "e.g. fnd_...",
         description: "The List ID returned by Find a List",
         displayOptions: { show: { operation: ["getListRows"] } },
       },
@@ -292,7 +328,8 @@ export class Specstream implements INodeType {
     for (let i = 0; i < items.length; i++) {
       const operation = this.getNodeParameter("operation", i) as string;
       const fail = (message: string) => new NodeOperationError(this.getNode(), message, { itemIndex: i });
-      const call = async (method: IHttpRequestMethods, path: string, body?: IDataObject): Promise<IDataObject> => {
+      // With allowNotFound, a 404 answer returns undefined. Every other HTTP, auth or network error is thrown.
+      const request = async (method: IHttpRequestMethods, path: string, body?: IDataObject, allowNotFound = false): Promise<IDataObject | undefined> => {
         let response: IDataObject | undefined;
         try {
           response = (await this.helpers.httpRequestWithAuthentication.call(this, "specstreamApi", {
@@ -304,7 +341,8 @@ export class Specstream implements INodeType {
             disableFollowRedirect: true,
           })) as IDataObject | undefined;
         } catch (error) {
-          throw new NodeOperationError(this.getNode(), error as Error, { itemIndex: i });
+          if (allowNotFound && isNotFound(error)) return undefined;
+          throw new NodeApiError(this.getNode(), error as JsonObject, { itemIndex: i });
         }
         const data = response?.data as IDataObject | undefined;
         if (!response || response.error != null || !data || typeof data !== "object" || Array.isArray(data)) {
@@ -312,6 +350,8 @@ export class Specstream implements INodeType {
         }
         return data;
       };
+      const call = async (method: IHttpRequestMethods, path: string, body?: IDataObject): Promise<IDataObject> =>
+        (await request(method, path, body)) as IDataObject;
 
       if (operation === "webSearch") {
         const q = String(this.getNodeParameter("search_query", i) || "").trim();
@@ -349,12 +389,9 @@ export class Specstream implements INodeType {
         if (given && (given.length < 8 || given.length > 128)) throw fail("Run Key must be 8 to 128 characters");
         // A retry, even in a new execution, recovers the run it already started instead of buying the list again.
         const requestKey = runKey({ request: q, count, maxPrice: Number(this.getNodeParameter("max_price_usd", i)), override: given });
-        let recovered: IDataObject | undefined;
-        try {
-          recovered = await call("GET", `/v1/capacity/requests/${encodeURIComponent(requestKey)}`);
-        } catch {
-          recovered = undefined;
-        }
+        // 404 is the expected answer when nothing has run for this key yet. A refused key,
+        // a server fault or a network fault stops the step here, before anything is priced or bought.
+        const recovered = await request("GET", `/v1/capacity/requests/${encodeURIComponent(requestKey)}`, undefined, true);
         if (recovered && recovered.find_id) {
           const listId = String(recovered.find_id);
           out.push({
