@@ -42,6 +42,62 @@ curl https://api.specstream.ai/v1/extract \
   -d '{"urls": ["https://example.com"]}'
 ```
 
+Search API in Python: answer a question from the live web in seconds.
+
+```python
+# pip install specstream-client
+import os
+from specstream_client import Client
+
+client = Client(os.environ["SPECSTREAM_API_KEY"])
+
+search = client.web_search(q="What is the population of Japan?")
+for source in search["sources"][:1]:
+    print(source["title"], source["url"], source["snippet"])
+```
+
+Extract API in Python: the main text of up to 20 web pages, PDF, Word or Excel files a call.
+
+```python
+# pip install specstream-client
+import os
+from specstream_client import Client
+
+client = Client(os.environ["SPECSTREAM_API_KEY"])
+
+extract = client.extract_pages({"urls": ["https://example.com"]})
+for page in extract["results"][:1]:
+    print(page["title"], page["url"], page["text"])
+```
+
+Search API in TypeScript:
+
+```ts
+// npm install @specstream/sdk
+import { Client } from "@specstream/sdk";
+
+const client = new Client({ apiKey: process.env.SPECSTREAM_API_KEY! });
+
+const search = await client.webSearch({ q: "What is the population of Japan?" });
+for (const source of search.sources.slice(0, 1)) {
+  console.log(source.title, source.url, source.snippet);
+}
+```
+
+Extract API in TypeScript:
+
+```ts
+// npm install @specstream/sdk
+import { Client } from "@specstream/sdk";
+
+const client = new Client({ apiKey: process.env.SPECSTREAM_API_KEY! });
+
+const extract = await client.extractPages({ urls: ["https://example.com"] });
+for (const page of extract.results.slice(0, 1)) {
+  console.log(page.title, page.url, page.text);
+}
+```
+
 - Source URL and read time on every value.
 - The Search API and Extract API need no quote and no approval. Each search or page takes its flat price from your balance.
 - In Deep Search, the most a run can cost is shown and approved before it runs. Only delivered rows are billed, and a run that finds nothing costs nothing.

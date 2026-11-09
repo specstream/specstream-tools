@@ -23,6 +23,36 @@ Create an API key under **Agents & API** in your SpecStream workspace and keep i
 export SPECSTREAM_API_KEY="ss_live_..."
 ```
 
+## Search the web
+
+`web_search` calls the [Search API](https://specstream.ai/docs/search-api), `GET /v1/web-search`, at $5 per 1,000 searches of up to 10 results.
+
+```python
+import os
+from specstream_client import Client
+
+client = Client(os.environ["SPECSTREAM_API_KEY"])
+
+search = client.web_search(q="What is the population of Japan?")
+for source in search["sources"][:1]:
+    print(source["title"], source["url"], source["snippet"])
+```
+
+## Extract pages
+
+`extract_pages` calls the [Extract API](https://specstream.ai/docs/extract-api), `POST /v1/extract`, at $0.80 per 1,000 pages, and a page with no text is not charged.
+
+```python
+import os
+from specstream_client import Client
+
+client = Client(os.environ["SPECSTREAM_API_KEY"])
+
+extract = client.extract_pages({"urls": ["https://example.com"]})
+for page in extract["results"][:1]:
+    print(page["title"], page["url"], page["text"])
+```
+
 ## Read a request, get the price
 
 ```python
