@@ -1,0 +1,42 @@
+{
+  "$schema": "https://context7.com/schema/context7.json",
+  "projectTitle": "SpecStream",
+  "description": "The live web data engine for teams and agents: Search API, Extract API and Deep Search.",
+  "folders": ["packages", "examples", "skills"],
+  "excludeFolders": [
+    "tests",
+    "test",
+    "__tests__",
+    "node_modules",
+    "dist",
+    "build",
+    ".venv",
+    "__pycache__",
+    "*.egg-info",
+    ".test-build",
+    "*archive*",
+    "*deprecated*",
+    "*legacy*"
+  ],
+  "excludeFiles": [
+    "package-lock.json",
+    "CHANGELOG.md",
+    "LICENSE",
+    "LICENSE.md",
+    "CODE_OF_CONDUCT.md",
+    "CONTRIBUTING.md",
+    "SECURITY.md"
+  ],
+  "rules": [
+    "Authenticate each call with the header Authorization: Bearer <key>. The examples take the key from the SPECSTREAM_API_KEY environment variable.",
+    "The account owner creates an API key under Agents & API at https://specstream.ai/workspace.",
+    "Search API: GET https://api.specstream.ai/v1/web-search?q=<the question>. Write q in everyday words, 1 to 2,000 characters.",
+    "Extract API: POST https://api.specstream.ai/v1/extract with the JSON body {\"urls\": [\"<url>\"], \"format\": \"markdown\"}. Send 1 to 20 http or https URLs.",
+    "Every reply of the Search API and the Extract API is a JSON object with one key: {\"data\": {...}} when the call succeeds, {\"error\": {\"code\", \"message\", \"details\"}} when it stops.",
+    "Search results are in data.sources, each with url, title, site and snippet. data.answer can be null: then read data.rows and data.sources.",
+    "Extract results are in data.results, one item for each URL in the order sent, each with url, status and text. Use the text only when status is ok.",
+    "SDK calls: web_search(q=...) and extract_pages({...}) in Python (specstream-client), webSearch({ q }) and extractPages({ urls }) in TypeScript (@specstream/sdk).",
+    "The MCP server is https://api.specstream.ai/mcp (Streamable HTTP). Its tool search_web calls the Search API and read_pages calls the Extract API.",
+    "On 503 with a Retry-After header, wait that many seconds and send the call again. Nothing is charged."
+  ]
+}
