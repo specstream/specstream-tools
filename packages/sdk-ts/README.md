@@ -35,6 +35,36 @@ const extract = await client.extractPages({
 for (const page of extract.results) console.log(page.url, page.status, page.text);
 ```
 
+## Drop-in for the API you already call
+
+SpecStream answers calls written for these search APIs at its own address, in each API's own reply shape. To switch, change the base address and the key. Each search call is one Search API web search on your SpecStream key: $0.005 for up to 10 results ($5 per 1,000 searches), and each 10 results more in the same call add $0.006.
+
+| API you call | Base address you have | SpecStream address | Where the SpecStream key goes |
+| --- | --- | --- | --- |
+| Tavily | `https://api.tavily.com` | `https://api.specstream.ai/tavily` | Bearer token or `api_key` |
+| Exa | `https://api.exa.ai` | `https://api.specstream.ai/exa` | `x-api-key` or Bearer token |
+| Brave Search API | `https://api.search.brave.com` | `https://api.specstream.ai` | `X-Subscription-Token` |
+| Serper | `https://google.serper.dev` | `https://api.specstream.ai/serper` | `X-API-KEY` |
+| Bing Web Search API v7 | `https://api.bing.microsoft.com/v7.0/search` | `https://api.specstream.ai/v7.0/search` | `Ocp-Apim-Subscription-Key` |
+| Google Custom Search JSON API | `https://www.googleapis.com` or `https://customsearch.googleapis.com` | `https://api.specstream.ai` | `key=` (`cx` is accepted and not used) |
+| SearXNG (JSON) | your instance address | `https://api.specstream.ai/searxng/<key>` | in the address, `key=`, `X-API-Key` or Bearer token |
+| Firecrawl v2 | `https://api.firecrawl.dev` | `https://api.specstream.ai/firecrawl` | Bearer token |
+
+The official Tavily and Exa Python SDKs take the address as an argument:
+
+```python
+import os
+from tavily import TavilyClient
+from exa_py import Exa
+
+tavily = TavilyClient(api_key=os.environ["SPECSTREAM_API_KEY"], api_base_url="https://api.specstream.ai/tavily")
+exa = Exa(api_key=os.environ["SPECSTREAM_API_KEY"], base_url="https://api.specstream.ai/exa")
+```
+
+- A Brave call that sends no `count` is priced as 20 results ($0.011). Send `count=10` for $0.005.
+- A Firecrawl `/v2/scrape` call is one Extract API page at $0.0008. The Firecrawl JavaScript SDK works with this address; the Firecrawl Python SDK does not yet.
+- Each route's request and reply fields: [specstream.ai/agents.md](https://specstream.ai/agents.md). Create a key under **Agents & API** at [specstream.ai/workspace](https://specstream.ai/workspace). New accounts start with $10 of credit, no card.
+
 ## Read a request, get the price
 
 ```ts
