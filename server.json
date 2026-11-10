@@ -3,7 +3,7 @@
   "name": "ai.specstream/specstream",
   "title": "SpecStream",
   "description": "The live web data engine for teams and agents: Search API, Extract API and Deep Search.",
-  "version": "1.3.3",
+  "version": "1.3.4",
   "websiteUrl": "https://specstream.ai",
   "remotes": [
     {

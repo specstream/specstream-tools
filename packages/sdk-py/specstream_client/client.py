@@ -296,7 +296,7 @@ class Client:
 
     def web_search(self, *, q: str, passages: bool | None = None) -> dict[str, Any]:
         """
-        Fast search: answer a question from the live web in seconds, each value with its source.
+        Search API: answer a question from the live web in seconds, each value with its source.
         """
         path = "/v1/web-search"
         query: dict[str, Any] = {
@@ -316,8 +316,9 @@ class Client:
 
     def extract_pages(self, request: dict[str, Any]) -> dict[str, Any]:
         """
-        Read up to 20 pages live: each page's main text as Markdown or plain text, its title and
-        its published date. Only a page read is charged.
+        Extract API: read up to 20 pages, live from their URLs or from HTML you send, each
+        page's main text as Markdown or plain text, its title and its published date. Only a
+        page read is charged.
         """
         path = "/v1/extract"
         return self._request("POST", path, request)

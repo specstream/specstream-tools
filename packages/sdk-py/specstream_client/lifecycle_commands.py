@@ -33,16 +33,16 @@ COMMANDS = {'get-vocabulary': {'method': 'get_vocabulary',
                 'body': False,
                 'body_required': False,
                 'query': {'q': 'string', 'passages': 'boolean'},
-                'summary': 'Fast search: answer a question from the live web in seconds, each '
-                           'value with its source'},
+                'summary': 'Search API: answer a question from the live web in seconds, each value '
+                           'with its source'},
  'extract-pages': {'method': 'extract_pages',
                    'arguments': [],
                    'body': True,
                    'body_required': True,
                    'query': {},
-                   'summary': "Read up to 20 pages live: each page's main text as Markdown or "
-                              'plain text, its title and its published date. Only a page read is '
-                              'charged'},
+                   'summary': 'Extract API: read up to 20 pages, live from their URLs or from HTML '
+                              "you send, each page's main text as Markdown or plain text, its "
+                              'title and its published date. Only a page read is charged'},
  'web-search-answers': {'method': 'web_search_answers',
                         'arguments': [],
                         'body': False,
