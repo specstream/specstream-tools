@@ -1,6 +1,6 @@
 [project]
 name = "pydantic-ai-specstream"
-version = "0.2.0"
+version = "0.2.1"
 description = "The live web data engine as a Pydantic AI capability: Search API ($5 per 1,000 searches of up to 10 results), Extract API ($0.80 per 1,000 pages) and Deep Search."
 readme = "README.md"
 requires-python = ">=3.11"

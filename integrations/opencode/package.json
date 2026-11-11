@@ -1,6 +1,6 @@
 {
   "name": "opencode-specstream",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "The live web data engine. One platform to build, search, extract, enrich, map, and monitor data across the entire web.",
   "type": "module",
   "main": "index.ts",

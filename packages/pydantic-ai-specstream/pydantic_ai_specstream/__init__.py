@@ -10,7 +10,7 @@ import httpx
 from pydantic_ai import FunctionToolset, ModelRetry, Tool
 from pydantic_ai.capabilities import AbstractCapability
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 
 DEFAULT_BASE_URL = "https://api.specstream.ai"
 MAX_EXTRACT_URLS = 20

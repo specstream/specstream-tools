@@ -1166,7 +1166,7 @@ export class Client {
       Authorization: token,
       Accept: "application/json",
       "Content-Type": "application/json",
-      "User-Agent": "specstream-typescript/1.3.2",
+      "User-Agent": "specstream-typescript/1.3.3",
     };
   }
 

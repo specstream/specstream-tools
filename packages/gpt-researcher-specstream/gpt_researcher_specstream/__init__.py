@@ -9,7 +9,7 @@ import urllib.parse
 import urllib.request
 from typing import Any
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 DEFAULT_BASE_URL = "https://api.specstream.ai"
 MAX_EXTRACT_URLS = 20

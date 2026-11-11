@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.2
+
+- README: the sign-up credit has no time limit.
+
 ## 0.2.1
 
 - README: the request examples are removed.
