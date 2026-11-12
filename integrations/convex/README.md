@@ -108,7 +108,7 @@ export const readPages = action({
 });
 ```
 
-`webSearch` calls the Search API (`GET /v1/web-search`, $5 per 1,000 searches). `extractPages` calls the Extract API (`POST /v1/extract`, up to 20 URLs a call, web pages, PDF, Word and Excel, $0.80 per 1,000 pages, a page with no text is free). Pass `{ format: "text" }` for plain text instead of markdown.
+`webSearch` calls the Search API (`GET /v1/web-search`, $5 per 1,000 searches of up to 10 results, or $1 on the fast tier). `extractPages` calls the Extract API (`POST /v1/extract`, up to 20 URLs a call, web pages, PDF, Word and Excel, $0.80 per 1,000 pages, a page with no text is free). Pass `{ format: "text" }` for plain text instead of markdown.
 
 ## Find a list
 

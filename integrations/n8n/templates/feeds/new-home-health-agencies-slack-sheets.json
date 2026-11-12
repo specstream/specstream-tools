@@ -1,0 +1,550 @@
+{
+  "name": "Send new home health agencies to Slack and Google Sheets with SpecStream",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## New home health agencies, every day\n\nEach day at 11:00 UTC this workflow reads the new rows of a SpecStream feed of home health agencies and sends each one to Slack and to a Google Sheet. The feed is rebuilt from its official source by about 10:00 UTC.\n\n### How it works\n1. **Get new rows** asks for the rows of the last 7 days your account has not had, up to 1,000, late rows included. To get older rows not delivered yet (up to 90 days back), remove its `since` parameter.\n2. **Only rows not seen before** drops any row this workflow already sent, so each row reaches Slack and the sheet once.\n3. If the new rows cost more than `max_cents`, SpecStream sends the oldest rows it pays for and the next day brings the rest. If it pays for no row, the workflow stops and says how many new rows wait and what they cost.\n\n### Set up (5 minutes)\n1. Create an API key at [specstream.ai](https://specstream.ai) under **Agents & API**.\n2. In n8n, create a **Bearer Auth** credential with the key and pick it in **Get new rows**.\n3. In **Your feed**, keep the page or paste another feed's page path from [specstream.ai/data/lists](https://specstream.ai/data/lists).\n4. Connect Google Sheets and pick a sheet in **Add to the sheet**. Its first row should hold the column names.\n5. Connect Slack and pick a channel in **Post to Slack**. Run once by hand, then activate.\n\n### Price\n5¢ for each row your account has not had from this feed before. A day with nothing new costs nothing. The default maximum is $5.00 a day.",
+        "height": 900,
+        "width": 560
+      },
+      "id": "09b7d42a-adaa-5011-af4c-99411f4b74c9",
+      "name": "Overview",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -640,
+        -420
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 1. Your feed\n**Your feed** holds the feed's page path and `max_cents`, the most one day may cost, in cents.",
+        "height": 440,
+        "width": 480,
+        "color": 7
+      },
+      "id": "89d56612-9c5d-5018-b79b-e96d4615ded1",
+      "name": "Step 1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -60,
+        -220
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 2. New rows, within your maximum\nOne call to the rows address. **Over your maximum or an error?** stops the run with the count and the price when the new rows cost more than `max_cents`, or with SpecStream's message when the call fails.",
+        "height": 440,
+        "width": 680,
+        "color": 7
+      },
+      "id": "46e6391a-fc7f-5603-bb52-fd09799bcd1b",
+      "name": "Step 2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        440,
+        -220
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 3. One item per row\nEach row becomes one item. **Only rows not seen before** keeps the rows this workflow has not sent yet, by the row's id.",
+        "height": 440,
+        "width": 480,
+        "color": 7
+      },
+      "id": "0f41db5b-cf02-51d1-b1b4-282097ec8ee3",
+      "name": "Step 3",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1140,
+        -220
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 4. Slack and the sheet\nOne Slack message per row with its key columns, linked to the official record. The sheet gets one row per row of the feed.",
+        "height": 640,
+        "width": 480,
+        "color": 7
+      },
+      "id": "4cac3829-a663-528a-82e2-b887a90e5be9",
+      "name": "Step 4",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1640,
+        -320
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 11
+            }
+          ]
+        }
+      },
+      "id": "87b1c70a-c64e-5608-bfef-7bde11a02151",
+      "name": "Every day at 11:00 UTC",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e204e4c2-6d56-5c47-9a29-b322198abfd1",
+              "name": "page",
+              "type": "string",
+              "value": "/data/home-health"
+            },
+            {
+              "id": "e696f714-dd2e-5e86-a58a-d2e3d358d4ac",
+              "name": "max_cents",
+              "type": "number",
+              "value": 500
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "372b37ef-4bb8-5b09-9425-10de57a796db",
+      "name": "Your feed",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.specstream.ai/v1/data/lists/rows",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "page",
+              "value": "={{ String($json.page).trim() }}"
+            },
+            {
+              "name": "since",
+              "value": "={{ $now.minus({days: 7}).toISODate() }}"
+            },
+            {
+              "name": "new_only",
+              "value": "true"
+            },
+            {
+              "name": "limit",
+              "value": "1000"
+            },
+            {
+              "name": "max_cents",
+              "value": "={{ $json.max_cents }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "specstream-n8n-template"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "d50d0df2-7b88-5082-b39c-c2bae6b023d1",
+      "name": "Get new rows",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        500,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c8ef6947-7b8a-553a-9179-7cd19541e9b7",
+              "leftValue": "={{ !!$json.error || (($json.rows || []).length === 0 && ($json.new_rows_waiting || 0) > 0) }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "a15e1795-7f7e-5f6e-91a1-7316adb7e3b6",
+      "name": "Over your maximum or an error?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        720,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "errorMessage": "={{ $json.error && $json.error.code === 'invalid_token' && ($json.error.details || {}).required_scope ? 'SpecStream: this API key cannot buy rows. Create a key with the ' + (($json.error.details || {}).required_scope || 'finds:spend') + ' scope under Agents & API.' : $json.error && $json.error.code !== 'payment_required' ? 'SpecStream: ' + ($json.error.message || 'the rows could not be read.') : (($json.error ? ($json.error.details || {}) : $json).new_rows_waiting || 0) + ((($json.error ? ($json.error.details || {}) : $json).new_rows_waiting || 0) === 1 ? ' new row waits and costs $' : ' new rows wait and cost $') + ((($json.error ? ($json.error.details || {}) : $json).price_cents_all || 0) / 100).toFixed(2) + '. Raise max_cents in Your feed to get them.' }}"
+      },
+      "id": "45e041a7-032a-590d-8c8f-fe4edfb31837",
+      "name": "Stop and say why",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        940,
+        -160
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "rows",
+        "options": {}
+      },
+      "id": "c8381db5-a9df-5fe4-8508-e1afa6c5dfe8",
+      "name": "One item per row",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "removeItemsSeenInPreviousExecutions",
+        "dedupeValue": "={{ $json._id || ($('Your feed').first().json.page + '\\n' + JSON.stringify(Object.fromEntries(Object.keys($json).sort().map((k) => [k, $json[k]])))).hash('sha256') }}",
+        "options": {
+          "historySize": 100000
+        }
+      },
+      "id": "c9690c3c-930d-5f65-9a04-7ecf1c8d8ad3",
+      "name": "Only rows not seen before",
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        1420,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $json[\"Name\"] }}",
+            "CMS Certification Number": "={{ $json[\"CMS Certification Number\"] }}",
+            "Street address": "={{ $json[\"Street address\"] }}",
+            "City": "={{ $json[\"City\"] }}",
+            "State": "={{ $json[\"State\"] }}",
+            "ZIP code": "={{ $json[\"ZIP code\"] }}",
+            "Phone": "={{ $json[\"Phone\"] }}",
+            "Ownership": "={{ $json[\"Ownership\"] }}",
+            "Stars": "={{ $json[\"Stars\"] }}",
+            "Timely start of care": "={{ $json[\"Timely start of care\"] }}",
+            "Preventable hospitalizations": "={{ $json[\"Preventable hospitalizations\"] }}",
+            "Certified": "={{ $json[\"Certified\"] }}",
+            "Owners and managers": "={{ $json[\"Owners and managers\"] }}",
+            "Source": "={{ $json[\"Source\"] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CMS Certification Number",
+              "displayName": "CMS Certification Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Street address",
+              "displayName": "Street address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "City",
+              "displayName": "City",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "State",
+              "displayName": "State",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ZIP code",
+              "displayName": "ZIP code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Ownership",
+              "displayName": "Ownership",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Stars",
+              "displayName": "Stars",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Timely start of care",
+              "displayName": "Timely start of care",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Preventable hospitalizations",
+              "displayName": "Preventable hospitalizations",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Certified",
+              "displayName": "Certified",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Owners and managers",
+              "displayName": "Owners and managers",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Source",
+              "displayName": "Source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0c990012-7405-509d-b596-2fd9315ccbec",
+      "name": "Add to the sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1700,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "text": "=<{{ $json[\"Source\"] }}|{{ $json[\"Name\"] }}> · {{ $json[\"CMS Certification Number\"] }} · {{ $json[\"Street address\"] }} · {{ $json[\"City\"] }}",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "id": "4c0e6565-19d8-5457-b66f-95f9c2c69f6a",
+      "name": "Post to Slack",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.2,
+      "position": [
+        1700,
+        100
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Every day at 11:00 UTC": {
+      "main": [
+        [
+          {
+            "node": "Your feed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Your feed": {
+      "main": [
+        [
+          {
+            "node": "Get new rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get new rows": {
+      "main": [
+        [
+          {
+            "node": "Over your maximum or an error?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Over your maximum or an error?": {
+      "main": [
+        [
+          {
+            "node": "Stop and say why",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "One item per row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "One item per row": {
+      "main": [
+        [
+          {
+            "node": "Only rows not seen before",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Only rows not seen before": {
+      "main": [
+        [
+          {
+            "node": "Add to the sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Post to Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Etc/UTC"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}

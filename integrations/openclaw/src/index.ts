@@ -34,7 +34,7 @@ const entry = defineToolPlugin({
       name: "specstream_web_search",
       label: "Search the web",
       description: [
-        "Search the live web in seconds with the SpecStream Search API (GET /v1/web-search, $5 per 1,000 searches, no quote needed).",
+        "Search the live web in seconds with the SpecStream Search API (GET /v1/web-search, $5 per 1,000 searches of up to 10 results, or $1 on the fast tier, no quote needed).",
         "Use it for a single fact, a question with sources, or to see the first rows of a request before pricing a full Deep Search dataset.",
         "Returns JSON with kind ('fact' or 'list'), answer (value, page and seen_at), rows, ranked sources, and optional page passages.",
       ].join(" "),
@@ -171,7 +171,7 @@ entry.register = (api: RegistrationApi) => {
     const search: SearchProvider = {
       id: "specstream",
       label: "SpecStream Search",
-      hint: "The most accurate web search API in the world ($5 per 1,000 searches, source URL and read time on every value)",
+      hint: "The most accurate web search API in the world ($5 per 1,000 searches of up to 10 results, or $1 on the fast tier, source URL and read time on every value)",
       onboardingScopes: ["text-inference"],
       credentialLabel: "SpecStream API key",
       envVars: ["SPECSTREAM_API_KEY"],

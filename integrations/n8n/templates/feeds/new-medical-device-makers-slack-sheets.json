@@ -1,0 +1,650 @@
+{
+  "name": "Send new medical device makers to Slack and Google Sheets with SpecStream",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## New medical device makers, every day\n\nEach day at 11:00 UTC this workflow reads the new rows of a SpecStream feed of medical device makers and sends each one to Slack and to a Google Sheet. The feed is rebuilt from its official source by about 10:00 UTC.\n\n### How it works\n1. **Get new rows** asks for the rows of the last 7 days your account has not had, up to 1,000, late rows included. To get older rows not delivered yet (up to 90 days back), remove its `since` parameter.\n2. **Only rows not seen before** drops any row this workflow already sent, so each row reaches Slack and the sheet once.\n3. If the new rows cost more than `max_cents`, SpecStream sends the oldest rows it pays for and the next day brings the rest. If it pays for no row, the workflow stops and says how many new rows wait and what they cost.\n\n### Set up (5 minutes)\n1. Create an API key at [specstream.ai](https://specstream.ai) under **Agents & API**.\n2. In n8n, create a **Bearer Auth** credential with the key and pick it in **Get new rows**.\n3. In **Your feed**, keep the page or paste another feed's page path from [specstream.ai/data/lists](https://specstream.ai/data/lists).\n4. Connect Google Sheets and pick a sheet in **Add to the sheet**. Its first row should hold the column names.\n5. Connect Slack and pick a channel in **Post to Slack**. Run once by hand, then activate.\n\n### Price\n5¢ for each row your account has not had from this feed before. A day with nothing new costs nothing. The default maximum is $5.00 a day.",
+        "height": 900,
+        "width": 560
+      },
+      "id": "42c9cfd7-77f0-59fe-b48d-3af4e96771d3",
+      "name": "Overview",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -640,
+        -420
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 1. Your feed\n**Your feed** holds the feed's page path and `max_cents`, the most one day may cost, in cents.",
+        "height": 440,
+        "width": 480,
+        "color": 7
+      },
+      "id": "c15bc9a5-6734-57c0-ab67-26c0af2a6502",
+      "name": "Step 1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -60,
+        -220
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 2. New rows, within your maximum\nOne call to the rows address. **Over your maximum or an error?** stops the run with the count and the price when the new rows cost more than `max_cents`, or with SpecStream's message when the call fails.",
+        "height": 440,
+        "width": 680,
+        "color": 7
+      },
+      "id": "34dcf3f7-f8d7-5188-8e8d-df2d88718f16",
+      "name": "Step 2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        440,
+        -220
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 3. One item per row\nEach row becomes one item. **Only rows not seen before** keeps the rows this workflow has not sent yet, by the row's id.",
+        "height": 440,
+        "width": 480,
+        "color": 7
+      },
+      "id": "4aecade6-5a19-5ca2-a05d-4e03a33db146",
+      "name": "Step 3",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1140,
+        -220
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 4. Slack and the sheet\nOne Slack message per row with its key columns, linked to the official record. The sheet gets one row per row of the feed.",
+        "height": 640,
+        "width": 480,
+        "color": 7
+      },
+      "id": "abb69d30-b71e-5c57-929b-045154e04297",
+      "name": "Step 4",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1640,
+        -320
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 11
+            }
+          ]
+        }
+      },
+      "id": "456eb0be-8026-5513-97f4-763573023ec7",
+      "name": "Every day at 11:00 UTC",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "edfb142f-ac2b-5a2c-b956-3eac1249e0aa",
+              "name": "page",
+              "type": "string",
+              "value": "/data/medical-devices"
+            },
+            {
+              "id": "d2fe57c2-e9a4-549d-a2c9-17799b16fb49",
+              "name": "max_cents",
+              "type": "number",
+              "value": 500
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ccf7139d-8406-5bc9-9842-ff2fbfcb83e5",
+      "name": "Your feed",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.specstream.ai/v1/data/lists/rows",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "page",
+              "value": "={{ String($json.page).trim() }}"
+            },
+            {
+              "name": "since",
+              "value": "={{ $now.minus({days: 7}).toISODate() }}"
+            },
+            {
+              "name": "new_only",
+              "value": "true"
+            },
+            {
+              "name": "limit",
+              "value": "1000"
+            },
+            {
+              "name": "max_cents",
+              "value": "={{ $json.max_cents }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "specstream-n8n-template"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "919f9f7a-8cee-5825-b982-4f2d2b73e0f5",
+      "name": "Get new rows",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        500,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "aed53f75-d07a-5627-a880-7a7871c4a8c0",
+              "leftValue": "={{ !!$json.error || (($json.rows || []).length === 0 && ($json.new_rows_waiting || 0) > 0) }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "8398460a-8865-538e-ae2d-6863db469488",
+      "name": "Over your maximum or an error?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        720,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "errorMessage": "={{ $json.error && $json.error.code === 'invalid_token' && ($json.error.details || {}).required_scope ? 'SpecStream: this API key cannot buy rows. Create a key with the ' + (($json.error.details || {}).required_scope || 'finds:spend') + ' scope under Agents & API.' : $json.error && $json.error.code !== 'payment_required' ? 'SpecStream: ' + ($json.error.message || 'the rows could not be read.') : (($json.error ? ($json.error.details || {}) : $json).new_rows_waiting || 0) + ((($json.error ? ($json.error.details || {}) : $json).new_rows_waiting || 0) === 1 ? ' new row waits and costs $' : ' new rows wait and cost $') + ((($json.error ? ($json.error.details || {}) : $json).price_cents_all || 0) / 100).toFixed(2) + '. Raise max_cents in Your feed to get them.' }}"
+      },
+      "id": "9ee44fef-41de-5f7d-80ca-c0a8833da08d",
+      "name": "Stop and say why",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        940,
+        -160
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "rows",
+        "options": {}
+      },
+      "id": "4c0d6c92-8ef5-5c64-9326-74724261e54e",
+      "name": "One item per row",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "removeItemsSeenInPreviousExecutions",
+        "dedupeValue": "={{ $json._id || ($('Your feed').first().json.page + '\\n' + JSON.stringify(Object.fromEntries(Object.keys($json).sort().map((k) => [k, $json[k]])))).hash('sha256') }}",
+        "options": {
+          "historySize": 100000
+        }
+      },
+      "id": "861b33c2-274b-532c-a14d-3d688e1117dd",
+      "name": "Only rows not seen before",
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        1420,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Establishment name": "={{ $json[\"Establishment name\"] }}",
+            "FDA registration number": "={{ $json[\"FDA registration number\"] }}",
+            "FEI number": "={{ $json[\"FEI number\"] }}",
+            "Street": "={{ $json[\"Street\"] }}",
+            "City": "={{ $json[\"City\"] }}",
+            "State": "={{ $json[\"State\"] }}",
+            "Postal code": "={{ $json[\"Postal code\"] }}",
+            "Country": "={{ $json[\"Country\"] }}",
+            "Owner or operator": "={{ $json[\"Owner or operator\"] }}",
+            "Owner or operator number": "={{ $json[\"Owner or operator number\"] }}",
+            "Establishment types": "={{ $json[\"Establishment types\"] }}",
+            "Device types listed": "={{ $json[\"Device types listed\"] }}",
+            "Product codes": "={{ $json[\"Product codes\"] }}",
+            "Device names": "={{ $json[\"Device names\"] }}",
+            "Device classes": "={{ $json[\"Device classes\"] }}",
+            "Brand names": "={{ $json[\"Brand names\"] }}",
+            "First device listed": "={{ $json[\"First device listed\"] }}",
+            "510(k) clearances": "={{ $json[\"510(k) clearances\"] }}",
+            "Latest clearance": "={{ $json[\"Latest clearance\"] }}",
+            "PMA approvals": "={{ $json[\"PMA approvals\"] }}",
+            "Recall events": "={{ $json[\"Recall events\"] }}",
+            "Class I recall events": "={{ $json[\"Class I recall events\"] }}",
+            "Registered through": "={{ $json[\"Registered through\"] }}",
+            "Source": "={{ $json[\"Source\"] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Establishment name",
+              "displayName": "Establishment name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "FDA registration number",
+              "displayName": "FDA registration number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "FEI number",
+              "displayName": "FEI number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Street",
+              "displayName": "Street",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "City",
+              "displayName": "City",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "State",
+              "displayName": "State",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Postal code",
+              "displayName": "Postal code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Country",
+              "displayName": "Country",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Owner or operator",
+              "displayName": "Owner or operator",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Owner or operator number",
+              "displayName": "Owner or operator number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Establishment types",
+              "displayName": "Establishment types",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Device types listed",
+              "displayName": "Device types listed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Product codes",
+              "displayName": "Product codes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Device names",
+              "displayName": "Device names",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Device classes",
+              "displayName": "Device classes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Brand names",
+              "displayName": "Brand names",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "First device listed",
+              "displayName": "First device listed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "510(k) clearances",
+              "displayName": "510(k) clearances",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Latest clearance",
+              "displayName": "Latest clearance",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "PMA approvals",
+              "displayName": "PMA approvals",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Recall events",
+              "displayName": "Recall events",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Class I recall events",
+              "displayName": "Class I recall events",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Registered through",
+              "displayName": "Registered through",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Source",
+              "displayName": "Source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "347546b4-0c42-5635-aae1-08d0fabd0425",
+      "name": "Add to the sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1700,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "text": "=<{{ $json[\"Source\"] }}|{{ $json[\"Establishment name\"] }}> · {{ $json[\"City\"] }} · {{ $json[\"Country\"] }} · Device types listed: {{ $json[\"Device types listed\"] }}",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "id": "1f394caf-9d77-523d-81c7-be459b8f6d79",
+      "name": "Post to Slack",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.2,
+      "position": [
+        1700,
+        100
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Every day at 11:00 UTC": {
+      "main": [
+        [
+          {
+            "node": "Your feed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Your feed": {
+      "main": [
+        [
+          {
+            "node": "Get new rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get new rows": {
+      "main": [
+        [
+          {
+            "node": "Over your maximum or an error?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Over your maximum or an error?": {
+      "main": [
+        [
+          {
+            "node": "Stop and say why",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "One item per row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "One item per row": {
+      "main": [
+        [
+          {
+            "node": "Only rows not seen before",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Only rows not seen before": {
+      "main": [
+        [
+          {
+            "node": "Add to the sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Post to Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Etc/UTC"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}

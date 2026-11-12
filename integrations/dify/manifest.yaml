@@ -1,4 +1,4 @@
-version: 0.0.2
+version: 0.3.0
 type: plugin
 author: specstream
 name: specstream
@@ -24,7 +24,7 @@ plugins:
   tools:
     - provider/specstream.yaml
 meta:
-  version: 0.0.2
+  version: 0.3.0
   minimum_dify_version: 1.0.0
   arch:
     - amd64

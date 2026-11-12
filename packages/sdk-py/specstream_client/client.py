@@ -294,7 +294,22 @@ class Client:
             path += "?" + encoded
         return self._request("GET", path, None)
 
-    def web_search(self, *, q: str, passages: bool | None = None) -> dict[str, Any]:
+    def web_search(
+        self,
+        *,
+        q: str,
+        passages: bool | None = None,
+        num: int | None = None,
+        page: int | None = None,
+        speed: str | None = None,
+        news: bool | None = None,
+        language: str | None = None,
+        country: str | None = None,
+        safe: str | None = None,
+        engines: str | None = None,
+        engines_asked: bool | None = None,
+        pages_wait_ms: int | None = None,
+    ) -> dict[str, Any]:
         """
         Search API: answer a question from the live web in seconds, each value with its source.
         """
@@ -302,6 +317,16 @@ class Client:
         query: dict[str, Any] = {
             "q": q,
             "passages": passages,
+            "num": num,
+            "page": page,
+            "speed": speed,
+            "news": news,
+            "language": language,
+            "country": country,
+            "safe": safe,
+            "engines": engines,
+            "engines_asked": engines_asked,
+            "pages_wait_ms": pages_wait_ms,
         }
         encoded = urlencode(
             {
@@ -322,6 +347,52 @@ class Client:
         """
         path = "/v1/extract"
         return self._request("POST", path, request)
+
+    def list_search_dialects(self) -> dict[str, Any]:
+        """
+        List the other search and page APIs SpecStream answers in, each with the addresses to
+        paste and a curl call; no key needed.
+        """
+        path = "/v1/search-dialects"
+        return self._request("GET", path, None)
+
+    def map_site(self, request: dict[str, Any]) -> dict[str, Any]:
+        """
+        Map a site: its start page's links and its sitemaps' pages, kept to the site. One page
+        read when it gives a link.
+        """
+        path = "/v1/map"
+        return self._request("POST", path, request)
+
+    def start_crawl(self, request: dict[str, Any]) -> dict[str, Any]:
+        """
+        Start a crawl: read a site page by page, breadth first, as a job to poll. Each page that
+        gives text is one page read.
+        """
+        path = "/v1/crawl"
+        return self._request("POST", path, request)
+
+    def get_crawl(self, crawl_id: str, *, skip: int | None = None) -> dict[str, Any]:
+        """Read a crawl job: its state and its pages from skip; follow next_skip."""
+        path = f"/v1/crawl/{quote_path(crawl_id, safe='')}"
+        query: dict[str, Any] = {
+            "skip": skip,
+        }
+        encoded = urlencode(
+            {
+                key: str(value).lower() if isinstance(value, bool) else value
+                for key, value in query.items()
+                if value is not None
+            }
+        )
+        if encoded:
+            path += "?" + encoded
+        return self._request("GET", path, None)
+
+    def cancel_crawl(self, crawl_id: str) -> dict[str, Any]:
+        """Stop a crawl job; the pages it read stay."""
+        path = f"/v1/crawl/{quote_path(crawl_id, safe='')}"
+        return self._request("DELETE", path, None)
 
     def web_search_answers(
         self,
@@ -351,6 +422,74 @@ class Client:
     def web_search_answer(self, answer_id: str) -> dict[str, Any]:
         """Open one kept web search answer as it was given."""
         path = f"/v1/web-search/answers/{quote_path(answer_id, safe='')}"
+        return self._request("GET", path, None)
+
+    def list_account_requests(
+        self,
+        *,
+        endpoint: str | None = None,
+        key_id: str | None = None,
+        status: str | None = None,
+        from_: str | None = None,
+        to: str | None = None,
+        cursor: str | None = None,
+        limit: int | None = None,
+    ) -> dict[str, Any]:
+        """List the account's Search API and Extract API calls, charged or not, newest first."""
+        path = "/v1/account/requests"
+        query: dict[str, Any] = {
+            "endpoint": endpoint,
+            "key_id": key_id,
+            "status": status,
+            "from": from_,
+            "to": to,
+            "cursor": cursor,
+            "limit": limit,
+        }
+        encoded = urlencode(
+            {
+                key: str(value).lower() if isinstance(value, bool) else value
+                for key, value in query.items()
+                if value is not None
+            }
+        )
+        if encoded:
+            path += "?" + encoded
+        return self._request("GET", path, None)
+
+    def get_account_request(self, request_log_id: str) -> dict[str, Any]:
+        """Open one call of the request log, with its reply where it is kept."""
+        path = f"/v1/account/requests/{quote_path(request_log_id, safe='')}"
+        return self._request("GET", path, None)
+
+    def get_account_usage(
+        self,
+        *,
+        group: str | None = None,
+        format: str | None = None,
+        from_: str | None = None,
+        to: str | None = None,
+    ) -> dict[str, Any]:
+        """
+        Sum calls and spend by day, endpoint, key or end user, for the Search API, the Extract
+        API and Deep Search, as JSON or CSV.
+        """
+        path = "/v1/account/usage"
+        query: dict[str, Any] = {
+            "group": group,
+            "format": format,
+            "from": from_,
+            "to": to,
+        }
+        encoded = urlencode(
+            {
+                key: str(value).lower() if isinstance(value, bool) else value
+                for key, value in query.items()
+                if value is not None
+            }
+        )
+        if encoded:
+            path += "?" + encoded
         return self._request("GET", path, None)
 
     def workspace_list_notifications(
@@ -722,6 +861,11 @@ class Client:
         path = "/v1/capacity/referral"
         return self._request("GET", path, None)
 
+    def get_capacity_partner(self) -> dict[str, Any]:
+        """Read a partner's own link, terms and monthly sign-ups, payments and commission."""
+        path = "/v1/capacity/partner"
+        return self._request("GET", path, None)
+
     def capture_capacity_referral(self, request: dict[str, Any]) -> dict[str, Any]:
         """Remember the first referral visit for sign-up within thirty days."""
         path = "/v1/capacity/referral/visit"
@@ -732,10 +876,74 @@ class Client:
         path = "/v1/capacity/history"
         return self._request("GET", path, None)
 
+    def list_capacity_payments(
+        self,
+        *,
+        cursor: str | None = None,
+        limit: int | None = None,
+    ) -> dict[str, Any]:
+        """
+        List the account's payments as receipts, newest first; app store payments are counted,
+        not listed, since the store issues their receipts.
+        """
+        path = "/v1/capacity/payments"
+        query: dict[str, Any] = {
+            "cursor": cursor,
+            "limit": limit,
+        }
+        encoded = urlencode(
+            {
+                key: str(value).lower() if isinstance(value, bool) else value
+                for key, value in query.items()
+                if value is not None
+            }
+        )
+        if encoded:
+            path += "?" + encoded
+        return self._request("GET", path, None)
+
+    def get_capacity_payment_receipt(self, payment_id: str) -> dict[str, Any]:
+        """
+        Read one payment's receipt: paid, tax, credit added with any prepayment bonus, refunds
+        and the cash value of the credit left; an app store payment answers 409
+        receipt_issued_by_store.
+        """
+        path = f"/v1/capacity/payments/{quote_path(payment_id, safe='')}/receipt"
+        return self._request("GET", path, None)
+
     def claim_free_capacity(self) -> dict[str, Any]:
         """Claim the one-time free balance for a verified eligible account."""
         path = "/v1/capacity/free"
         return self._request("POST", path, None)
+
+    def get_capacity_auto_topup(self) -> dict[str, Any]:
+        """
+        Read the automatic top-up setting, its saved card, this month's charges and the allowed
+        ranges.
+        """
+        path = "/v1/capacity/auto-topup"
+        return self._request("GET", path, None)
+
+    def set_capacity_auto_topup(self) -> dict[str, Any]:
+        """
+        Turn automatic top-up on or off and set its level, amount or search pack, and monthly
+        limits (owner only).
+        """
+        path = "/v1/capacity/auto-topup"
+        return self._request("PUT", path, None)
+
+    def start_capacity_auto_topup_card(self) -> dict[str, Any]:
+        """
+        Open a Stripe page to save or change the card for automatic top-up, with no payment
+        (owner only).
+        """
+        path = "/v1/capacity/auto-topup/card"
+        return self._request("POST", path, None)
+
+    def remove_capacity_auto_topup_card(self) -> dict[str, Any]:
+        """Remove the saved card; automatic top-up turns off (owner only)."""
+        path = "/v1/capacity/auto-topup/card"
+        return self._request("DELETE", path, None)
 
     def set_capacity_budget(self, request: dict[str, Any]) -> dict[str, Any]:
         """Set an owner-approved monthly account spending maximum."""

@@ -8,7 +8,7 @@ Source URL and read time on every value.
 
 Three products:
 
-1. Search API: `GET /v1/web-search`, $5 per 1,000 searches. The most accurate web search API in the world (scores and method: https://specstream.ai/benchmarks).
+1. Search API: `GET /v1/web-search`, $5 per 1,000 searches of up to 10 results, or $1 on the fast tier. The most accurate web search API in the world (scores and method: https://specstream.ai/benchmarks).
 2. Extract API: `POST /v1/extract`, up to 20 URLs a call (web pages, PDF, Word, Excel), $0.80 per 1,000 pages. A page with no text is not charged.
 3. Deep Search: ask in plain words and get every match on the live web, in structured rows, priced per row (5 cents, 15 cents or $1 a row, plus 5 cents for a person's email and 15 cents for a phone). A run that finds nothing costs nothing.
 
@@ -63,7 +63,7 @@ Give the key only what the task needs: its scope, projects, an expiry and a spen
 | `q` | The search question or request in everyday words (1 to 2,000 characters). Quoted phrases are searched as phrases |
 | `passages` | Optional. Set `true` to include the main text passages of the top matching pages |
 
-Calls `GET /v1/web-search` ($5 per 1,000 searches, no quote needed). Returns `kind` (`fact` or `list`), `answer` (with `value`, `page` and `seen_at`), `rows`, ranked `sources` and optional `passages`.
+Calls `GET /v1/web-search` ($5 per 1,000 searches of up to 10 results, or $1 on the fast tier, no quote needed). Returns `kind` (`fact` or `list`), `answer` (with `value`, `page` and `seen_at`), `rows`, ranked `sources` and optional `passages`.
 
 ### `specstream_extract_pages`
 

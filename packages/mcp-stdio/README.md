@@ -56,7 +56,7 @@ Reconnect your client and list the tools. They cover three products: Search API,
 
 | Product | Tool | Input | Price |
 |---|---|---|---|
-| Search API | `search_web` | `q`: the question in everyday words, in any language, up to 2,000 characters | $5 per 1,000 searches |
+| Search API | `search_web` | `q`: the question in everyday words, in any language, up to 2,000 characters | $5 per 1,000 searches, $1 per 1,000 with `speed=fast` |
 | Extract API | `read_pages` | `urls`: 1 to 20 URLs. `format`: `markdown` (the default) or `text` | $0.80 per 1,000 pages |
 
 Each call takes its price from your balance and needs no quote or approval.

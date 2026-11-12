@@ -114,7 +114,7 @@ class SpecStreamAPI:
 
 
     def web_search(self, q: str, *, passages: bool = False) -> dict[str, Any]:
-        """Search the live web with GET /v1/web-search ($5 per 1,000 searches, no quote needed)."""
+        """Search the live web with GET /v1/web-search ($5 per 1,000 searches of up to 10 results, or $1 on the fast tier, no quote needed)."""
         query = (q or "").strip()
         if not query or len(query) > 2000:
             raise ValueError("q must be between 1 and 2,000 characters.")

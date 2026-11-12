@@ -166,11 +166,11 @@ class SpecStreamGetListResultsTool(_SpecStreamTool):
 
 
 class SpecStreamWebSearchTool(_SpecStreamTool):
-    """Search the live web in seconds with the SpecStream Search API (GET /v1/web-search, $5 per 1,000 searches)."""
+    """Search the live web in seconds with the SpecStream Search API (GET /v1/web-search, $5 per 1,000 searches of up to 10 results, or $1 on the fast tier)."""
 
     name: str = "specstream_web_search"
     description: str = (
-        "Search the live web in seconds with the SpecStream Search API ($5 per 1,000 searches, no quote needed). "
+        "Search the live web in seconds with the SpecStream Search API ($5 per 1,000 searches of up to 10 results, or $1 on the fast tier, no quote needed). "
         "Returns JSON with kind ('fact' or 'list'), answer (value, page and seen_at), matching rows, ranked sources and optional passages."
     )
     args_schema: Type[BaseModel] = WebSearchInput

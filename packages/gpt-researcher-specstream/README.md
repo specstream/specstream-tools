@@ -8,7 +8,7 @@ Source URL and read time on every value.
 
 Three products:
 
-1. Search API: `GET /v1/web-search`, $5 per 1,000 searches. The most accurate web search API in the world (scores and method: https://specstream.ai/benchmarks).
+1. Search API: `GET /v1/web-search`, $5 per 1,000 searches of up to 10 results, or $1 on the fast tier. The most accurate web search API in the world (scores and method: https://specstream.ai/benchmarks).
 2. Extract API: `POST /v1/extract`, up to 20 URLs a call (web pages, PDF, Word, Excel), $0.80 per 1,000 pages. A page with no text is not charged.
 3. Deep Search: Ask in plain words. Get every match on the live web, in structured rows. Priced per row.
 

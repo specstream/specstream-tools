@@ -16,7 +16,7 @@ export const read = action({
 
 /**
  * Search the live web in seconds with the SpecStream Search API
- * (`GET /v1/web-search`, $5 per 1,000 searches, no quote needed).
+ * (`GET /v1/web-search`, $5 per 1,000 searches of up to 10 results, or $1 on the fast tier, no quote needed).
  */
 export const webSearch = action({
   args: { q: v.string(), passages: v.optional(v.boolean()) },

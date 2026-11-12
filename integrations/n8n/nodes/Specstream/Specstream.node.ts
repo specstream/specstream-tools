@@ -74,7 +74,7 @@ export class Specstream implements INodeType {
         displayOptions: { show: { resource: ["web"] } },
         options: [
           { name: "Extract Pages", value: "extractPages", action: "Extract pages", description: "Read the main text, title and published date of 1 to 20 web pages, PDFs, Word or Excel files live ($0.80 per 1,000 pages)" },
-          { name: "Web Search", value: "webSearch", action: "Search the web", description: "Answer a question from the live web in seconds with the Search API ($5 per 1,000 searches of up to 10 results)" },
+          { name: "Web Search", value: "webSearch", action: "Search the web", description: "Answer a question from the live web in seconds with the Search API ($5 per 1,000 searches of up to 10 results, or $1 on the fast tier)" },
         ],
         default: "webSearch",
       },

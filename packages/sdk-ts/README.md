@@ -16,7 +16,7 @@ Create an API key under **Agents & API** in your SpecStream workspace and keep i
 
 SpecStream has three products: Search API, Extract API and Deep Search. The first two take one call at a flat price, with no quote or approval. The sections after this one cover Deep Search.
 
-`client.webSearch` calls the [Search API](https://specstream.ai/docs/search-api), `GET /v1/web-search`, at $5 per 1,000 searches. It is the most accurate web search API in the world ([benchmarks](https://specstream.ai/benchmarks)) and answers from the live web in a few seconds. Write `q` in everyday words, in any language.
+`client.webSearch` calls the [Search API](https://specstream.ai/docs/search-api), `GET /v1/web-search`, at $5 per 1,000 searches of up to 10 results, or $1 on the fast tier. It is the most accurate web search API in the world ([benchmarks](https://specstream.ai/benchmarks)) and answers from the live web in a few seconds. Write `q` in everyday words, in any language.
 
 `client.extractPages` calls the [Extract API](https://specstream.ai/docs/extract-api), `POST /v1/extract`, at $0.80 per 1,000 pages. It takes up to 20 URLs a call, reads web pages, PDF, Word and Excel, and returns each one's main text as `markdown` (the default) or `text`. A page with no text is free.
 
@@ -37,7 +37,7 @@ for (const page of extract.results) console.log(page.url, page.status, page.text
 
 ## Drop-in for the API you already call
 
-SpecStream answers calls written for these search APIs at its own address, in each API's own reply shape. To switch, change the base address and the key. Each search call is one Search API web search on your SpecStream key: $0.005 for up to 10 results ($5 per 1,000 searches), and each 10 results more in the same call add $0.006.
+SpecStream answers calls written for these search APIs at its own address, in each API's own reply shape. To switch, change the base address and the key. Each search call is one Search API web search on your SpecStream key. A drop-in call runs the fast search: $0.001 for up to 10 results ($1 per 1,000 searches), and each 10 results more in the same call add $0.0012. A call that asks for an answer or the API's thorough mode runs the default search: $0.005 for up to 10 results, and $0.006 for each 10 more.
 
 | API you call | Base address you have | SpecStream address | Where the SpecStream key goes |
 | --- | --- | --- | --- |
@@ -61,7 +61,7 @@ tavily = TavilyClient(api_key=os.environ["SPECSTREAM_API_KEY"], api_base_url="ht
 exa = Exa(api_key=os.environ["SPECSTREAM_API_KEY"], base_url="https://api.specstream.ai/exa")
 ```
 
-- A Brave call that sends no `count` is priced as 20 results ($0.011). Send `count=10` for $0.005.
+- A call that names no result count returns 10 results, at $0.001 on the fast search. Brave's own default is 20: send `count=20` for 20 results at $0.0022.
 - A Firecrawl `/v2/scrape` call is one Extract API page at $0.0008. The Firecrawl JavaScript SDK works with this address; the Firecrawl Python SDK does not yet.
 - Each route's request and reply fields: [specstream.ai/agents.md](https://specstream.ai/agents.md). Create a key under **Agents & API** at [specstream.ai/workspace](https://specstream.ai/workspace). New accounts start with $10 of credit, no card.
 
@@ -114,7 +114,7 @@ If the response is lost, `getCapacityRequest(savedRequestKey)` returns the same 
 
 ## Pricing
 
-New accounts start with $10 of credit, no card. The Search API costs $5 per 1,000 searches and the Extract API $0.80 per 1,000 pages. In Deep Search, a delivered result costs 5 cents, 15 cents or $1 depending on how many facts it carries. No result, no charge. See [pricing](https://specstream.ai/pricing).
+New accounts start with $10 of credit, no card. The Search API costs $5 per 1,000 searches of up to 10 results, or $1 on the fast tier, and the Extract API $0.80 per 1,000 pages. In Deep Search, a delivered result costs 5 cents, 15 cents or $1 depending on how many facts it carries. No result, no charge. See [pricing](https://specstream.ai/pricing).
 
 ## Links
 

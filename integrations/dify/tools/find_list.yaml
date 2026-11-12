@@ -6,7 +6,7 @@ identity:
 description:
   human:
     en_US: Ask for a list in plain words. SpecStream prices it first and starts it only if the price is within your maximum.
-  llm: Starts a SpecStream list from a plain-English request describing what every row must meet and the details to bring back, for example "roofing companies in Columbus, Ohio with their website and phone". The list starts only if its price is at or below the maximum price set on this tool; otherwise it doesn't start, costs nothing, and the price is returned. Waits up to the given number of seconds and returns the rows found so far with the list ID, so Get List Results can fetch the rest later.
+  llm: Starts a SpecStream dataset request from plain words describing what every row must meet and the details to bring back. The run starts only if its price is at or below the maximum price set on this tool; otherwise it does not start, costs nothing, and the price is returned. Waits up to the given number of seconds and returns the rows found so far with the list ID, so Get List Results can fetch the rest later.
 parameters:
   - name: request
     type: string

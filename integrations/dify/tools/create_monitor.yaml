@@ -1,0 +1,98 @@
+identity:
+  name: create_monitor
+  author: specstream
+  label:
+    en_US: Create a Monitor
+description:
+  human:
+    en_US: Watch a list on a schedule. Each run checks the rows again or finds new matches, within the limits per run and per month you set.
+  llm: Creates a SpecStream monitor for a list ID from Find a List. Each run reads the live web again, hourly to monthly. watch_for 'changes' rechecks the list's rows (half the row rate for a changed row, 1 cent for an unchanged row); 'new' looks for new matching rows. The monitor is made only if one run's current price is at or below the maximum per run set on this tool; otherwise nothing is made or charged. Returns the monitor ID, its state and the next run time.
+parameters:
+  - name: list_id
+    type: string
+    required: true
+    form: llm
+    label:
+      en_US: List ID
+    human_description:
+      en_US: The list ID returned by Find a List. It starts with fnd_.
+    llm_description: The list ID returned by Find a List, starting with fnd_.
+  - name: watch_for
+    type: select
+    required: true
+    form: form
+    default: changes
+    options:
+      - value: changes
+        label:
+          en_US: Changes to the rows
+      - value: new
+        label:
+          en_US: New matching rows
+    label:
+      en_US: Watch for
+    human_description:
+      en_US: Check the rows you have again, or look for new rows that match the request.
+  - name: frequency
+    type: select
+    required: true
+    form: form
+    default: daily
+    options:
+      - value: hourly
+        label:
+          en_US: Every hour
+      - value: daily
+        label:
+          en_US: Every day
+      - value: weekly
+        label:
+          en_US: Every week
+      - value: monthly
+        label:
+          en_US: Every 30 days
+    label:
+      en_US: How often
+    human_description:
+      en_US: How often the monitor runs.
+  - name: new_results_per_run
+    type: number
+    required: false
+    form: form
+    default: 25
+    min: 1
+    max: 1000
+    label:
+      en_US: New rows per run
+    human_description:
+      en_US: When watching for new rows, the most new rows one run looks for.
+  - name: max_price_per_run_usd
+    type: number
+    required: true
+    form: form
+    label:
+      en_US: Maximum price per run (USD)
+    human_description:
+      en_US: The most one run may cost. Set by you, never by the model. A run above it does not start.
+  - name: max_price_per_month_usd
+    type: number
+    required: true
+    form: form
+    label:
+      en_US: Maximum price per month (USD)
+    human_description:
+      en_US: The most the monitor may spend in one calendar month.
+  - name: months
+    type: number
+    required: false
+    form: form
+    default: 3
+    min: 1
+    max: 24
+    label:
+      en_US: Run for (months)
+    human_description:
+      en_US: How long the monitor keeps running. After that it stops on its own.
+extra:
+  python:
+    source: tools/create_monitor.py

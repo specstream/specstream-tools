@@ -286,7 +286,7 @@ export class SpecStreamClient {
 
   /**
    * Search the live web with the Search API (`GET /v1/web-search`, $5 per 1,000
-   * searches). No quote is needed.
+   * searches of up to 10 results, or $1 on the fast tier). No quote is needed.
    */
   async webSearch(
     ctx: ActionCtx,

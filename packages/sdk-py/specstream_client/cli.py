@@ -75,7 +75,8 @@ def _parser() -> argparse.ArgumentParser:
                 options["action"] = argparse.BooleanOptionalAction
             else:
                 options["type"] = int if kind == "integer" else str
-            command.add_argument("--" + parameter.replace("_", "-"), **options)
+            flag = "--" + parameter.rstrip("_").replace("_", "-")
+            command.add_argument(flag, dest=parameter, **options)
     return parser
 
 

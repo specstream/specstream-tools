@@ -1,7 +1,7 @@
 /** The SpecStream REST calls the tools share: read a request, price it, start it within a maximum, read its rows. */
 
 export const DEFAULT_BASE_URL = "https://api.specstream.ai";
-export const USER_AGENT = "@specstream/ai-sdk/0.2.2";
+export const USER_AGENT = "@specstream/ai-sdk/0.3.0";
 /** A list runs for up to about five minutes, so the tools wait a little longer than that by default. */
 export const DEFAULT_WAIT_SECONDS = 420;
 export const DEFAULT_POLL_INTERVAL_SECONDS = 3;
@@ -185,7 +185,7 @@ export class SpecStreamClient {
   }
 
   private async request(
-    method: "GET" | "POST",
+    method: "GET" | "POST" | "PATCH",
     path: string,
     body?: Record<string, unknown>,
     options: { allow404?: boolean; abortSignal?: AbortSignal } = {},
@@ -235,7 +235,7 @@ export class SpecStreamClient {
     return data;
   }
 
-  /** Search the live web with GET /v1/web-search ($5 per 1,000 searches, no quote needed). */
+  /** Search the live web with GET /v1/web-search ($5 per 1,000 searches of up to 10 results, or $1 on the fast tier, no quote needed). */
   async webSearch(query: string, options: { passages?: boolean; abortSignal?: AbortSignal } = {}): Promise<Record<string, unknown>> {
     const q = (query ?? "").trim();
     if (!q || q.length > 2000) throw new Error("q must be between 1 and 2,000 characters.");
@@ -359,6 +359,237 @@ export class SpecStreamClient {
     }
     return found;
   }
+
+  /**
+   * Checks a list again on a schedule. Each check reads the live web for the list's rows.
+   * Nothing is saved when one check can cost more than `maxPricePerRunUsd`.
+   */
+  async monitorList(listId: string, options: MonitorListOptions): Promise<MonitorListResult> {
+    const findId = (listId ?? "").trim();
+    if (!findId) throw new Error("Give the list_id of the list to monitor.");
+    const every = options.every ?? "day";
+    const cadenceSeconds = CADENCE_SECONDS[every];
+    if (!cadenceSeconds) throw new Error('every must be "hour", "day", "week" or "month".');
+    const perRunCents = Math.round(Number(options.maxPricePerRunUsd) * 100);
+    if (!(perRunCents > 0)) throw new Error("maxPricePerRunUsd must be greater than 0.");
+    const periodCents =
+      options.maxPricePerMonthUsd === undefined
+        ? perRunCents * Math.ceil((31 * 86_400) / cadenceSeconds)
+        : Math.round(Number(options.maxPricePerMonthUsd) * 100);
+    if (!(periodCents >= perRunCents)) throw new Error("maxPricePerMonthUsd must cover at least one check.");
+    const { abortSignal } = options;
+
+    // Times come from the start of the hour, so a retried step sends the same schedule and gets the one it saved.
+    const hourStart = Math.floor(this.now() / 3_600_000) * 3_600_000;
+    const first = options.firstRunAt ? options.firstRunAt.getTime() : hourStart + cadenceSeconds * 1000;
+    const until = options.until ? options.until.getTime() : first + 365 * 86_400_000;
+    if (!Number.isFinite(first) || !Number.isFinite(until) || until <= first) {
+      throw new Error("until must come after the first check.");
+    }
+
+    const list = (await this.request("GET", `/v1/finds/${encodeURIComponent(findId)}`, undefined, { abortSignal })) ?? {};
+    if (typeof list.ast_hash !== "string" || !list.ast_hash) {
+      throw new SpecStreamError("SpecStream returned a response this package couldn't read.");
+    }
+    const units = Math.max(1, Math.min(Math.trunc(Number(list.requested_count)) || 25, 10_000));
+    // A list in a project is checked in that project; the API refuses any other.
+    const scope = {
+      ast_hash: list.ast_hash,
+      operation: "refresh",
+      parent_find_id: findId,
+      requested_units: units,
+      ...(typeof list.project_id === "string" && list.project_id ? { project_id: list.project_id } : {}),
+    };
+    const quote = (await this.request("POST", "/v1/capacity/quotes", scope, { abortSignal })) ?? {};
+    const maximumCents = Math.trunc(Number(quote.maximum_cents)) || 0;
+    if (maximumCents > perRunCents) {
+      return {
+        status: "over_maximum",
+        list_id: findId,
+        maximum_price_usd: maximumCents / 100,
+        message: `Nothing was saved: one check of this list can cost up to ${dollars(maximumCents)}, above the maximum of ${dollars(perRunCents)} per check. Raise maxPricePerRunUsd.`,
+      };
+    }
+    const firstDueAt = new Date(first).toISOString();
+    const validUntil = new Date(until).toISOString();
+    const digest = await sha256Hex(`${findId}|${cadenceSeconds}|${perRunCents}|${periodCents}|${firstDueAt}|${validUntil}`);
+    const schedule =
+      (await this.request(
+        "POST",
+        "/v1/capacity/schedules",
+        {
+          idempotency_key: `${this.keyPrefix}-monitor-${digest.slice(0, 32)}`,
+          scope,
+          cadence_seconds: cadenceSeconds,
+          first_due_at: firstDueAt,
+          per_run_cents: perRunCents,
+          period_cents: periodCents,
+          valid_until: validUntil,
+        },
+        { abortSignal },
+      )) ?? {};
+    return monitorView(schedule);
+  }
+
+  /** Every monitor of the account, running, paused or ended. Reading is free. */
+  async monitors(abortSignal?: AbortSignal): Promise<Monitor[]> {
+    const found: Monitor[] = [];
+    let after: string | null = null;
+    for (;;) {
+      const query: URLSearchParams = new URLSearchParams({ limit: "100", ...(after ? { after } : {}) });
+      const page: Record<string, unknown> = (await this.request("GET", `/v1/capacity/schedules?${query}`, undefined, { abortSignal })) ?? {};
+      for (const item of Array.isArray(page.schedules) ? page.schedules : []) {
+        if (isObject(item)) found.push(monitorView(item));
+      }
+      const next: string | null = typeof page.next_after === "string" && page.next_after ? page.next_after : null;
+      if (!next || next === after) break;
+      after = next;
+    }
+    return found;
+  }
+
+  /** A monitor's recent checks, newest first: each one's time, outcome, reason and the list it made. Reading is free. */
+  async monitorRuns(monitorId: string, options: { limit?: number; abortSignal?: AbortSignal } = {}): Promise<MonitorRun[]> {
+    const limit = Math.max(1, Math.min(Math.trunc(Number(options.limit ?? 50)) || 50, 100));
+    const page =
+      (await this.request(
+        "GET",
+        `/v1/capacity/schedules/${encodeURIComponent(requireId(monitorId))}/occurrences?limit=${limit}`,
+        undefined,
+        { abortSignal: options.abortSignal },
+      )) ?? {};
+    return (Array.isArray(page.occurrences) ? page.occurrences : []).filter(isObject).map((item) => ({
+      due_at: String(item.due_at ?? ""),
+      status: String(item.status ?? ""),
+      reason: item.reason == null ? null : String(item.reason),
+      list_id: item.find_id == null ? null : String(item.find_id),
+    }));
+  }
+
+  /** Checks the list once now, inside the monitor's own limits. Its regular times stay as they are. */
+  async runMonitorNow(monitorId: string, abortSignal?: AbortSignal): Promise<{ monitor_id: string; list_id: string; started_at: string }> {
+    const id = requireId(monitorId);
+    const run = (await this.request("POST", `/v1/capacity/schedules/${encodeURIComponent(id)}/run`, undefined, { abortSignal })) ?? {};
+    if (!run.find_id) throw new SpecStreamError("SpecStream returned a response this package couldn't read.");
+    return { monitor_id: id, list_id: String(run.find_id), started_at: String(run.started_at ?? "") };
+  }
+
+  /** Stops the checks until `resumeMonitor`. Missed checks are never bought later. */
+  pauseMonitor(monitorId: string, abortSignal?: AbortSignal): Promise<Monitor> {
+    return this.setMonitorState(monitorId, "paused", abortSignal);
+  }
+
+  /** Starts the checks again from the next time due. */
+  resumeMonitor(monitorId: string, abortSignal?: AbortSignal): Promise<Monitor> {
+    return this.setMonitorState(monitorId, "active", abortSignal);
+  }
+
+  /** Ends the monitor for good. The lists it made stay yours. */
+  deleteMonitor(monitorId: string, abortSignal?: AbortSignal): Promise<Monitor> {
+    return this.setMonitorState(monitorId, "deleted", abortSignal);
+  }
+
+  private async setMonitorState(monitorId: string, state: "active" | "paused" | "deleted", abortSignal?: AbortSignal): Promise<Monitor> {
+    const id = requireId(monitorId);
+    const current = (await this.monitors(abortSignal)).find((monitor) => monitor.monitor_id === id);
+    if (!current) throw new SpecStreamError(`No monitor ${id} on this account.`);
+    const changed =
+      (await this.request(
+        "PATCH",
+        `/v1/capacity/schedules/${encodeURIComponent(id)}`,
+        { expected_version: current.version, state },
+        { abortSignal },
+      )) ?? {};
+    return monitorView(changed);
+  }
+}
+
+export type MonitorEvery = "hour" | "day" | "week" | "month";
+
+const CADENCE_SECONDS: Record<MonitorEvery, number> = { hour: 3_600, day: 86_400, week: 604_800, month: 2_592_000 };
+
+export type MonitorListOptions = {
+  /** How often to check the list. "month" is every 30 days. Defaults to "day". */
+  every?: MonitorEvery;
+  /** The most one check may cost, in US dollars. Above it, nothing is saved. */
+  maxPricePerRunUsd: number;
+  /** The most the monitor may spend in one UTC calendar month, checks run on demand included. Defaults to the per-check maximum times the checks in 31 days. */
+  maxPricePerMonthUsd?: number;
+  /** The first check. Defaults to one interval after the current hour began. */
+  firstRunAt?: Date;
+  /** The monitor ends here. Defaults to one year after the first check. */
+  until?: Date;
+  abortSignal?: AbortSignal;
+};
+
+/** A saved monitor, as the API reports it. */
+export type Monitor = {
+  status: "saved";
+  monitor_id: string;
+  list_id: string | null;
+  /** "active", "paused", "deleted" or another state the API reports, such as a monitor out of credit. */
+  state: string;
+  every_seconds: number;
+  next_run_at: string | null;
+  last_run_at: string | null;
+  last_list_id: string | null;
+  last_reason: string | null;
+  max_price_per_run_usd: number;
+  max_price_per_month_usd: number;
+  valid_until: string | null;
+  version: number;
+  list_link: string | null;
+};
+
+export type MonitorOverMaximum = {
+  status: "over_maximum";
+  list_id: string;
+  maximum_price_usd: number;
+  message: string;
+};
+
+export type MonitorListResult = Monitor | MonitorOverMaximum;
+
+export type MonitorRun = {
+  due_at: string;
+  /** "started", "completed", "blocked", "missed" or another outcome the API reports. */
+  status: string;
+  reason: string | null;
+  list_id: string | null;
+};
+
+function requireId(monitorId: string): string {
+  const id = (monitorId ?? "").trim();
+  if (!id) throw new Error("Give the monitor_id.");
+  return id;
+}
+
+function optionalText(value: unknown): string | null {
+  return typeof value === "string" && value ? value : null;
+}
+
+function monitorView(data: Record<string, unknown>): Monitor {
+  if (typeof data.schedule_id !== "string" || !data.schedule_id) {
+    throw new SpecStreamError("SpecStream returned a response this package couldn't read.");
+  }
+  const scope = isObject(data.scope) ? data.scope : {};
+  const listId = optionalText(scope.parent_find_id);
+  return {
+    status: "saved",
+    monitor_id: data.schedule_id,
+    list_id: listId,
+    state: String(data.state ?? ""),
+    every_seconds: Math.trunc(Number(data.cadence_seconds)) || 0,
+    next_run_at: optionalText(data.next_due_at),
+    last_run_at: optionalText(data.last_occurrence_at),
+    last_list_id: optionalText(data.last_find_id),
+    last_reason: optionalText(data.last_reason),
+    max_price_per_run_usd: (Math.trunc(Number(data.per_run_cents)) || 0) / 100,
+    max_price_per_month_usd: (Math.trunc(Number(data.monthly_maximum_cents ?? data.period_cents)) || 0) / 100,
+    valid_until: optionalText(data.valid_until),
+    version: Math.trunc(Number(data.version)) || 0,
+    list_link: listId ? listLink(listId) : null,
+  };
 }
 
 function isObject(value: unknown): value is Record<string, unknown> {

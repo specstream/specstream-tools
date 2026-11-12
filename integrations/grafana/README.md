@@ -15,6 +15,6 @@ Use the tables in any panel, in transformations, and in alerts.
 2. In Grafana, add a data source, pick SpecStream, and paste the key. The key is stored encrypted and is sent only to https://api.specstream.ai.
 3. Choose Save and test.
 
-Each search is one Search API call at $5 per 1,000 searches. Reading a saved list is free. The plugin never starts a Deep Search run and never spends credit on a list.
+Each search is one Search API call at $5 per 1,000 searches of up to 10 results, or $1 on the fast tier. Reading a saved list is free. The plugin never starts a Deep Search run and never spends credit on a list.
 
 Docs: https://specstream.ai/docs.

@@ -341,7 +341,7 @@ pack.addFormula({
 pack.addFormula({
   name: "WebSearch",
   description:
-    "Searches the live web in seconds with the SpecStream Search API ($5 per 1,000 searches) and returns the answer or top matching row.",
+    "Searches the live web in seconds with the SpecStream Search API ($5 per 1,000 searches of up to 10 results, or $1 on the fast tier) and returns the answer or top matching row.",
   parameters: [
     coda.makeParameter({ type: coda.ParameterType.String, name: "question", description: "The question in everyday words (1 to 2,000 characters)." }),
   ],

@@ -26,6 +26,8 @@ on:
           - langchain-js
           - gpt-researcher
           - pydantic-ai
+          - airflow
+          - ruby
 
 jobs:
   npm:
@@ -52,14 +54,14 @@ jobs:
         run: npm publish --access public --provenance
 
   pypi:
-    if: ${{ contains(fromJSON('["sdk-py","mcp-stdio","langchain","llamaindex","crewai","haystack","gpt-researcher","pydantic-ai"]'), inputs.package) }}
+    if: ${{ contains(fromJSON('["sdk-py","mcp-stdio","langchain","llamaindex","crewai","haystack","gpt-researcher","pydantic-ai","airflow"]'), inputs.package) }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
       id-token: write
     defaults:
       run:
-        working-directory: ${{ fromJSON('{"sdk-py":"packages/sdk-py","mcp-stdio":"packages/mcp-stdio","langchain":"packages/langchain-specstream","llamaindex":"packages/llama-index-tools-specstream","crewai":"packages/crewai-specstream","haystack":"packages/specstream-haystack","gpt-researcher":"packages/gpt-researcher-specstream","pydantic-ai":"packages/pydantic-ai-specstream"}')[inputs.package] }}
+        working-directory: ${{ fromJSON('{"sdk-py":"packages/sdk-py","mcp-stdio":"packages/mcp-stdio","langchain":"packages/langchain-specstream","llamaindex":"packages/llama-index-tools-specstream","crewai":"packages/crewai-specstream","haystack":"packages/specstream-haystack","gpt-researcher":"packages/gpt-researcher-specstream","pydantic-ai":"packages/pydantic-ai-specstream","airflow":"packages/airflow-provider-specstream"}')[inputs.package] }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -72,3 +74,25 @@ jobs:
           mv dist "$GITHUB_WORKSPACE/dist"
       # Trusted Publisher upload (OIDC), with attestations.
       - uses: pypa/gh-action-pypi-publish@release/v1
+
+  # RubyGems trusted publishing (OIDC): the gem "specstream" trusts this file
+  # (release.yml in specstream/specstream-tools), so no API key is stored here.
+  # A new gem needs a pending trusted publisher on rubygems.org first.
+  rubygems:
+    if: ${{ inputs.package == 'ruby' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    defaults:
+      run:
+        working-directory: packages/specstream-ruby
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+      - run: for f in test/test_*.rb; do ruby -Ilib -Itest "$f" || exit 1; done
+      - run: gem build specstream.gemspec
+      - uses: rubygems/configure-rubygems-credentials@v1.0.0
+      - run: gem push specstream-*.gem

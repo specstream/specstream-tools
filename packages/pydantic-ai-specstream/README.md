@@ -8,7 +8,7 @@ Source URL and read time on every value.
 
 Three products:
 
-1. Search API: `GET /v1/web-search`, $5 per 1,000 searches of up to 10 results. The most accurate web search API in the world (scores and method: https://specstream.ai/benchmarks).
+1. Search API: `GET /v1/web-search`, $5 per 1,000 searches of up to 10 results, or $1 on the fast tier. The most accurate web search API in the world (scores and method: https://specstream.ai/benchmarks).
 2. Extract API: `POST /v1/extract`, up to 20 URLs a call (web pages, PDF, Word, Excel), $0.80 per 1,000 pages. A page with no text is not charged.
 3. Deep Search: Ask in plain words. Get every match on the live web, in structured rows. Priced per row.
 
@@ -68,7 +68,7 @@ agent = Agent.from_file('agent.yaml', custom_capability_types=[SpecStreamCapabil
 
 | Function | What it gives the agent | Cost |
 | --- | --- | --- |
-| `specstream_search_tool()` | A `specstream_search` tool: calls `GET /v1/web-search` and returns the answer, matching rows and ranked sources, with page passages when `passages=True` | $5 per 1,000 searches of up to 10 results |
+| `specstream_search_tool()` | A `specstream_search` tool: calls `GET /v1/web-search` and returns the answer, matching rows and ranked sources, with page passages when `passages=True` | $5 per 1,000 searches, $1 per 1,000 with `speed=fast` |
 | `specstream_extract_tool()` | A `specstream_extract` tool: calls `POST /v1/extract` and returns the main text, title and published date of 1 to 20 web pages, PDF, Word or Excel files | $0.80 per 1,000 pages (pages with no text are free) |
 | `specstream_toolset()` | A `FunctionToolset` with both tools, for `Agent(toolsets=[...])` | |
 

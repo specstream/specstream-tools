@@ -1,6 +1,6 @@
 ---
 name: continue-work
-description: Read the finished rows with the page behind each fact, send them where the person works, and start new work only on purpose.
+description: Read the finished rows with each value's source URL and read time, send them where the person works, and start new work only on purpose.
 ---
 
 # Read, send and continue

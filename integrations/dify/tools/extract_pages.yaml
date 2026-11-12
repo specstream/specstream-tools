@@ -1,0 +1,38 @@
+identity:
+  name: extract_pages
+  author: specstream
+  label:
+    en_US: Extract Pages
+description:
+  human:
+    en_US: Read the main text, title and published date of 1 to 20 web pages, PDFs, Word or Excel files live ($0.80 per 1,000 pages, empty pages free).
+  llm: Reads the main text, title and published date of 1 to 20 URLs (web pages, PDF, Word or Excel) live with the SpecStream Extract API (POST /v1/extract, $0.80 per 1,000 pages, a page with no text is free, no quote needed).
+parameters:
+  - name: urls
+    type: string
+    required: true
+    form: llm
+    label:
+      en_US: URLs
+    human_description:
+      en_US: 1 to 20 http or https URLs separated by newlines or commas.
+    llm_description: 1 to 20 http or https URLs separated by newlines or commas.
+  - name: format
+    type: select
+    required: false
+    form: form
+    default: markdown
+    options:
+      - value: markdown
+        label:
+          en_US: Markdown
+      - value: text
+        label:
+          en_US: Plain text
+    label:
+      en_US: Output format
+    human_description:
+      en_US: Markdown (keeps headings, lists and links) or plain text.
+extra:
+  python:
+    source: tools/extract_pages.py

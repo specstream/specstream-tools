@@ -2,7 +2,7 @@
 
 A [Singer](https://www.singer.io/) tap for [SpecStream](https://specstream.ai), built with the [Meltano Singer SDK](https://sdk.meltano.com).
 
-SpecStream is the live web data engine. One platform to build, search, extract, enrich, map, and monitor data across the entire web. Three products: Search API (`GET /v1/web-search`, $5 per 1,000 searches, the most accurate web search API in the world, proof at https://specstream.ai/benchmarks), Extract API (`POST /v1/extract`, up to 20 URLs a call, $0.80 per 1,000 pages, a page with no text is free) and Deep Search (structured rows, 5¢, 15¢ or $1 a row). You ask in plain words for the data you need, and it returns every match as structured data, each value with the page it was read from. Each request becomes a list in your SpecStream workspace.
+SpecStream is the live web data engine. One platform to build, search, extract, enrich, map, and monitor data across the entire web. Three products: Search API (`GET /v1/web-search`, $5 per 1,000 searches of up to 10 results, or $1 on the fast tier, the most accurate web search API in the world, proof at https://specstream.ai/benchmarks), Extract API (`POST /v1/extract`, up to 20 URLs a call, $0.80 per 1,000 pages, a page with no text is free) and Deep Search (structured rows, 5¢, 15¢ or $1 a row). You ask in plain words for the data you need, and it returns every match as structured data, each value with the page it was read from. Each request becomes a list in your SpecStream workspace.
 
 This tap reads those lists into any Singer target or Meltano project. It only reads: it never starts a request or spends from your SpecStream balance.
 

@@ -21,8 +21,14 @@ credentials_for_provider:
       en_US: Create a key in SpecStream under Agents & API. New accounts get $10 of credit.
     url: https://specstream.ai/workspace/settings
 tools:
+  - tools/web_search.yaml
+  - tools/extract_pages.yaml
   - tools/find_list.yaml
   - tools/get_list_results.yaml
+  - tools/find_public_records.yaml
+  - tools/get_public_records.yaml
+  - tools/create_monitor.yaml
+  - tools/get_monitor_runs.yaml
 extra:
   python:
     source: provider/specstream.py

@@ -1,7 +1,7 @@
 {
   "name": "specstream",
   "version": "1.0.0",
-  "description": "SpecStream is the live web data engine for teams and agents. The Search API answers a question from the live web, $5 per 1,000 searches. The Extract API reads up to 20 web pages, PDF, Word and Excel files a call, $0.80 per 1,000 pages. Deep Search finds every match on the live web as structured rows and monitors them for change. Every value carries its source URL and read time. The plugin is free to install. Use of the SpecStream API is billed under SpecStream's terms, and Deep Search shows the most a run can cost before it runs.",
+  "description": "SpecStream is the live web data engine for teams and agents. The Search API answers a question from the live web, $5 per 1,000 searches of up to 10 results, or $1 on the fast tier. The Extract API reads up to 20 web pages, PDF, Word and Excel files a call, $0.80 per 1,000 pages. Deep Search finds every match on the live web as structured rows and monitors them for change. Every value carries its source URL and read time. The plugin is free to install. Use of the SpecStream API is billed under SpecStream's terms, and Deep Search shows the most a run can cost before it runs.",
   "author": {
     "name": "SpecStream",
     "email": "support@specstream.ai"

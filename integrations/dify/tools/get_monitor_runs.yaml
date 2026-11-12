@@ -1,0 +1,33 @@
+identity:
+  name: get_monitor_runs
+  author: specstream
+  label:
+    en_US: Get Monitor Runs
+description:
+  human:
+    en_US: See each run of a monitor, with the list each run made.
+  llm: Reads the latest runs of a SpecStream monitor by its monitor ID (from Create a Monitor), newest first. Each run has its time, status (started, blocked, missed or expired), the reason when it did not run, and the list ID of its results for Get List Results. Costs nothing.
+parameters:
+  - name: monitor_id
+    type: string
+    required: true
+    form: llm
+    label:
+      en_US: Monitor ID
+    human_description:
+      en_US: The monitor ID returned by Create a Monitor. It starts with csc_.
+    llm_description: The monitor ID returned by Create a Monitor, starting with csc_.
+  - name: limit
+    type: number
+    required: false
+    form: form
+    default: 10
+    min: 1
+    max: 100
+    label:
+      en_US: Number of runs
+    human_description:
+      en_US: How many of the latest runs to return.
+extra:
+  python:
+    source: tools/get_monitor_runs.py

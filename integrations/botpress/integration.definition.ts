@@ -11,7 +11,7 @@ export default new IntegrationDefinition({
   name: integrationName,
   title: 'SpecStream',
   description:
-    'The live web data engine. Search API: the most accurate web search API in the world, $5 per 1,000 searches (specstream.ai/benchmarks). Extract API: $0.80 per 1,000 pages. Deep Search: structured rows.',
+    'The live web data engine. Search API: the most accurate web search API in the world, $5 per 1,000 searches of up to 10 results, or $1 on the fast tier (specstream.ai/benchmarks). Extract API: $0.80 per 1,000 pages. Deep Search: structured rows.',
   version: '1.0.1',
   readme: 'hub.md',
   icon: 'icon.svg',

@@ -1,0 +1,570 @@
+{
+  "name": "Send new nonprofits to Slack and Google Sheets with SpecStream",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## New nonprofits, every day\n\nEach day at 11:00 UTC this workflow reads the new rows of a SpecStream feed of nonprofits and sends each one to Slack and to a Google Sheet. The feed is rebuilt from its official source by about 10:00 UTC.\n\n### How it works\n1. **Get new rows** asks for the rows of the last 7 days your account has not had, up to 1,000, late rows included. To get older rows not delivered yet (up to 90 days back), remove its `since` parameter.\n2. **Only rows not seen before** drops any row this workflow already sent, so each row reaches Slack and the sheet once.\n3. If the new rows cost more than `max_cents`, SpecStream sends the oldest rows it pays for and the next day brings the rest. If it pays for no row, the workflow stops and says how many new rows wait and what they cost.\n\n### Set up (5 minutes)\n1. Create an API key at [specstream.ai](https://specstream.ai) under **Agents & API**.\n2. In n8n, create a **Bearer Auth** credential with the key and pick it in **Get new rows**.\n3. In **Your feed**, keep the page or paste another feed's page path from [specstream.ai/data/lists](https://specstream.ai/data/lists).\n4. Connect Google Sheets and pick a sheet in **Add to the sheet**. Its first row should hold the column names.\n5. Connect Slack and pick a channel in **Post to Slack**. Run once by hand, then activate.\n\n### Price\n5¢ for each row your account has not had from this feed before. A day with nothing new costs nothing. The default maximum is $5.00 a day.",
+        "height": 900,
+        "width": 560
+      },
+      "id": "54d2385e-00a6-576c-b819-f865a3f0dacd",
+      "name": "Overview",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -640,
+        -420
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 1. Your feed\n**Your feed** holds the feed's page path and `max_cents`, the most one day may cost, in cents.",
+        "height": 440,
+        "width": 480,
+        "color": 7
+      },
+      "id": "7ad387dc-3a92-5912-8332-88fc3ff53783",
+      "name": "Step 1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -60,
+        -220
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 2. New rows, within your maximum\nOne call to the rows address. **Over your maximum or an error?** stops the run with the count and the price when the new rows cost more than `max_cents`, or with SpecStream's message when the call fails.",
+        "height": 440,
+        "width": 680,
+        "color": 7
+      },
+      "id": "9f74880a-6ed4-5623-bd12-71966deeb898",
+      "name": "Step 2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        440,
+        -220
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 3. One item per row\nEach row becomes one item. **Only rows not seen before** keeps the rows this workflow has not sent yet, by the row's id.",
+        "height": 440,
+        "width": 480,
+        "color": 7
+      },
+      "id": "28521816-298c-516b-966e-59b8eab4ba13",
+      "name": "Step 3",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1140,
+        -220
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 4. Slack and the sheet\nOne Slack message per row with its key columns, linked to the official record. The sheet gets one row per row of the feed.",
+        "height": 640,
+        "width": 480,
+        "color": 7
+      },
+      "id": "88314a48-cb63-5f2d-925c-c8b9f18e5ef2",
+      "name": "Step 4",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1640,
+        -320
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 11
+            }
+          ]
+        }
+      },
+      "id": "5102b414-a06e-593e-9893-51d05797e476",
+      "name": "Every day at 11:00 UTC",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f4e43342-acbb-5058-97ab-f079eb08b600",
+              "name": "page",
+              "type": "string",
+              "value": "/data/nonprofits/california"
+            },
+            {
+              "id": "048b1e95-b2cf-5aac-9047-2e5a32b8517e",
+              "name": "max_cents",
+              "type": "number",
+              "value": 500
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7bd353c1-d3c0-5159-9fe9-1a5f57e1833a",
+      "name": "Your feed",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.specstream.ai/v1/data/lists/rows",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "page",
+              "value": "={{ String($json.page).trim() }}"
+            },
+            {
+              "name": "since",
+              "value": "={{ $now.minus({days: 7}).toISODate() }}"
+            },
+            {
+              "name": "new_only",
+              "value": "true"
+            },
+            {
+              "name": "limit",
+              "value": "1000"
+            },
+            {
+              "name": "max_cents",
+              "value": "={{ $json.max_cents }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "specstream-n8n-template"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "b3ce4d68-02f0-591c-8bb5-fd9d269c532f",
+      "name": "Get new rows",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        500,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f6673a5f-b6d6-5b01-8dda-31396e7a1ebd",
+              "leftValue": "={{ !!$json.error || (($json.rows || []).length === 0 && ($json.new_rows_waiting || 0) > 0) }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "f860c2bf-11b2-5f94-8998-f805e7ac39c2",
+      "name": "Over your maximum or an error?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        720,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "errorMessage": "={{ $json.error && $json.error.code === 'invalid_token' && ($json.error.details || {}).required_scope ? 'SpecStream: this API key cannot buy rows. Create a key with the ' + (($json.error.details || {}).required_scope || 'finds:spend') + ' scope under Agents & API.' : $json.error && $json.error.code !== 'payment_required' ? 'SpecStream: ' + ($json.error.message || 'the rows could not be read.') : (($json.error ? ($json.error.details || {}) : $json).new_rows_waiting || 0) + ((($json.error ? ($json.error.details || {}) : $json).new_rows_waiting || 0) === 1 ? ' new row waits and costs $' : ' new rows wait and cost $') + ((($json.error ? ($json.error.details || {}) : $json).price_cents_all || 0) / 100).toFixed(2) + '. Raise max_cents in Your feed to get them.' }}"
+      },
+      "id": "e939552b-2f02-5de1-a1ea-6a8ce213188c",
+      "name": "Stop and say why",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        940,
+        -160
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "rows",
+        "options": {}
+      },
+      "id": "679104c2-ef45-5ddb-80d0-4653276f8248",
+      "name": "One item per row",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "removeItemsSeenInPreviousExecutions",
+        "dedupeValue": "={{ $json._id || ($('Your feed').first().json.page + '\\n' + JSON.stringify(Object.fromEntries(Object.keys($json).sort().map((k) => [k, $json[k]])))).hash('sha256') }}",
+        "options": {
+          "historySize": 100000
+        }
+      },
+      "id": "bc58700d-5427-5a16-92dd-715643018fa1",
+      "name": "Only rows not seen before",
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        1420,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $json[\"Name\"] }}",
+            "EIN": "={{ $json[\"EIN\"] }}",
+            "Street": "={{ $json[\"Street\"] }}",
+            "City": "={{ $json[\"City\"] }}",
+            "State": "={{ $json[\"State\"] }}",
+            "ZIP": "={{ $json[\"ZIP\"] }}",
+            "NTEE code": "={{ $json[\"NTEE code\"] }}",
+            "Cause": "={{ $json[\"Cause\"] }}",
+            "Subsection": "={{ $json[\"Subsection\"] }}",
+            "Ruling year": "={{ $json[\"Ruling year\"] }}",
+            "Ruling month": "={{ $json[\"Ruling month\"] }}",
+            "Revenue": "={{ $json[\"Revenue\"] }}",
+            "Assets": "={{ $json[\"Assets\"] }}",
+            "Income": "={{ $json[\"Income\"] }}",
+            "Latest tax period": "={{ $json[\"Latest tax period\"] }}",
+            "Source": "={{ $json[\"Source\"] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "EIN",
+              "displayName": "EIN",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Street",
+              "displayName": "Street",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "City",
+              "displayName": "City",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "State",
+              "displayName": "State",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ZIP",
+              "displayName": "ZIP",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "NTEE code",
+              "displayName": "NTEE code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Cause",
+              "displayName": "Cause",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Subsection",
+              "displayName": "Subsection",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Ruling year",
+              "displayName": "Ruling year",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Ruling month",
+              "displayName": "Ruling month",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Revenue",
+              "displayName": "Revenue",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Assets",
+              "displayName": "Assets",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Income",
+              "displayName": "Income",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Latest tax period",
+              "displayName": "Latest tax period",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Source",
+              "displayName": "Source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d64d7f69-5aa1-50ae-90ad-f11d65b27e04",
+      "name": "Add to the sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1700,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "text": "=<{{ $json[\"Source\"] }}|{{ $json[\"Name\"] }}> · {{ $json[\"City\"] }} · {{ $json[\"State\"] }} · {{ $json[\"Cause\"] }}",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "id": "13086bf7-3fc5-5778-a052-636482710c09",
+      "name": "Post to Slack",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.2,
+      "position": [
+        1700,
+        100
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Every day at 11:00 UTC": {
+      "main": [
+        [
+          {
+            "node": "Your feed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Your feed": {
+      "main": [
+        [
+          {
+            "node": "Get new rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get new rows": {
+      "main": [
+        [
+          {
+            "node": "Over your maximum or an error?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Over your maximum or an error?": {
+      "main": [
+        [
+          {
+            "node": "Stop and say why",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "One item per row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "One item per row": {
+      "main": [
+        [
+          {
+            "node": "Only rows not seen before",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Only rows not seen before": {
+      "main": [
+        [
+          {
+            "node": "Add to the sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Post to Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Etc/UTC"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}

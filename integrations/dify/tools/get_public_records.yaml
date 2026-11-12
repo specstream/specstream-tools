@@ -1,0 +1,70 @@
+identity:
+  name: get_public_records
+  author: specstream
+  label:
+    en_US: Get Public Records
+description:
+  human:
+    en_US: Get the rows of a public-records list by date. Each row costs 5¢ the first time your account gets it, and never more than the maximum price you set.
+  llm: Reads the rows of a SpecStream public-records list by its page (from Find Public Records, for example /data/form-d/state/texas), dated on or after a day, oldest first. Each row has _id (stable), _date and one field per column. A row the account has not had costs 5 cents; a row it had comes again free. Never charges above the maximum price the user set; at a maximum of 0 it returns only the number of rows waiting and their price. Returns next_cursor when more rows wait.
+parameters:
+  - name: page
+    type: string
+    required: true
+    form: llm
+    label:
+      en_US: List page
+    human_description:
+      en_US: The list's page from Find Public Records, for example /data/form-d/state/texas.
+    llm_description: The list's page path from Find Public Records, for example /data/form-d/state/texas, or its full https://specstream.ai address.
+  - name: since
+    type: string
+    required: false
+    form: llm
+    label:
+      en_US: Since (YYYY-MM-DD)
+    human_description:
+      en_US: The first day of the rows to get. Leave empty for the last 7 days.
+    llm_description: The first date of the rows to return, as YYYY-MM-DD. Empty means 7 days back.
+  - name: limit
+    type: number
+    required: false
+    form: llm
+    default: 100
+    min: 1
+    max: 1000
+    label:
+      en_US: Number of rows
+    human_description:
+      en_US: How many rows to return in one call, from 1 to 1,000.
+    llm_description: How many rows to return in one call, from 1 to 1000.
+  - name: cursor
+    type: string
+    required: false
+    form: llm
+    label:
+      en_US: Cursor
+    human_description:
+      en_US: The next_cursor of the call before, to get the rows after it.
+    llm_description: The next_cursor value of the previous call, to continue. Empty starts from the first row.
+  - name: new_only
+    type: boolean
+    required: false
+    form: form
+    default: false
+    label:
+      en_US: New rows only
+    human_description:
+      en_US: Return only the rows your account has not had from this list (up to 90 days back), for a daily check.
+  - name: max_price_usd
+    type: number
+    required: true
+    form: form
+    default: 0
+    label:
+      en_US: Maximum price per call (USD)
+    human_description:
+      en_US: The most one call may cost. Set by you, never by the model. At 0 the call only counts the rows and prices them.
+extra:
+  python:
+    source: tools/get_public_records.py

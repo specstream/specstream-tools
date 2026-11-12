@@ -27,7 +27,7 @@ Try it for one run without installing: `pi -e npm:@specstream/pi-package`.
 
 | Skill | What it does |
 |---|---|
-| `/skill:specstream-search-web` | Answers a question from the live web with sources ($5 per 1,000 searches) |
+| `/skill:specstream-search-web` | Answers a question from the live web with sources ($5 per 1,000 searches of up to 10 results, or $1 on the fast tier) |
 | `/skill:specstream-extract-pages` | Reads up to 20 web pages, PDFs, Word or Excel files ($0.80 per 1,000 pages) |
 | `/skill:specstream-compile` | Shows how SpecStream read your request before anything runs |
 | `/skill:specstream-review-work` | Gets the exact price and its expiry |

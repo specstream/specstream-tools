@@ -252,7 +252,7 @@ export class Client {
     return this.request("GET", path) as Promise<Schemas["WorkspaceSearchPage"]>;
   }
 
-  webSearch(query: { "q": string; "passages"?: boolean; }): Promise<Schemas["WebSearchPage"]> {
+  webSearch(query: { "q": string; "passages"?: boolean; "num"?: number; "page"?: number; "speed"?: "default" | "fast"; "news"?: boolean; "language"?: string; "country"?: string; "safe"?: "off" | "moderate" | "strict"; "engines"?: string; "engines_asked"?: boolean; "pages_wait_ms"?: number; }): Promise<Schemas["WebSearchPage"]> {
     let path = `/v1/web-search`;
     const queryString = new URLSearchParams();
     for (const [key, value] of Object.entries(query))
@@ -264,6 +264,35 @@ export class Client {
   extractPages(request: Schemas["ExtractRequest"]): Promise<Schemas["ExtractPage"]> {
     let path = `/v1/extract`;
     return this.request("POST", path, request) as Promise<Schemas["ExtractPage"]>;
+  }
+
+  listSearchDialects(): Promise<Schemas["SearchDialectList"]> {
+    let path = `/v1/search-dialects`;
+    return this.request("GET", path) as Promise<Schemas["SearchDialectList"]>;
+  }
+
+  mapSite(request: Schemas["MapRequest"]): Promise<Schemas["MapPage"]> {
+    let path = `/v1/map`;
+    return this.request("POST", path, request) as Promise<Schemas["MapPage"]>;
+  }
+
+  startCrawl(request: Schemas["CrawlRequest"]): Promise<Schemas["CrawlStarted"]> {
+    let path = `/v1/crawl`;
+    return this.request("POST", path, request) as Promise<Schemas["CrawlStarted"]>;
+  }
+
+  getCrawl(crawlId: string, query: { "skip"?: number; } = {}): Promise<Schemas["CrawlPage"]> {
+    let path = `/v1/crawl/${encodeURIComponent(crawlId)}`;
+    const queryString = new URLSearchParams();
+    for (const [key, value] of Object.entries(query))
+      if (value !== undefined && value !== null) queryString.set(key, String(value));
+    if (queryString.size) path += "?" + queryString.toString();
+    return this.request("GET", path) as Promise<Schemas["CrawlPage"]>;
+  }
+
+  cancelCrawl(crawlId: string): Promise<Schemas["CrawlPage"]> {
+    let path = `/v1/crawl/${encodeURIComponent(crawlId)}`;
+    return this.request("DELETE", path) as Promise<Schemas["CrawlPage"]>;
   }
 
   webSearchAnswers(query: { "q"?: string; "limit"?: number; "cursor"?: string; } = {}): Promise<Schemas["WebSearchAnswerPage"]> {
@@ -278,6 +307,29 @@ export class Client {
   webSearchAnswer(answerId: string): Promise<Schemas["WebSearchAnswer"]> {
     let path = `/v1/web-search/answers/${encodeURIComponent(answerId)}`;
     return this.request("GET", path) as Promise<Schemas["WebSearchAnswer"]>;
+  }
+
+  listAccountRequests(query: { "endpoint"?: "/v1/web-search" | "/v1/web-search/batch" | "/v1/extract"; "key_id"?: string; "status"?: string; "from"?: string; "to"?: string; "cursor"?: string; "limit"?: number; } = {}): Promise<Schemas["ApiRequestPage"]> {
+    let path = `/v1/account/requests`;
+    const queryString = new URLSearchParams();
+    for (const [key, value] of Object.entries(query))
+      if (value !== undefined && value !== null) queryString.set(key, String(value));
+    if (queryString.size) path += "?" + queryString.toString();
+    return this.request("GET", path) as Promise<Schemas["ApiRequestPage"]>;
+  }
+
+  getAccountRequest(requestLogId: string): Promise<Schemas["ApiRequestDetail"]> {
+    let path = `/v1/account/requests/${encodeURIComponent(requestLogId)}`;
+    return this.request("GET", path) as Promise<Schemas["ApiRequestDetail"]>;
+  }
+
+  getAccountUsage(query: { "group"?: "day" | "endpoint" | "key" | "end_user"; "format"?: "json" | "csv"; "from"?: string; "to"?: string; } = {}): Promise<Schemas["UsagePage"]> {
+    let path = `/v1/account/usage`;
+    const queryString = new URLSearchParams();
+    for (const [key, value] of Object.entries(query))
+      if (value !== undefined && value !== null) queryString.set(key, String(value));
+    if (queryString.size) path += "?" + queryString.toString();
+    return this.request("GET", path) as Promise<Schemas["UsagePage"]>;
   }
 
   workspaceListNotifications(query: { "tab"?: "all" | "unread" | "archived"; "limit"?: number; "cursor"?: string; } = {}): Promise<Schemas["WorkspaceNotificationPage"]> {
@@ -511,6 +563,11 @@ export class Client {
     return this.request("GET", path) as Promise<Schemas["CapacityReferralData"]>;
   }
 
+  getCapacityPartner(): Promise<Schemas["CapacityPartnerReportData"]> {
+    let path = `/v1/capacity/partner`;
+    return this.request("GET", path) as Promise<Schemas["CapacityPartnerReportData"]>;
+  }
+
   captureCapacityReferral(request: Schemas["CapacityReferralVisitRequest"]): Promise<Schemas["CapacityReferralVisitData"]> {
     let path = `/v1/capacity/referral/visit`;
     return this.request("POST", path, request) as Promise<Schemas["CapacityReferralVisitData"]>;
@@ -521,9 +578,43 @@ export class Client {
     return this.request("GET", path) as Promise<Schemas["CapacityHistoryData"]>;
   }
 
+  listCapacityPayments(query: { "cursor"?: string; "limit"?: number; } = {}): Promise<Schemas["CapacityReceiptPageData"]> {
+    let path = `/v1/capacity/payments`;
+    const queryString = new URLSearchParams();
+    for (const [key, value] of Object.entries(query))
+      if (value !== undefined && value !== null) queryString.set(key, String(value));
+    if (queryString.size) path += "?" + queryString.toString();
+    return this.request("GET", path) as Promise<Schemas["CapacityReceiptPageData"]>;
+  }
+
+  getCapacityPaymentReceipt(paymentId: string): Promise<Schemas["CapacityReceiptData"]> {
+    let path = `/v1/capacity/payments/${encodeURIComponent(paymentId)}/receipt`;
+    return this.request("GET", path) as Promise<Schemas["CapacityReceiptData"]>;
+  }
+
   claimFreeCapacity(): Promise<Schemas["CapacityBalanceData"]> {
     let path = `/v1/capacity/free`;
     return this.request("POST", path) as Promise<Schemas["CapacityBalanceData"]>;
+  }
+
+  getCapacityAutoTopup(): Promise<{ [key: string]: unknown; }> {
+    let path = `/v1/capacity/auto-topup`;
+    return this.request("GET", path) as Promise<{ [key: string]: unknown; }>;
+  }
+
+  setCapacityAutoTopup(): Promise<{ [key: string]: unknown; }> {
+    let path = `/v1/capacity/auto-topup`;
+    return this.request("PUT", path) as Promise<{ [key: string]: unknown; }>;
+  }
+
+  startCapacityAutoTopupCard(): Promise<{ [key: string]: unknown; }> {
+    let path = `/v1/capacity/auto-topup/card`;
+    return this.request("POST", path) as Promise<{ [key: string]: unknown; }>;
+  }
+
+  removeCapacityAutoTopupCard(): Promise<{ [key: string]: unknown; }> {
+    let path = `/v1/capacity/auto-topup/card`;
+    return this.request("DELETE", path) as Promise<{ [key: string]: unknown; }>;
   }
 
   setCapacityBudget(request: Schemas["CapacityBalanceLimitRequest"]): Promise<{ [key: string]: unknown; }> {

@@ -1,4 +1,4 @@
-export { specstreamTools, type SpecStreamToolsOptions } from "./tools.js";
+export { specstreamTools, type SpecStreamToolsOptions, type SpecStreamBaseTools, type SpecStreamMonitorTools } from "./tools.js";
 export {
   SpecStreamClient,
   SpecStreamError,
@@ -12,6 +12,12 @@ export {
   type FoundList,
   type ListResults,
   type ListRow,
+  type Monitor,
+  type MonitorEvery,
+  type MonitorListOptions,
+  type MonitorListResult,
+  type MonitorOverMaximum,
+  type MonitorRun,
   type NeedsEdit,
   type OverMaximum,
   type SpecStreamClientOptions,

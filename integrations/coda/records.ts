@@ -92,7 +92,7 @@ export function shownColumns(records: Record[], columns: Column[], limit = 5): s
     .flatMap((column) => (has(column, "source") ? [column.key, `${column.key}_source`] : [column.key]));
 }
 
-// One Coda row: the record's IDs, then each value and the page it came from.
+// One Coda row: the record's IDs, then each value and its source URL.
 export function codaRow(record: Record, columns: Column[]): { [key: string]: string | null } {
   const out: { [key: string]: string | null } = { record_id: record.recordId, entity_id: record.entityId };
   for (const column of columns) {

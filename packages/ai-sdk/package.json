@@ -1,7 +1,7 @@
 {
   "name": "@specstream/ai-sdk",
-  "version": "0.2.2",
-  "description": "The live web data engine for the Vercel AI SDK: Search API ($5 per 1,000 searches), Extract API ($0.80 per 1,000 pages) and Deep Search.",
+  "version": "0.3.0",
+  "description": "The live web data engine for the Vercel AI SDK: Search API ($5 per 1,000 searches of up to 10 results, or $1 on the fast tier), Extract API ($0.80 per 1,000 pages) and Deep Search.",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

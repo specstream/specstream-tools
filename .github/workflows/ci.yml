@@ -60,6 +60,12 @@ jobs:
           python -m pip install -e ".[test]" build
           python -m pytest -q
           python -m build
+      - name: Airflow provider tests
+        working-directory: packages/airflow-provider-specstream
+        run: |
+          python -m pip install -e ".[test]" build
+          python -m pytest -q
+          python -m build
       - name: stdio proxy builds
         working-directory: packages/mcp-stdio
         run: python -m build
@@ -127,3 +133,16 @@ jobs:
       - run: npm run check
       - run: npm test
       - run: npm run plugin:validate
+
+  ruby:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/specstream-ruby
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+      - run: for f in test/test_*.rb; do ruby -Ilib -Itest "$f" || exit 1; done
+      - run: gem build specstream.gemspec

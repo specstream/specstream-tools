@@ -1,0 +1,43 @@
+identity:
+  name: find_public_records
+  author: specstream
+  label:
+    en_US: Find Public Records
+description:
+  human:
+    en_US: Search the public-records lists SpecStream rebuilds every day from official sources (companies, nonprofits, SEC filings, carriers, licenses and more) by words in their title. It costs nothing.
+  llm: Searches the ready public-records lists SpecStream rebuilds every day from official sources, by words in the list title (for example "Form D Texas" or "nonprofits Ohio"). Returns each list's page (its ID for Get Public Records), title, family, number of rows and key column, largest first. Only lists whose rows can be read by date are returned. Costs nothing.
+parameters:
+  - name: words
+    type: string
+    required: false
+    form: llm
+    label:
+      en_US: Words in the list title
+    human_description:
+      en_US: Words every list title must hold, for example "nonprofits Texas". Leave empty to see the largest lists.
+    llm_description: Words every list title must hold (any case), for example "Form D Texas". Empty returns the largest lists.
+  - name: family
+    type: string
+    required: false
+    form: llm
+    label:
+      en_US: Family
+    human_description:
+      en_US: One family of lists only, for example form-d, nonprofits or uk-companies. Leave empty for all.
+    llm_description: Optional family ID to search in, for example form-d, nonprofits, uk-companies or france-companies. Empty searches every family.
+  - name: limit
+    type: number
+    required: false
+    form: llm
+    default: 20
+    min: 1
+    max: 100
+    label:
+      en_US: Number of lists
+    human_description:
+      en_US: How many lists to return, from 1 to 100.
+    llm_description: How many lists to return, from 1 to 100.
+extra:
+  python:
+    source: tools/find_public_records.py

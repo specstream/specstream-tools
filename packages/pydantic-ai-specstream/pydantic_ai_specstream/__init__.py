@@ -128,7 +128,7 @@ def specstream_search_tool(
     client: httpx.AsyncClient | None = None,
     passages: bool = False,
 ) -> Tool[Any]:
-    """A Pydantic AI tool for the Search API (`GET /v1/web-search`, $5 per 1,000 searches of up to 10 results).
+    """A Pydantic AI tool for the Search API (`GET /v1/web-search`, $5 per 1,000 searches of up to 10 results, or $1 on the fast tier).
 
     `passages=True` adds the text of the top pages to every search. The reply holds `kind`, `answer`,
     `rows`, `sources` and, with passages, `passages`.

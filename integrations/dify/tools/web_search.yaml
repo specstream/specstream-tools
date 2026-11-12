@@ -1,0 +1,32 @@
+identity:
+  name: web_search
+  author: specstream
+  label:
+    en_US: Web Search
+description:
+  human:
+    en_US: Answer a question from the live web in seconds with the SpecStream Search API ($5 per 1,000 searches of up to 10 results, or $1 on the fast tier, source URL and read time on every value).
+  llm: Searches the live web in seconds with the SpecStream Search API (GET /v1/web-search, $5 per 1,000 searches of up to 10 results, or $1 on the fast tier, no quote needed). Returns kind ('fact' or 'list'), answer (with value, page and seen_at), matching rows, ranked sources and optional page passages.
+parameters:
+  - name: q
+    type: string
+    required: true
+    form: llm
+    label:
+      en_US: Search query
+    human_description:
+      en_US: The question or search query in everyday words (1 to 2,000 characters). Quoted phrases are searched as phrases.
+    llm_description: The question or search query in everyday words (1 to 2,000 characters).
+  - name: passages
+    type: boolean
+    required: false
+    form: llm
+    default: false
+    label:
+      en_US: Include passages
+    human_description:
+      en_US: Include the main text passages of the top matching pages in the response.
+    llm_description: Set true to include the main text passages of the closest pages.
+extra:
+  python:
+    source: tools/web_search.py

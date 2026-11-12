@@ -1,7 +1,7 @@
 {
   "name": "@specstream/convex",
   "version": "0.2.2",
-  "description": "The live web data engine for Convex: Search API ($5 per 1,000 searches), Extract API ($0.80 per 1,000 pages) and Deep Search.",
+  "description": "The live web data engine for Convex: Search API ($5 per 1,000 searches of up to 10 results, or $1 on the fast tier), Extract API ($0.80 per 1,000 pages) and Deep Search.",
   "keywords": [
     "convex",
     "component",

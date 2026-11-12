@@ -1,0 +1,115 @@
+{
+  "identifier": "specstream-monitor",
+  "name": "SpecStream",
+  "version": "1.0.0",
+  "description": "Monitors for live web data. Describe what to watch in plain words, such as new restaurant permits in Miami, and SpecStream runs it as a scheduled check, hourly to yearly, within a spending limit you set. Each run reads the live web and sends a feed of new and changed records, old and new values side by side, to notifications, Slack, a connected tool or a signed webhook. A first run bills 5¢, 15¢ or $1 a row; a refresh bills half that rate for a changed row and 1¢ for an unchanged row. Remote MCP with OAuth.",
+  "icon": "https://specstream.ai/logo/specstream-logo-1024.png",
+  "category": "web-search",
+  "cloudEndpoint": "https://api.specstream.ai/mcp",
+  "homepage": "https://specstream.ai/docs/schedules",
+  "author": "SpecStream SAS",
+  "authorUrl": "https://specstream.ai",
+  "tags": [
+    "monitoring",
+    "scheduled-checks",
+    "change-detection",
+    "feeds",
+    "web-data",
+    "alerts",
+    "webhooks"
+  ],
+  "prompts": [
+    {
+      "name": "watch_for_changes",
+      "title": "Watch the web on a schedule",
+      "description": "Run a request on a schedule and get a feed of the new and changed records where you work.",
+      "arguments": [
+        {
+          "name": "request",
+          "description": "What to watch, in plain words. For example: new restaurant permits in Miami.",
+          "required": true
+        },
+        {
+          "name": "how_often",
+          "description": "How often to check, such as every weekday at 9:00.",
+          "required": false
+        },
+        {
+          "name": "monthly_limit",
+          "description": "The most the monitor may spend in one month, such as $20.",
+          "required": false
+        },
+        {
+          "name": "send_to",
+          "description": "Where new and changed records go: notifications, a Slack channel, a connected tool or a webhook.",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "see_changes",
+      "title": "See what changed",
+      "description": "Compare a list with its earlier results: each fact that changed, before and after, and where it was seen.",
+      "arguments": [
+        {
+          "name": "list",
+          "description": "The list's name, or words from it.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "review_monitors",
+      "title": "Review my monitors",
+      "description": "List your monitors and each run they made, missed or were blocked on, then pause, resume or delete one.",
+      "arguments": []
+    }
+  ],
+  "tools": [
+    {
+      "name": "compile",
+      "title": "Understand a request",
+      "description": "Fits when the user wants a list or table from the live web, every match or as many as asked, with the same facts on each row, also when a web search returned only part of the list: companies and local businesses, products and stores, jobs, papers, clinical trials, grants, tenders, datasets, repositories and packages, apps, books or podcasts. Not for one fact or a quick answer, which the fast web search gives, or for the text of known pages. A list the user already has is imported first, and its quote takes this reading. Reads the request in everyday words in any language. Returns how SpecStream understood it: what to find, the conditions for every result, the facts to bring back (required or optional), how many, and in what order. The returned ast_hash identifies this reading. For a list the user has, parent_find_id and the operation add facts to it, extend it or refresh it. In that case, what it finds and its conditions stay the same, and only the new facts or the new count are read. The caller needs read access to that list. Nothing runs and nothing is charged."
+    },
+    {
+      "name": "quote_capacity_work",
+      "title": "Get a quote",
+      "description": "Fits when the user wants the price of a request before anything runs. Not for starting the work, which waits for the user's yes to the quote. Prices the reading identified by ast_hash. Operation find prices a new request. Operation extend prices more results, add_facts prices more facts on results the user has, and refresh prices a recheck of them. These three take parent_find_id. For an imported list, operation find with source_import_id and its source_row_ids fills in details or checks each row. The quote shows the most the work can cost. Nothing is spent."
+    },
+    {
+      "name": "create_capacity_schedule",
+      "title": "Create a monitor",
+      "description": "Runs a request on a schedule, hourly to yearly, within a limit per run and per period. Each run reads the live web. A refresh bills half the rate for a changed row and 1 cent for an unchanged row. monthly_maximum_cents is the most the monitor can spend in one UTC calendar month. It equals the limit per period, and that limit covers both the scheduled runs and the runs started on demand. scheduled_monthly_cents is the most the scheduled runs alone can spend in their busiest UTC calendar month: the number of runs in that month times the limit per run, never more than the limit per period."
+    },
+    {
+      "name": "list_capacity_schedules",
+      "title": "List monitors",
+      "description": "Lists the account's monitors and whether each is running or paused. monthly_maximum_cents is the most a monitor can spend in one UTC calendar month, equal to its limit per period. scheduled_monthly_cents is the most its scheduled runs alone can spend in their busiest UTC calendar month."
+    },
+    {
+      "name": "update_capacity_schedule",
+      "title": "Pause, resume or delete a monitor",
+      "description": "Pauses, resumes or deletes a monitor. Missed runs are never bought later."
+    },
+    {
+      "name": "list_capacity_occurrences",
+      "title": "See each monitor run",
+      "description": "Reads a monitor's completed, blocked and missed runs, with the reason for each."
+    },
+    {
+      "name": "set_schedule_delivery",
+      "title": "Choose where a monitor reports",
+      "description": "Sets where new and changed records go when a monitor finds them: notifications, Slack, a connected tool or a signed webhook. Nothing runs."
+    },
+    {
+      "name": "get_collection_changes",
+      "title": "See what changed",
+      "description": "Compares a list with its earlier results: each changed fact, before and after, and where it was seen."
+    },
+    {
+      "name": "get_revisit",
+      "title": "Read what a recheck found",
+      "description": "Reads one page of the records a recheck looked at: what still holds, what changed, and what it could not reach. next_after is the after value for the next page, and it is null on the last page."
+    }
+  ]
+}

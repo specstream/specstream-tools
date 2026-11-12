@@ -7,7 +7,7 @@ export const webSearchAction = createAction({
   auth: specstreamAuth,
   name: 'web_search',
   displayName: 'Web Search',
-  description: 'Answer a question from the live web in seconds with the SpecStream Search API ($5 per 1,000 searches, source URL and read time on every value).',
+  description: 'Answer a question from the live web in seconds with the SpecStream Search API ($5 per 1,000 searches of up to 10 results, or $1 on the fast tier, source URL and read time on every value).',
   props: {
     q: Property.ShortText({
       displayName: 'Search Query',

@@ -237,7 +237,7 @@ export class SpecStreamClient {
     return data;
   }
 
-  /** Search the live web with GET /v1/web-search ($5 per 1,000 searches, no quote needed). */
+  /** Search the live web with GET /v1/web-search ($5 per 1,000 searches of up to 10 results, or $1 on the fast tier, no quote needed). */
   async webSearch(query: string, options: WebSearchOptions = {}): Promise<Record<string, unknown>> {
     const q = (query ?? "").trim();
     if (!q) throw new Error("Provide a search query in q.");

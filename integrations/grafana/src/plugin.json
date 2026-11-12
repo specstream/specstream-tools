@@ -28,6 +28,10 @@
       {
         "name": "Documentation",
         "url": "https://specstream.ai/docs"
+      },
+      {
+        "name": "Source",
+        "url": "https://github.com/specstream/specstream-tools/tree/main/integrations/grafana"
       }
     ],
     "screenshots": [

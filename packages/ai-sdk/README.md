@@ -54,7 +54,7 @@ The tool's result wraps the rows with `status`, `list_id`, `list_link`, `row_cou
 
 | Tool | The model gives | What happens | Cost |
 | --- | --- | --- | --- |
-| `specstream_web_search` | `q`, `passages` | Calls `GET /v1/web-search` and returns the answer, matching rows, ranked sources and optional page passages | $5 per 1,000 searches |
+| `specstream_web_search` | `q`, `passages` | Calls `GET /v1/web-search` and returns the answer, matching rows, ranked sources and optional page passages | $5 per 1,000 searches of up to 10 results, $1 per 1,000 with `speed=fast` |
 | `specstream_extract_pages` | `urls`, `format` | Calls `POST /v1/extract` and returns the clean main text, title and published date of 1 to 20 web pages, PDFs, Word or Excel files | $0.80 per 1,000 pages (empty pages free) |
 | `specstream_find_list` | `request`, `maxResults` (1 to 1000, default 25) | Reads the request, prices it, starts it only within `maxPriceUsd`, waits up to `waitSeconds` (7 minutes by default) and returns every row | Only delivered rows |
 | `specstream_get_list_results` | `listId` | Every row found so far, for a list that was still running | Free |
@@ -72,6 +72,8 @@ Settings, all optional except the price:
 | `locale` | `en-US` | The language and region the request is written in |
 | `baseUrl` | `https://api.specstream.ai` | The SpecStream API address |
 | `fetch` | global `fetch` | Your own `fetch`, for a proxy or a test |
+| `monitorMaxPricePerRunUsd` | not set | The most one check of a monitored list may cost. Set it to give the model the two monitor tools |
+| `monitorMaxPricePerMonthUsd` | per check × checks in 31 days | The most one monitor may spend in a UTC calendar month |
 
 Running on a serverless function? Set `waitSeconds` below the function's time limit. A list that's still running when the wait ends comes back with its `list_id`, and the agent reads the rest with `specstream_get_list_results`.
 
@@ -93,9 +95,54 @@ if ("rows" in list) console.log(list.row_count, list.rows[0].source_url);
 else console.log(list.message); // "over_maximum" or "needs_edit": nothing ran
 ```
 
+## Keep a list current on a schedule
+
+A monitor checks a list again on the live web every hour, day, week or month.
+Each check is a refresh: half the row rate for a row that changed or is new, and 1¢ for a row that comes back unchanged.
+
+```ts
+import { SpecStreamClient } from "@specstream/ai-sdk";
+
+const client = new SpecStreamClient();
+
+const monitor = await client.monitorList("fnd_gk5y3d0r97bvyz0t08zzh75kr6", {
+  every: "week",
+  maxPricePerRunUsd: 2,
+  maxPricePerMonthUsd: 8,
+});
+
+if (monitor.status === "saved") console.log(monitor.monitor_id, monitor.next_run_at);
+else console.log(monitor.message); // "over_maximum": one check costs more than maxPricePerRunUsd, nothing was saved
+```
+
+The client prices one check before it saves anything.
+When one check can cost more than `maxPricePerRunUsd`, nothing is saved.
+`maxPricePerMonthUsd` is the most the monitor spends in one UTC calendar month, checks run on demand included.
+Without it, the limit is `maxPricePerRunUsd` times the checks in 31 days.
+The first check runs one interval after the current hour began, and the monitor ends a year after it, unless you set `firstRunAt` and `until`.
+
+| Call | What it does | Cost |
+| --- | --- | --- |
+| `monitorList(listId, options)` | Prices one check of the list and saves the schedule within your limits | Each check, within the limits |
+| `monitors()` | Every monitor of the account, with its state, next check and last list | Free |
+| `monitorRuns(monitorId)` | The recent checks, newest first: when, the outcome, the reason and the list each one made | Free |
+| `runMonitorNow(monitorId)` | One check now, inside the monitor's limits. The regular times stay as they are | One check |
+| `pauseMonitor(monitorId)`, `resumeMonitor(monitorId)` | Stops and starts the checks. A missed check is never bought later | Free |
+| `deleteMonitor(monitorId)` | Ends the monitor. The lists it made stay yours | Free |
+
+To let an agent start monitors, give the tools a maximum per check.
+The model then gets `specstream_monitor_list` (it picks the list and how often) and `specstream_list_monitors`.
+Without `monitorMaxPricePerRunUsd`, the model can't start recurring work.
+
+```ts
+const tools = specstreamTools({ maxPriceUsd: 5, monitorMaxPricePerRunUsd: 2, monitorMaxPricePerMonthUsd: 20 });
+```
+
+Where each check's new and changed rows go (Slack, email, a sheet, a CRM or a webhook) is set on the monitor in your SpecStream workspace.
+
 ## Money, plainly
 
-- `maxPriceUsd` lives in your code. The model never sees it and can't change it.
+- `maxPriceUsd` and the monitor limits live in your code. The model never sees them and can't change them.
 - You pay for rows that match. Candidates SpecStream couldn't confirm are left out and aren't billed.
 - A retried step asking for the same list within the hour gets the list it already started, not a second bill. Agents retry. Your card shouldn't notice.
 - Rates and plans: [specstream.ai/pricing](https://specstream.ai/pricing).

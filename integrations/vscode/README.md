@@ -12,7 +12,7 @@ This extension adds SpecStream to VS Code two ways: your agent can use it as an 
 
 | Product | What it does | Price |
 | --- | --- | --- |
-| Search API | `GET /v1/web-search`. The most accurate web search API in the world ([scores and method](https://specstream.ai/benchmarks)). | $5 per 1,000 searches |
+| Search API | `GET /v1/web-search`. The most accurate web search API in the world ([scores and method](https://specstream.ai/benchmarks)). | $5 per 1,000 searches, $1 per 1,000 with `speed=fast` |
 | Extract API | `POST /v1/extract`. The main text of up to 20 web pages, PDF, Word or Excel files a call. | $0.80 per 1,000 pages. A page with no text is not charged. |
 | Deep Search | Ask in plain words. Get every match on the live web, in structured rows. | 5¢, 15¢ or $1 a row |
 

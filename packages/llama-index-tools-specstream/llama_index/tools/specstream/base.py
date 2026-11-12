@@ -69,7 +69,7 @@ class SpecStreamToolSpec(BaseToolSpec):
         q: Annotated[str, Field(description="Search query or question in everyday words (1 to 2,000 characters).")],
         passages: Annotated[bool, Field(description="Set True to include main text passages from the top matching pages.")] = False,
     ) -> str:
-        """Search the live web in seconds with the SpecStream Search API (GET /v1/web-search, $5 per 1,000 searches, no quote needed)."""
+        """Search the live web in seconds with the SpecStream Search API (GET /v1/web-search, $5 per 1,000 searches of up to 10 results, or $1 on the fast tier, no quote needed)."""
         return json.dumps(self._client.web_search(q, passages=passages), ensure_ascii=False)
 
     def specstream_extract_pages(

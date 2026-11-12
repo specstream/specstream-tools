@@ -1,0 +1,80 @@
+{
+  "identifier": "specstream-tables",
+  "name": "SpecStream",
+  "version": "1.0.0",
+  "description": "SpecStream is the live web data engine for teams and agents. Deep Search turns a request in plain words into structured rows from the live web: every match found, extracted and enriched into structured records, then monitored for change. It also enriches a list you have. Source URL and read time on every value. The most a run can cost is shown and approved before it runs, only delivered rows are billed at 5 cents, 15 cents or $1 a row, and a run that finds nothing costs nothing. Remote MCP with OAuth.",
+  "icon": "https://specstream.ai/logo/specstream-logo-1024.png",
+  "category": "business",
+  "cloudEndpoint": "https://api.specstream.ai/mcp",
+  "homepage": "https://specstream.ai/docs/mcp",
+  "author": "SpecStream SAS",
+  "authorUrl": "https://specstream.ai",
+  "tags": [
+    "web-data",
+    "structured-data",
+    "data-enrichment",
+    "data-extraction",
+    "change-monitoring",
+    "lead-generation",
+    "company-data",
+    "live-data"
+  ],
+  "prompts": [
+    {
+      "name": "find_data",
+      "title": "Find live web data",
+      "description": "Describe the records you need and get them from the live web, with the source URL and read time on every value.",
+      "arguments": [
+        {
+          "name": "request",
+          "description": "What you need, in plain words. For example: dental clinics in Austin with the owner's name and phone number.",
+          "required": true
+        },
+        {
+          "name": "budget",
+          "description": "The most you want to spend, such as $20.",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "enrich_records",
+      "title": "Add facts to my records",
+      "description": "Bring in your own companies, people or places and fill in what's missing from the live web.",
+      "arguments": [
+        {
+          "name": "records",
+          "description": "Your records: pasted rows, a CSV, or a link to a Google Sheet, Excel workbook or Airtable view.",
+          "required": true
+        },
+        {
+          "name": "facts",
+          "description": "The facts to add. For example: website, headcount and the CEO's email.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "keep_current",
+      "title": "Keep data current",
+      "description": "Run a request on a schedule and get the new and changed records where you work.",
+      "arguments": [
+        {
+          "name": "request",
+          "description": "What to watch, in plain words. For example: new restaurant permits in Miami.",
+          "required": true
+        },
+        {
+          "name": "how_often",
+          "description": "How often to check, such as every weekday at 9:00.",
+          "required": false
+        },
+        {
+          "name": "send_to",
+          "description": "Where new and changed records go: notifications, a Slack channel, a connected tool or a webhook.",
+          "required": false
+        }
+      ]
+    }
+  ]
+}
