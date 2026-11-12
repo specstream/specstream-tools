@@ -89,10 +89,18 @@ jobs:
         working-directory: packages/specstream-ruby
     steps:
       - uses: actions/checkout@v4
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: "3.3"
+      # The runner's own Ruby (3.2 on ubuntu-24.04) and a plain OIDC exchange, the same calls as
+      # rubygems/configure-rubygems-credentials: the org allows only GitHub's and specstream/* actions.
+      - run: ruby --version
       - run: for f in test/test_*.rb; do ruby -Ilib -Itest "$f" || exit 1; done
       - run: gem build specstream.gemspec
-      - uses: rubygems/configure-rubygems-credentials@v1.0.0
+      - name: Exchange the GitHub OIDC token for a short-lived RubyGems key
+        run: |
+          jwt=$(curl -sSf -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=rubygems.org" | python3 -c 'import json, sys; print(json.load(sys.stdin)["value"])')
+          echo "::add-mask::$jwt"
+          reply=$(curl -sS -X POST -H "Content-Type: application/json" -H "Accept: application/json" -d "{\"jwt\": \"$jwt\"}" https://rubygems.org/api/v1/oidc/trusted_publisher/exchange_token)
+          gemkey=$(printf '%s' "$reply" | python3 -c 'import json, sys; print(json.load(sys.stdin).get("rubygems_api_key", ""))' 2>/dev/null || true)
+          if [ -z "$gemkey" ]; then echo "No trusted publisher on rubygems.org accepted this workflow: $(printf '%s' "$reply" | head -c 300)"; exit 1; fi
+          echo "::add-mask::$gemkey"
+          echo "GEM_HOST_API_KEY=$gemkey" >> "$GITHUB_ENV"
       - run: gem push specstream-*.gem

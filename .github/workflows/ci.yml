@@ -141,8 +141,7 @@ jobs:
         working-directory: packages/specstream-ruby
     steps:
       - uses: actions/checkout@v4
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: "3.3"
+      # The runner's own Ruby (3.2 on ubuntu-24.04): the org allows only GitHub's and specstream/* actions.
+      - run: ruby --version
       - run: for f in test/test_*.rb; do ruby -Ilib -Itest "$f" || exit 1; done
       - run: gem build specstream.gemspec
