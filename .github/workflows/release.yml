@@ -28,6 +28,11 @@ on:
           - pydantic-ai
           - airflow
           - ruby
+      rubygems_owner:
+        description: "ruby, first publish only: the RubyGems.org account ID shown on that account's Pending Trusted Publishers page"
+        type: string
+        required: false
+        default: ""
 
 jobs:
   npm:
@@ -95,10 +100,13 @@ jobs:
       - run: for f in test/test_*.rb; do ruby -Ilib -Itest "$f" || exit 1; done
       - run: gem build specstream.gemspec
       - name: Exchange the GitHub OIDC token for a short-lived RubyGems key
+        env:
+          RUBYGEMS_OWNER: ${{ inputs.rubygems_owner }}
         run: |
           jwt=$(curl -sSf -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=rubygems.org" | python3 -c 'import json, sys; print(json.load(sys.stdin)["value"])')
           echo "::add-mask::$jwt"
-          reply=$(curl -sS -X POST -H "Content-Type: application/json" -H "Accept: application/json" -d "{\"jwt\": \"$jwt\"}" https://rubygems.org/api/v1/oidc/trusted_publisher/exchange_token)
+          body=$(JWT="$jwt" OWNER="$RUBYGEMS_OWNER" python3 -c 'import json, os; d = {"jwt": os.environ["JWT"]}; d.update({"owner": os.environ["OWNER"]} if os.environ["OWNER"] else {}); print(json.dumps(d))')
+          reply=$(curl -sS -X POST -H "Content-Type: application/json" -H "Accept: application/json" -d "$body" https://rubygems.org/api/v1/oidc/trusted_publisher/exchange_token)
           gemkey=$(printf '%s' "$reply" | python3 -c 'import json, sys; print(json.load(sys.stdin).get("rubygems_api_key", ""))' 2>/dev/null || true)
           if [ -z "$gemkey" ]; then echo "No trusted publisher on rubygems.org accepted this workflow: $(printf '%s' "$reply" | head -c 300)"; exit 1; fi
           echo "::add-mask::$gemkey"
