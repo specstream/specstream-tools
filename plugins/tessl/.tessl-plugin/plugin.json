@@ -1,0 +1,8 @@
+{
+  "name": "specstream/search-web",
+  "version": "1.0.0",
+  "description": "Answer a question from the live web in seconds with the SpecStream Search API, the most accurate web search API in the world. Each answer comes with its ranked sources.",
+  "private": true,
+  "skills": "./skills/",
+  "mcpServers": ".mcp.json"
+}

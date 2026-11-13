@@ -68,6 +68,51 @@ find = SpecStreamFindList(max_price_usd=20, wait_seconds=600)
 results = SpecStreamGetListResults()
 ```
 
+## Research reports
+
+`SpecStreamResearch` answers a question in plain words with a written report from the live web. Each cited sentence links to a page read in that run, with its read time. Use it when the answer needs many pages read and compared, not a table of rows.
+
+```python
+from langchain_specstream import SpecStreamGetResearch, SpecStreamResearch
+
+research = SpecStreamResearch(depth="quick")
+report = research.invoke({"input": "How do the EU and the US regulate stablecoin reserves in 2026?"})
+tools = [research, SpecStreamGetResearch()]
+```
+
+| Tool | The model gives | What happens | Cost |
+| --- | --- | --- | --- |
+| `specstream_research` | `input` | Calls `POST /v1/research` at the `depth` you set, waits up to `wait_seconds` (7 minutes by default) and returns the report: `content` in Markdown with `[1]` markers, `citations` (page, read time and passage of each cited sentence) and `sources` (every page read) | $0.10 (`quick`), $0.30 (`standard`) or $1.00 (`deep`) a report |
+| `specstream_get_research` | `research_id` | Calls `GET /v1/research/{id}`: the state of a report that was still running, and the report when it is completed | Free |
+
+`depth` lives on the tool, in your code, so the model can't choose a higher price. A report is charged once, when it is delivered. A quick report takes about a minute, a standard report about four minutes and a deep report about five. `include_domains` and `exclude_domains` choose the sites, `length` is `short`, `standard` or `long`, and `json_schema` (a JSON Schema) brings the report back as JSON under `structured` as well. A retried step with the same question and settings within the hour gets the report it already started, not a second bill.
+
+## Browser sessions
+
+Some pages show nothing until a button is clicked, a form is filled in or their JavaScript runs. For those, the agent opens a real browser that SpecStream runs, drives it step by step and closes it.
+
+```python
+from langchain.agents import create_agent
+from langchain_specstream import specstream_browser_tools
+
+agent = create_agent(
+    "anthropic:claude-haiku-5-5",
+    tools=specstream_browser_tools(timeout_s=300, allowed_domains=["example.com"]),
+)
+```
+
+| Tool | The model gives | What happens | Cost |
+| --- | --- | --- | --- |
+| `specstream_open_browser` | `url` (optional) | Calls `POST /v1/browser/sessions` with the limits you set in code and returns the `session_id` | $0.10 an hour of browser time, charged by the second |
+| `specstream_browser_navigate` | `session_id`, `url` | Opens the address | $1 per 1,000 steps |
+| `specstream_browser_read` | `session_id`, `format` | The page's text as it stands after its JavaScript ran, in Markdown or plain text | $1 per 1,000 steps |
+| `specstream_browser_snapshot` | `session_id` | The page's links, buttons and fields, each with a reference | $1 per 1,000 steps |
+| `specstream_browser_click`, `specstream_browser_type` | `session_id`, `target`, `text` | Clicks an element or types into a field, by its reference | $1 per 1,000 steps |
+| `specstream_browser_action` | `session_id`, `tool`, `arguments` | Any other Playwright MCP step: a key press, a select, a wait, a form | $1 per 1,000 steps |
+| `specstream_close_browser` | `session_id` | Calls `POST /v1/browser/sessions/{id}/release` and returns the seconds, the steps and the charge | Free |
+
+`timeout_s` lives on the tool, in your code: the browser ends then, whatever the model does, so 300 seconds is at most $0.0084 of time. `allowed_domains` keeps the browser on the hosts you name. A page a site or your own list refuses comes back as an error the agent can read, not an exception. Browser sessions need langchain-specstream 0.4.0 or later.
+
 ## As a retriever
 
 ```python

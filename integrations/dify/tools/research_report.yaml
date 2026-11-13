@@ -1,0 +1,60 @@
+identity:
+  name: research_report
+  author: specstream
+  label:
+    en_US: Research Report
+description:
+  human:
+    en_US: Ask a question. Get a written report from the live web, with the page behind each cited sentence. The report starts only if its price is within your maximum.
+  llm: SpecStream Research Report. Use it for a question that needs a written, cited answer from many pages of the live web; for one fact or a quick answer use Web Search, and for a complete list or table use Deep Search. Starts a report from the question in plain words. The report starts only if the price of its depth is at or below the maximum price set on this tool; otherwise it does not start, costs nothing, and the price is returned. Waits up to the given number of seconds and returns the report in markdown with numbered citations, and its sources with the time each page was read. When the report is still in work it returns the report ID, so Get Research Report can fetch it later.
+parameters:
+  - name: question
+    type: string
+    required: true
+    form: llm
+    label:
+      en_US: Question
+    human_description:
+      en_US: The question the report answers, in plain words, in any language.
+    llm_description: The question the report answers, in plain words, in any language. Include the place, the period or the companies it is about.
+  - name: depth
+    type: select
+    required: true
+    form: form
+    default: standard
+    options:
+      - value: quick
+        label:
+          en_US: Quick ($0.10)
+      - value: standard
+        label:
+          en_US: Standard ($0.30)
+      - value: deep
+        label:
+          en_US: Deep ($1.00)
+    label:
+      en_US: Depth
+    human_description:
+      en_US: How far the report searches and reads, and its price. You pay once, when the report is delivered.
+  - name: max_price_usd
+    type: number
+    required: true
+    form: form
+    label:
+      en_US: Maximum price (USD)
+    human_description:
+      en_US: The most one report may cost. Set by you, never by the model. Above it, nothing runs.
+  - name: wait_seconds
+    type: number
+    required: false
+    form: form
+    default: 120
+    min: 0
+    max: 150
+    label:
+      en_US: Wait for the report (seconds)
+    human_description:
+      en_US: How long to wait for the report before returning. The report keeps running after that; use Get Research Report for it.
+extra:
+  python:
+    source: tools/research_report.py

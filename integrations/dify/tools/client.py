@@ -14,12 +14,22 @@ class SpecStreamClient:
     def __init__(self, api_key: str) -> None:
         self.session = requests.Session()
         self.session.headers.update(
-            {"Authorization": f"Bearer {api_key.strip()}", "Content-Type": "application/json"}
+            {
+                "Authorization": f"Bearer {api_key.strip()}",
+                "Content-Type": "application/json",
+                "User-Agent": "specstream-dify/0.5.0",
+            }
         )
 
-    def _send(self, method: str, path: str, body: dict[str, Any] | None = None) -> dict[str, Any]:
+    def _send(
+        self,
+        method: str,
+        path: str,
+        body: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
+    ) -> dict[str, Any]:
         response = self.session.request(
-            method, BASE_URL + path, json=body, timeout=60, allow_redirects=False
+            method, BASE_URL + path, json=body, headers=headers, timeout=60, allow_redirects=False
         )
         response.raise_for_status()
         return response.json()["data"]
@@ -40,6 +50,11 @@ class SpecStreamClient:
 
     def post(self, path: str, body: dict[str, Any]) -> dict[str, Any]:
         return self._send("POST", path, body)
+
+    def post_once(self, path: str, body: dict[str, Any], request_key: str) -> dict[str, Any]:
+        """A POST the API runs once for this key: a retry with the same key and body gets the
+        first call's answer."""
+        return self._send("POST", path, body, {"Idempotency-Key": request_key})
 
     def recover(self, request_key: str) -> dict[str, Any] | None:
         try:

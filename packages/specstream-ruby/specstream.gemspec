@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.authors = ["SpecStream"]
   spec.summary = "SpecStream: the live web data engine. One platform to build, search, extract, enrich, map, " \
                  "and monitor data across the entire web."
-  spec.description = "Ruby client for SpecStream's Deep Search API, Search API and Extract API. " \
+  spec.description = "Ruby client for SpecStream's Deep Search API (with monitors on a schedule), Search API and Extract API. " \
                      "Ask for any dataset in plain words, and SpecStream builds it from the entire live web: " \
                      "every match found, extracted and enriched into structured records, then monitored for change. " \
                      "Standard library only."

@@ -1,0 +1,63 @@
+{
+  "name": "n8n-nodes-specstream-browser",
+  "version": "1.0.0",
+  "description": "Opens a real browser in the cloud from an n8n workflow and drives it step by step with SpecStream browser sessions.",
+  "license": "MIT",
+  "homepage": "https://specstream.ai/docs/integrations",
+  "keywords": [
+    "n8n-community-node-package",
+    "specstream",
+    "browser",
+    "headless-browser",
+    "browser-automation",
+    "playwright",
+    "screenshot",
+    "web-scraping",
+    "live-web"
+  ],
+  "author": {
+    "name": "SpecStream",
+    "email": "support@specstream.ai"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/specstream/specstream-tools.git",
+    "directory": "integrations/n8n-browser"
+  },
+  "bugs": {
+    "url": "https://github.com/specstream/specstream-tools/issues"
+  },
+  "scripts": {
+    "build": "n8n-node build",
+    "build:watch": "tsc --watch",
+    "dev": "n8n-node dev",
+    "lint": "n8n-node lint",
+    "lint:fix": "n8n-node lint --fix",
+    "test": "n8n-node build && node test/base.test.js && node test/browser.test.js",
+    "prepublishOnly": "n8n-node lint",
+    "release": "n8n-node release"
+  },
+  "files": [
+    "dist"
+  ],
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "strict": true,
+    "credentials": [
+      "dist/credentials/SpecstreamBrowserApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/SpecstreamBrowser/SpecstreamBrowser.node.js"
+    ]
+  },
+  "devDependencies": {
+    "@n8n/node-cli": "0.55.6",
+    "eslint": "9.32.0",
+    "prettier": "3.6.2",
+    "release-it": "^21.1.0",
+    "typescript": "5.9.2"
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  }
+}

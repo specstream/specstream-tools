@@ -6,6 +6,7 @@ require "time"
 require "uri"
 require_relative "error"
 require_relative "version"
+require_relative "monitors"
 
 module Specstream
   DEFAULT_BASE_URL = "https://api.specstream.ai"
@@ -14,17 +15,21 @@ module Specstream
   RETRY_AFTER_MAX_S = 10.0
 
   # Client for the SpecStream API: Deep Search (read a request, quote it, approve it,
-  # read the rows), the Search API and the Extract API.
+  # read the rows), monitors (check a list again on a schedule, see Specstream::Monitors),
+  # the Search API and the Extract API.
   #
   # Standard library only. Each call opens its own connection, so one client can be
   # shared across threads. Redirects are not followed and no proxy from the
   # environment is used, so the key goes only to the base address.
   class Client
+    include Monitors
+
     attr_reader :base_url, :timeout
 
     # transport: optional callable (method, uri, headers, body) -> [status, headers, body],
-    # for tests and for apps that bring their own HTTP stack.
-    def initialize(api_key, base_url: DEFAULT_BASE_URL, timeout: 150, transport: nil, sleeper: nil)
+    # for tests and for apps that bring their own HTTP stack. clock: optional callable
+    # returning the current Time, for tests.
+    def initialize(api_key, base_url: DEFAULT_BASE_URL, timeout: 150, transport: nil, sleeper: nil, clock: nil)
       key = api_key.to_s.strip
       raise Error, "SPECSTREAM_API_KEY is required" if key.empty?
 
@@ -33,6 +38,7 @@ module Specstream
       @timeout = timeout
       @transport = transport || method(:net_http_transport)
       @sleeper = sleeper || ->(seconds) { sleep(seconds) }
+      @clock = clock
     end
 
     # Never show the key in logs or consoles.

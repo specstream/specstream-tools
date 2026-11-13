@@ -31,7 +31,7 @@ const find = { resource: "list", operation: "findList", request: "Roofers in Col
   const resource = properties.find((p) => p.name === "resource");
   assert.deepStrictEqual(resource.options.map((o) => o.value), ["list", "quote", "web"]);
   const values = properties.filter((p) => p.name === "operation").flatMap((p) => p.options.map((o) => o.value));
-  assert.deepStrictEqual([...values].sort(), ["compile", "confirmAndRun", "extractPages", "findList", "getListRows", "quoteWork", "webSearch"]);
+  assert.deepStrictEqual([...values].sort(), ["compile", "confirmAndRun", "extractPages", "findList", "findRows", "getListRows", "quoteWork", "webSearch"]);
   assert.strictEqual(new Set(values).size, values.length);
   for (const p of properties.filter((p) => p.name === "operation")) {
     assert.ok(p.options.length <= 5 && p.displayOptions.show.resource.length === 1);

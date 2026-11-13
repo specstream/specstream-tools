@@ -1,0 +1,102 @@
+{
+  "id": "specstream-browser",
+  "name": "SpecStream Browser",
+  "description": "A real Chromium browser in the cloud for your agent: open pages, click, type, read and take screenshots, with no browser to install. Sessions cost $0.10 an hour charged by the second, and $1 per 1,000 steps.",
+  "categories": [
+    "computer-use"
+  ],
+  "version": "0.1.0",
+  "configSchema": {
+    "type": "object",
+    "properties": {
+      "apiKey": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "object",
+            "patternProperties": {
+              "^.*$": {}
+            }
+          }
+        ],
+        "description": "SpecStream API key, or a SecretRef. Falls back to the SPECSTREAM_API_KEY environment variable."
+      },
+      "timeoutSeconds": {
+        "type": "integer",
+        "minimum": 60,
+        "maximum": 3600,
+        "description": "The most seconds one browser session runs. Defaults to 300. The model can ask for less per session and never more."
+      },
+      "idleTimeoutSeconds": {
+        "type": "integer",
+        "minimum": 10,
+        "maximum": 600,
+        "description": "A session ends after this many seconds without a step. Defaults to 300."
+      },
+      "allowedDomains": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "maxItems": 100,
+        "description": "Hosts the browser may open, such as example.com or *.example.com. Empty allows every public host. The model can narrow the list per session and never add a host."
+      },
+      "blockMedia": {
+        "type": "boolean",
+        "description": "true skips images, video, audio and fonts, so pages load faster. Screenshots then show no pictures."
+      }
+    },
+    "additionalProperties": false
+  },
+  "activation": {
+    "onStartup": false
+  },
+  "uiHints": {
+    "apiKey": {
+      "label": "SpecStream API key",
+      "help": "Create a key under Agents & API in your SpecStream workspace. Falls back to the SPECSTREAM_API_KEY environment variable.",
+      "sensitive": true,
+      "placeholder": "ss_live_..."
+    },
+    "timeoutSeconds": {
+      "label": "Longest session (seconds)",
+      "help": "A browser session ends after this many seconds at the latest. The model can ask for less and never more. Default 300."
+    },
+    "idleTimeoutSeconds": {
+      "label": "Idle wait (seconds)",
+      "help": "A session ends after this many seconds without a step. Default 300.",
+      "advanced": true
+    },
+    "allowedDomains": {
+      "label": "Allowed hosts",
+      "help": "Hosts the browser may open, such as example.com or *.example.com. Empty allows every public host.",
+      "advanced": true
+    },
+    "blockMedia": {
+      "label": "Skip pictures and media",
+      "help": "Pages load faster. Screenshots then show no pictures.",
+      "advanced": true
+    }
+  },
+  "configContracts": {
+    "secretInputs": {
+      "paths": [
+        {
+          "path": "apiKey",
+          "expected": "string",
+          "ownerKind": "capability"
+        }
+      ]
+    }
+  },
+  "contracts": {
+    "tools": [
+      "specstream_browser_open",
+      "specstream_browser_step",
+      "specstream_browser_read",
+      "specstream_browser_close"
+    ]
+  }
+}

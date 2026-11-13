@@ -10,7 +10,7 @@ import type {
 import { NodeApiError, NodeConnectionTypes, NodeOperationError } from "n8n-workflow";
 
 import { requireConfirmMaxUsd } from "../../lib/confirm_max_usd.js";
-import { flatRowsById, flattenRow, isNotFound, resolveBase, runKey } from "../../lib/specstream.js";
+import { flatRowsById, flattenRow, isNotFound, listIdOf, rowMatches, resolveBase, runKey } from "../../lib/specstream.js";
 
 export class Specstream implements INodeType {
   description: INodeTypeDescription = {
@@ -49,6 +49,7 @@ export class Specstream implements INodeType {
         displayOptions: { show: { resource: ["list"] } },
         options: [
           { name: "Find a List", value: "findList", action: "Find a list", description: "Ask for a dataset in plain words and start it if the price is within your maximum" },
+          { name: "Find Rows", value: "findRows", action: "Find rows in a list", description: "The rows of a list that hold a value in a column, each with the page it was read from" },
           { name: "Get List Results", value: "getListRows", action: "Get the rows of a list", description: "One item per matching row, each with the page it was read from" },
         ],
         default: "findList",
@@ -174,8 +175,26 @@ export class Specstream implements INodeType {
         default: "",
         required: true,
         placeholder: "e.g. fnd_...",
-        description: "The List ID returned by Find a List",
-        displayOptions: { show: { operation: ["getListRows"] } },
+        description: "The List ID returned by Find a List, or the list's link",
+        displayOptions: { show: { operation: ["getListRows", "findRows"] } },
+      },
+      {
+        displayName: "Column",
+        name: "column",
+        type: "string",
+        default: "",
+        placeholder: "e.g. Website",
+        description: "The column to look in, as the list names it. Leave empty to look in every column.",
+        displayOptions: { show: { operation: ["findRows"] } },
+      },
+      {
+        displayName: "Value",
+        name: "value",
+        type: "string",
+        default: "",
+        placeholder: "e.g. acme.com",
+        description: "The words to find in the column. Case does not matter. Leave empty to match every row.",
+        displayOptions: { show: { operation: ["findRows"] } },
       },
       {
         displayName: "Return All",
@@ -183,7 +202,7 @@ export class Specstream implements INodeType {
         type: "boolean",
         default: false,
         description: "Whether to return all results or only up to a given limit",
-        displayOptions: { show: { operation: ["getListRows"] } },
+        displayOptions: { show: { operation: ["getListRows", "findRows"] } },
       },
       {
         displayName: "Limit",
@@ -192,7 +211,7 @@ export class Specstream implements INodeType {
         typeOptions: { minValue: 1 },
         default: 50,
         description: "Max number of results to return",
-        displayOptions: { show: { operation: ["getListRows"], returnAll: [false] } },
+        displayOptions: { show: { operation: ["getListRows", "findRows"], returnAll: [false] } },
       },
       {
         displayName: "Request",
@@ -445,16 +464,21 @@ export class Specstream implements INodeType {
         continue;
       }
 
-      if (operation === "getListRows") {
-        const listId = String(this.getNodeParameter("list_id", i) || "").trim();
+      if (operation === "getListRows" || operation === "findRows") {
+        const listId = listIdOf(this.getNodeParameter("list_id", i));
+        if (!listId) throw fail("Enter the List ID, or map it from an earlier SpecStream step");
+        const filter = operation === "findRows";
+        const column = filter ? String(this.getNodeParameter("column", i, "") || "") : "";
+        const words = filter ? String(this.getNodeParameter("value", i, "") || "") : "";
         const returnAll = this.getNodeParameter("returnAll", i, false) as boolean;
         const wanted = returnAll ? Infinity : Math.floor(Number(this.getNodeParameter("limit", i, 50)));
         if (!returnAll && (!Number.isSafeInteger(wanted) || wanted < 1)) throw fail("Limit must be 1 or more");
         let cursor = "";
         let returned = 0;
         // Each page holds up to 100 rows; follow next_cursor until the list ends or the limit is reached.
+        // Find Rows reads full pages, since a match can sit anywhere in the list.
         for (let pages = 0; pages < 10000 && returned < wanted; pages++) {
-          const pageSize = Math.min(100, wanted - returned);
+          const pageSize = filter ? 100 : Math.min(100, wanted - returned);
           const query = `limit=${pageSize}${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`;
           const page = await call("GET", `/v1/finds/${encodeURIComponent(listId)}/rows?${query}`);
           const rows = (page.rows as IDataObject[] | undefined) || [];
@@ -462,6 +486,7 @@ export class Specstream implements INodeType {
           for (const record of rows) {
             if (returned >= wanted) break;
             const row = flattenRow(String(page.find_id), record, flat.get(`${String(page.find_id)}:${String(record.entity_id)}`));
+            if (filter && !rowMatches(row, column, words)) continue;
             out.push({ json: { ...row, list_status: page.status as string }, pairedItem: { item: i } });
             returned++;
           }

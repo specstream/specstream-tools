@@ -1,0 +1,81 @@
+{
+  "manifest_version": "0.3",
+  "name": "specstream",
+  "display_name": "SpecStream",
+  "version": "1.0.0",
+  "description": "Web search, page reading and structured web data for Claude, from the live web, with a source URL on every value.",
+  "long_description": "SpecStream gives Claude three products on the live web.\n\n**Search API** (`search_web`): ask a question in everyday words and get an answer with its sources in a few seconds. $5 per 1,000 searches of up to 10 results.\n\n**Extract API** (`read_pages`): the main text of up to 20 web pages, PDF, Word or Excel files per call. $0.80 per 1,000 pages; a page with no text is free.\n\n**Deep Search** (`compile` and the tools after it): ask for a complete list or table in plain words and get every match in structured rows, each value with its source URL and read time. Each run is quoted first and starts only after you approve its maximum.\n\nThe extension runs a small local server that forwards Claude's requests over HTTPS to SpecStream's hosted MCP server at `https://api.specstream.ai/mcp`. It needs an API key, which you create under **Agents & API** in your SpecStream workspace. Claude Desktop stores the key in your operating system's keychain. Without a key the extension lists its tools and explains how to get one.",
+  "author": {
+    "name": "SpecStream",
+    "url": "https://specstream.ai"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/specstream/specstream-tools"
+  },
+  "homepage": "https://specstream.ai",
+  "documentation": "https://specstream.ai/docs/mcp",
+  "support": "https://github.com/specstream/specstream-tools/issues",
+  "icon": "icon.png",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/server/index.js"],
+      "env": {
+        "SPECSTREAM_API_KEY": "${user_config.api_key}"
+      }
+    }
+  },
+  "tools": [
+    {
+      "name": "search_web",
+      "description": "Search the live web with a question in everyday words and get an answer with its sources."
+    },
+    {
+      "name": "read_pages",
+      "description": "Read the main text of 1 to 20 web pages, PDF, Word or Excel files."
+    },
+    {
+      "name": "compile",
+      "description": "Read a request for a complete list or table into its conditions and the facts to bring back."
+    },
+    {
+      "name": "quote_capacity_work",
+      "description": "Price a Deep Search run before anything is spent."
+    },
+    {
+      "name": "authorize_capacity_work",
+      "description": "Start a quoted run with the maximum the user approved."
+    },
+    {
+      "name": "get_find",
+      "description": "Show the progress of a run."
+    },
+    {
+      "name": "list_find_rows",
+      "description": "Read the results of a run, each value with its source."
+    }
+  ],
+  "tools_generated": true,
+  "keywords": ["web search", "search", "extract", "web data", "research", "specstream"],
+  "license": "MIT",
+  "privacy_policies": ["https://specstream.ai/privacy"],
+  "user_config": {
+    "api_key": {
+      "type": "string",
+      "title": "API key",
+      "description": "Create a key under Agents & API in your SpecStream workspace (https://specstream.ai/workspace).",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "compatibility": {
+    "claude_desktop": ">=0.10.0",
+    "platforms": ["darwin", "win32", "linux"],
+    "runtimes": {
+      "node": ">=18.0.0"
+    }
+  }
+}

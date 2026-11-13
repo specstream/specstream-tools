@@ -1,5 +1,5 @@
 # Publishes the n8n community node, the Activepieces piece, the OpenCode and OpenClaw plugins, the Pi package, the Convex component
-# and the DeepSeek Harness plugin
+# and the DeepSeek Harness plugin, and the Twenty CRM app,
 # to npm with a provenance statement.
 #
 # n8n only verifies community nodes that are published from GitHub Actions with
@@ -23,6 +23,7 @@ on:
           - pi
           - convex
           - dsh
+          - twenty-app
         default: n8n
   push:
     tags:
@@ -33,6 +34,7 @@ on:
       - "pi-v*"
       - "convex-v*"
       - "dsh-v*"
+      - "twenty-app-v*"
 
 jobs:
   n8n:
@@ -204,3 +206,36 @@ jobs:
         env:
           NPM_CONFIG_PROVENANCE: "true"
         run: npm publish --access public
+
+  # A Twenty app is not published with `npm publish`: `twenty app publish` builds the app's manifest and packs it,
+  # on Node 24 and Yarn 4, and adds the provenance itself. Twenty reads that provenance when the app is claimed
+  # (Settings > Developers > Apps > Claim with GitHub) before its marketplace review. The CLI version is the one
+  # the app was scaffolded with: change it together with twenty-sdk, twenty-client-sdk and twenty-ui in the app's
+  # package.json.
+  twenty-app:
+    if: inputs.package == 'twenty-app' || startsWith(github.ref, 'refs/tags/twenty-app-v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    defaults:
+      run:
+        working-directory: integrations/twenty/app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      # npm 11.5.1+ publishes through an npm Trusted Publisher (OIDC) with no token.
+      - run: npm install -g npm@latest
+      - run: npm install -g twenty@2.58.0
+      - run: corepack enable
+      - run: yarn install --immutable
+      - run: yarn lint
+      - run: yarn typecheck
+      - run: yarn test:unit
+      # Builds the same manifest the publish step packs, so a broken build stops before anything is uploaded.
+      - run: twenty app build
+      - name: Publish with provenance
+        run: twenty app publish

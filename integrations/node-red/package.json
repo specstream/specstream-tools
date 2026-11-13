@@ -1,0 +1,47 @@
+{
+  "name": "node-red-contrib-specstream",
+  "version": "1.0.0",
+  "description": "Node-RED nodes for SpecStream, the live web data engine: Search API, Extract API and research reports.",
+  "keywords": [
+    "node-red",
+    "specstream",
+    "web search",
+    "extract",
+    "web data",
+    "research"
+  ],
+  "license": "MIT",
+  "homepage": "https://specstream.ai/docs/api",
+  "author": "SpecStream <support@specstream.ai>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/specstream/specstream-tools.git",
+    "directory": "integrations/node-red"
+  },
+  "bugs": {
+    "url": "https://github.com/specstream/specstream-tools/issues"
+  },
+  "files": [
+    "lib.js",
+    "specstream-*.js",
+    "specstream-*.html",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test test/lib.test.js test/research.test.js",
+    "build": "node --check lib.js && node --check specstream-config.js && node --check specstream-search.js && node --check specstream-extract.js && node --check specstream-research.js"
+  },
+  "node-red": {
+    "version": ">=3.0.0",
+    "nodes": {
+      "specstream-config": "specstream-config.js",
+      "specstream-search": "specstream-search.js",
+      "specstream-extract": "specstream-extract.js",
+      "specstream-research": "specstream-research.js"
+    }
+  }
+}

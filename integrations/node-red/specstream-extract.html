@@ -1,0 +1,16 @@
+<script type="text/javascript">
+RED.nodes.registerType("specstream extract", {
+  category: "network",
+  color: "#a6bbcf",
+  defaults: { name: { value: "" }, server: { value: "", type: "specstream-config", required: true } },
+  inputs: 1, outputs: 1, icon: "white-globe.svg",
+  label: function () { return this.name || "specstream extract"; }
+});
+</script>
+<script type="text/html" data-template-name="specstream extract">
+  <div class="form-row"><label>Name</label><input type="text" id="node-input-name"></div>
+  <div class="form-row"><label>API key</label><input type="text" id="node-input-server"></div>
+</script>
+<script type="text/html" data-help-name="specstream extract">
+  <p>Runs <code>POST /v1/extract</code> on the SpecStream Extract API for up to 20 URLs (web pages, PDF, Word, Excel). Set <code>msg.payload</code> to a URL or an array of URLs.</p>
+</script>

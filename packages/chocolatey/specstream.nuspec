@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The Chocolatey package of the SpecStream desktop app for Windows. update.py writes the version here and the
+     address and checksum in tools/chocolateyinstall.ps1 from one installer; pack.py makes the .nupkg. -->
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>specstream</id>
+    <version>0.1.0</version>
+    <packageSourceUrl>https://github.com/specstream/specstream-tools/tree/main/packages/chocolatey</packageSourceUrl>
+    <owners>SpecStream</owners>
+    <title>SpecStream</title>
+    <authors>SpecStream</authors>
+    <projectUrl>https://specstream.ai</projectUrl>
+    <iconUrl>https://specstream.ai/logo/specstream-logo-1024.png</iconUrl>
+    <copyright>2026 SpecStream</copyright>
+    <licenseUrl>https://specstream.ai/terms</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <docsUrl>https://specstream.ai/docs/apps</docsUrl>
+    <tags>specstream web-data web-search data-extraction datasets desktop</tags>
+    <summary>The live web data engine.</summary>
+    <description><![CDATA[SpecStream is the live web data engine for teams and agents.
+
+One platform to build, search, extract, enrich, map, and monitor data across the entire web.
+
+Ask for any dataset in plain words, and SpecStream builds it from the entire live web: every match found, extracted and enriched into structured records, then monitored for change.
+
+This package installs the SpecStream desktop app for Windows (64-bit). The app is the SpecStream workspace in a window of its own, with an ask box, notifications and file handling on your computer. It needs a SpecStream account.
+
+## Features
+
+- Source URL and read time on every value.
+- The SpecStream workspace in a window of its own.
+- A shortcut on the desktop and in the Start menu.
+
+## Package notes
+
+The installer is downloaded from specstream.ai and checked against the SHA-256 in this package. It installs for all users of the PC.
+]]></description>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+  </files>
+</package>

@@ -67,7 +67,7 @@ class CreateMonitorTool(Tool):
         months = max(1, min(24, int(tool_parameters.get("months") or 3)))
         if not list_id.startswith("fnd_"):
             yield self.create_text_message(
-                "Pass the list ID from Find a List. It starts with fnd_."
+                "Pass the list ID from Deep Search. It starts with fnd_."
             )
             return
         if watch not in ("changes", "new") or frequency not in CADENCE_SECONDS:

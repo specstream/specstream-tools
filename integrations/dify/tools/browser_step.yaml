@@ -1,0 +1,40 @@
+identity:
+  name: browser_step
+  author: specstream
+  label:
+    en_US: Browser Step
+description:
+  human:
+    en_US: Run one step in an open browser, such as open a page, click, type, read the page's text or take a screenshot. Each step costs $0.001.
+  llm: 'Runs one step in a browser opened by Open Browser. The step is a Playwright MCP tool name with its arguments as that tool names them, or browser_read for the page''s text. Common steps: browser_navigate {"url": "https://..."}; browser_snapshot {} returns the page''s elements with a ref for each; browser_click {"target": "<ref>", "element": "<what it is>"}; browser_type {"target": "<ref>", "text": "...", "submit": true}; browser_press_key {"key": "Enter"}; browser_wait_for {"text": "..."}; browser_take_screenshot {} returns a picture; browser_read {"format": "markdown"} returns the page''s text. Take a snapshot before a click or a type to get the refs. Each step that runs costs $0.001. When the session has ended, open a new browser.'
+parameters:
+  - name: session_id
+    type: string
+    required: true
+    form: llm
+    label:
+      en_US: Session ID
+    human_description:
+      en_US: The session ID returned by Open Browser. It starts with brs_.
+    llm_description: The session ID returned by Open Browser, starting with brs_.
+  - name: step
+    type: string
+    required: true
+    form: llm
+    label:
+      en_US: Step
+    human_description:
+      en_US: A Playwright MCP tool name, such as browser_navigate, browser_snapshot, browser_click or browser_type, or browser_read for the page's text.
+    llm_description: A Playwright MCP tool name (browser_navigate, browser_snapshot, browser_click, browser_type, browser_press_key, browser_select_option, browser_wait_for, browser_take_screenshot and the others), or browser_read for the page's text.
+  - name: arguments
+    type: string
+    required: false
+    form: llm
+    label:
+      en_US: Arguments (JSON)
+    human_description:
+      en_US: 'The step''s arguments as one JSON object, for example {"url": "https://example.com"}.'
+    llm_description: 'The step''s arguments as one JSON object, named as Playwright MCP names them, for example {"url": "https://example.com"}. Leave empty for a step with no arguments.'
+extra:
+  python:
+    source: tools/browser_step.py

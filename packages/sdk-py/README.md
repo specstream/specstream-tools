@@ -124,11 +124,77 @@ If the response is lost, `get_capacity_request(saved_request_key)` returns the s
 
 `authorize_capacity_work` refuses to send anything unless the quote, its signature, the maximum and the key are all present.
 
+## Keep a list current on a schedule
+
+A monitor checks a list again on the live web every hour, day, week or month ("month" is every 30 days).
+Each check is a refresh: half the row rate for a row that changed or is new, and 1 cent for a row that comes back unchanged.
+
+```python
+monitor = client.monitor_list(
+    find_id,
+    every="week",
+    max_price_per_run_usd=2,
+    max_price_per_month_usd=8,
+)
+
+if monitor["status"] == "saved":
+    print(monitor["monitor_id"], monitor["next_run_at"])
+else:
+    print(monitor["message"])  # "over_maximum": one check costs more than max_price_per_run_usd, nothing was saved
+```
+
+The client prices one check before it saves anything.
+When one check can cost more than `max_price_per_run_usd`, nothing is saved.
+`max_price_per_month_usd` is the most the monitor spends in one UTC calendar month, checks run on demand included.
+Without it, the limit is `max_price_per_run_usd` times the checks in 31 days.
+The first check runs one interval after the current hour began, and the monitor ends a year after it, unless you set `first_run_at=` and `ends_at=` (a `datetime` with a time zone or an ISO 8601 string).
+The same call again in the same hour returns the monitor already saved, not a second one.
+
+| Call | What it does | Cost |
+| --- | --- | --- |
+| `monitor_list(list_id, ...)` | Prices one check of the list and saves the schedule within your limits | Each check, within the limits |
+| `monitors()` | Every monitor of the account, with its state, next check and last list | Free |
+| `monitor_runs(monitor_id)` | The recent checks, newest first: when, the outcome, the reason and the list each one made | Free |
+| `run_monitor_now(monitor_id)` | One check now, inside the monitor's limits. The regular times stay as they are | One check |
+| `pause_monitor(monitor_id)`, `resume_monitor(monitor_id)` | Stops and starts the checks. A missed check is never bought later | Free |
+| `delete_monitor(monitor_id)` | Ends the monitor. The lists it made stay yours | Free |
+| `revisit(list_id)` | Each record of a refreshed list: still matches, no longer matches, unresolved or unavailable | Free |
+
+A blocked or missed check is not an unchanged result, and it is not bought later.
+For a calendar schedule (for example Mondays at 9:00 in your time zone), call `create_capacity_schedule` with the API's own fields, including `calendar_schedule`; `list_capacity_schedules`, `update_capacity_schedule`, `list_capacity_occurrences` and `run_capacity_schedule_now` are there too.
+
+### Send new and changed records to a webhook
+
+```python
+delivery = client.set_monitor_delivery(monitor["monitor_id"], webhook="https://example.com/hooks/specstream")
+signing_secret = delivery["webhook_secret"]  # shown once: store it, never log it
+```
+
+`set_monitor_delivery` also takes `slack=` (a channel of your connected Slack workspace), `send_to=` (a connected tool) and `notify=` (SpecStream notifications). Nothing runs when you set it.
+Slack and webhook delivery need a plan that includes deliveries.
+
+Each delivery is a JSON POST with the headers `Specstream-Event-Id` and `Specstream-Signature: t=<unix time>,v1=<hex>`.
+Check it before you trust the body, and use the event id to drop repeats:
+
+```python
+import json
+import os
+from specstream_client import verify_webhook
+
+# In your web endpoint, with the raw request body
+verify_webhook(
+    secret=os.environ["SPECSTREAM_WEBHOOK_SECRET"],
+    signature=request.headers["Specstream-Signature"],
+    body=raw_body,
+)  # raises SpecstreamError when the signature is wrong or older than 5 minutes
+event = json.loads(raw_body)
+```
+
 ## More than a first request
 
 - `quote_capacity_work` also prices `extend` (more results), `add_facts` and `refresh` (a recheck, at half price) on a finished run. Pass the original `parent_find_id`.
 - `spec_options(kind)` lists the facts you can ask for, per kind of thing. `edit_spec` changes a request without rereading it.
-- `create_capacity_schedule` keeps a request up to date, hourly to yearly, inside per-run and per-period limits.
+- `create_capacity_schedule` keeps any request up to date, hourly to yearly, inside per-run and per-period limits.
 - `export` and `download_export` give CSV, XLSX, JSON or HTML. `create_customer_webhook` sends signed events.
 - Projects, members, shares and starred items have their own methods.
 

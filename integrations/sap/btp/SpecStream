@@ -1,0 +1,10 @@
+Name=SpecStream
+Type=HTTP
+URL=https://api.specstream.ai
+Authentication=NoAuthentication
+ProxyType=Internet
+Description=SpecStream Search API and Extract API
+URL.headers.Authorization=Bearer <your SpecStream API key>
+sap.processautomation.enabled=true
+sap.applicationdevelopment.actions.enabled=true
+HTML5.DynamicDestination=true

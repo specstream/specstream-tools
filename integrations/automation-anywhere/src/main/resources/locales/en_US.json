@@ -1,0 +1,20 @@
+{
+  "label": "SpecStream",
+  "description": "The live web data engine. One platform to build, search, extract, enrich, map, and monitor data across the entire web.",
+  "apiKey.label": "SpecStream API key",
+  "apiKey.description": "Keep the key in a Credential Vault locker. Create a key at specstream.ai, under Agents & API.",
+  "WebSearch.label": "Search the web",
+  "WebSearch.description": "Answers a question from the live web in seconds with the SpecStream Search API, the most accurate web search API in the world. $5 per 1,000 searches of up to 10 results, or $1 per 1,000 on the fast tier.",
+  "WebSearch.node_label": "for {{question}} and assign to {{returnTo}}",
+  "WebSearch.return_label": "Assign the result to a dictionary variable",
+  "WebSearch.return_description": "The key \"answer\" holds the answer. The key \"json\" holds the complete reply, with every result and its source.",
+  "WebSearch.question.label": "Question",
+  "WebSearch.fast.label": "Use the fast tier",
+  "WebSearch.fast.description": "$1 per 1,000 searches instead of $5.",
+  "ReadPage.label": "Read a page",
+  "ReadPage.description": "Reads the text of a web page, PDF, Word or Excel file live with the SpecStream Extract API. $0.80 per 1,000 pages; a page with no text is not charged.",
+  "ReadPage.node_label": "{{url}} and assign to {{returnTo}}",
+  "ReadPage.return_label": "Assign the text to a variable",
+  "ReadPage.return_description": "The text of the page as Markdown.",
+  "ReadPage.url.label": "URL"
+}

@@ -1,0 +1,65 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "SpecStream",
+    "description": "Gives AI agents live web research through the Model Context Protocol (MCP): web search, page reading, written reports with the page behind each cited sentence, and complete lists from the live web in structured rows. A price is shown and approved before paid work starts.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "SpecStream",
+      "url": "https://specstream.ai/docs/integrations",
+      "email": "support@specstream.ai"
+    }
+  },
+  "host": "api.specstream.ai",
+  "basePath": "/",
+  "schemes": [
+    "https"
+  ],
+  "consumes": [],
+  "produces": [],
+  "paths": {
+    "/mcp": {
+      "post": {
+        "summary": "Invoke SpecStream MCP server",
+        "description": "Invokes the SpecStream MCP endpoint, which gives an agent the SpecStream tools for web search, page reading, research reports and lists from the live web.",
+        "operationId": "InvokeMCP",
+        "x-ms-agentic-protocol": "mcp-streamable-1.0",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {},
+  "parameters": {},
+  "responses": {},
+  "securityDefinitions": {
+    "api_key": {
+      "type": "apiKey",
+      "in": "header",
+      "name": "Authorization"
+    }
+  },
+  "security": [
+    {
+      "api_key": []
+    }
+  ],
+  "tags": [],
+  "x-ms-connector-metadata": [
+    {
+      "propertyName": "Website",
+      "propertyValue": "https://specstream.ai"
+    },
+    {
+      "propertyName": "Privacy policy",
+      "propertyValue": "https://specstream.ai/privacy"
+    },
+    {
+      "propertyName": "Categories",
+      "propertyValue": "AI;Website"
+    }
+  ]
+}

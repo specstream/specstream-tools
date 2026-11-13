@@ -6,7 +6,7 @@ identity:
 description:
   human:
     en_US: Watch a list on a schedule. Each run checks the rows again or finds new matches, within the limits per run and per month you set.
-  llm: Creates a SpecStream monitor for a list ID from Find a List. Each run reads the live web again, hourly to monthly. watch_for 'changes' rechecks the list's rows (half the row rate for a changed row, 1 cent for an unchanged row); 'new' looks for new matching rows. The monitor is made only if one run's current price is at or below the maximum per run set on this tool; otherwise nothing is made or charged. Returns the monitor ID, its state and the next run time.
+  llm: Creates a SpecStream monitor for a list ID from Deep Search. Each run reads the live web again, hourly to monthly. watch_for 'changes' rechecks the list's rows (half the row rate for a changed row, 1 cent for an unchanged row); 'new' looks for new matching rows. The monitor is made only if one run's current price is at or below the maximum per run set on this tool; otherwise nothing is made or charged. Returns the monitor ID, its state and the next run time.
 parameters:
   - name: list_id
     type: string
@@ -15,8 +15,8 @@ parameters:
     label:
       en_US: List ID
     human_description:
-      en_US: The list ID returned by Find a List. It starts with fnd_.
-    llm_description: The list ID returned by Find a List, starting with fnd_.
+      en_US: The list ID returned by Deep Search. It starts with fnd_.
+    llm_description: The list ID returned by Deep Search, starting with fnd_.
   - name: watch_for
     type: select
     required: true

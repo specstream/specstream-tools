@@ -1,0 +1,422 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "SpecStream",
+    "version": "1.0.0",
+    "description": "SpecStream Search API and Extract API for SAP Build: answer a question from the live web, each value with its source, and read the main text of web pages. Use it with a BTP destination named SpecStream whose URL is https://api.specstream.ai.",
+    "contact": {
+      "name": "SpecStream",
+      "url": "https://specstream.ai/docs",
+      "email": "support@specstream.ai"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.specstream.ai"
+    }
+  ],
+  "security": [
+    {
+      "apiKey": []
+    }
+  ],
+  "paths": {
+    "/v1/web-search": {
+      "get": {
+        "operationId": "webSearch",
+        "summary": "Search the web",
+        "description": "Answers a question from the live web in seconds. Every value comes with the page it was read from. $5 per 1,000 searches of up to 10 results; $1 per 1,000 with speed set to fast.",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "description": "The question or the request in everyday words, in any language, 1 to 2,000 characters.",
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            }
+          },
+          {
+            "name": "speed",
+            "in": "query",
+            "required": false,
+            "description": "default reads the results for an answer and rows. fast returns the search results in about a second, with no answer.",
+            "schema": {
+              "type": "string",
+              "enum": ["default", "fast"],
+              "default": "default"
+            }
+          },
+          {
+            "name": "passages",
+            "in": "query",
+            "required": false,
+            "description": "Also return the text of the top pages closest to the request.",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "num",
+            "in": "query",
+            "required": false,
+            "description": "The number of results to return, 1 to 100. A call of up to 10 results is one search.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "news",
+            "in": "query",
+            "required": false,
+            "description": "News items for the query instead of web results, newest first.",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "required": false,
+            "description": "The language of the results, a two-letter ISO 639-1 code such as de.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z]{2}$"
+            }
+          },
+          {
+            "name": "country",
+            "in": "query",
+            "required": false,
+            "description": "The country the results are for, a two-letter ISO 3166-1 code such as DE.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z]{2}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The answer or the rows, each value with its page, and the search results read.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebSearchResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/extract": {
+      "post": {
+        "operationId": "extractPages",
+        "summary": "Extract pages",
+        "description": "Reads 1 to 20 web pages, PDF, Word or Excel files and returns each page's main text, its title and its published date. $0.80 per 1,000 pages; a page with no text is not charged.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExtractRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Each URL's result in the order sent.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExtractResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "apiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "Bearer followed by your SpecStream API key. Set it once on the BTP destination as the additional property URL.headers.Authorization."
+      }
+    },
+    "schemas": {
+      "WebSearchValue": {
+        "type": "object",
+        "required": ["value", "page"],
+        "properties": {
+          "value": {
+            "type": "string",
+            "description": "The value found."
+          },
+          "page": {
+            "type": "string",
+            "description": "The URL of the page the value was read from."
+          },
+          "seen_at": {
+            "type": "string",
+            "nullable": true,
+            "description": "When SpecStream read the page (ISO 8601)."
+          }
+        }
+      },
+      "WebSearchRow": {
+        "type": "object",
+        "required": ["name", "page", "snippet"],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "page": {
+            "type": "string"
+          },
+          "snippet": {
+            "type": "string"
+          },
+          "probability": {
+            "type": "number"
+          },
+          "fields": {
+            "type": "object",
+            "description": "The facts found for this row, by column name; each holds value, page and seen_at."
+          }
+        }
+      },
+      "WebSearchSource": {
+        "type": "object",
+        "required": ["url", "title"],
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "site": {
+            "type": "string"
+          },
+          "snippet": {
+            "type": "string"
+          },
+          "cited": {
+            "type": "boolean"
+          },
+          "published": {
+            "type": "string",
+            "nullable": true
+          },
+          "read_at": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "WebSearchPassage": {
+        "type": "object",
+        "required": ["url", "title", "text"],
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          }
+        }
+      },
+      "WebSearchPage": {
+        "type": "object",
+        "required": ["request_id", "query", "kind", "took_ms", "price_usd"],
+        "properties": {
+          "request_id": {
+            "type": "string"
+          },
+          "query": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "enum": ["list", "fact"]
+          },
+          "columns": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "answer": {
+            "$ref": "#/components/schemas/WebSearchValue"
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WebSearchRow"
+            }
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WebSearchSource"
+            }
+          },
+          "passages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WebSearchPassage"
+            }
+          },
+          "took_ms": {
+            "type": "integer"
+          },
+          "price_usd": {
+            "type": "number"
+          }
+        }
+      },
+      "WebSearchResponse": {
+        "type": "object",
+        "required": ["data"],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/WebSearchPage"
+          }
+        }
+      },
+      "ExtractRequest": {
+        "type": "object",
+        "required": ["urls"],
+        "properties": {
+          "urls": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 20,
+            "items": {
+              "type": "string"
+            },
+            "description": "1 to 20 http or https URLs."
+          },
+          "format": {
+            "type": "string",
+            "enum": ["markdown", "text"],
+            "default": "markdown",
+            "description": "The format of each page's text."
+          }
+        }
+      },
+      "ExtractedPage": {
+        "type": "object",
+        "required": ["url", "status", "text"],
+        "properties": {
+          "url": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "enum": ["ok", "blocked", "not_found", "empty", "unsupported", "invalid_url", "failed"]
+          },
+          "reason": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "text": {
+            "type": "string"
+          },
+          "text_truncated": {
+            "type": "boolean"
+          },
+          "published": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "ExtractPage": {
+        "type": "object",
+        "required": ["request_id", "results", "took_ms", "price_usd"],
+        "properties": {
+          "request_id": {
+            "type": "string"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ExtractedPage"
+            }
+          },
+          "took_ms": {
+            "type": "integer"
+          },
+          "price_usd": {
+            "type": "number"
+          }
+        }
+      },
+      "ExtractResponse": {
+        "type": "object",
+        "required": ["data"],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/ExtractPage"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,217 @@
+{
+  "$schema": "https://unpkg.com/@camunda/zeebe-element-templates-json-schema/resources/schema.json",
+  "name": "SpecStream Extract Pages",
+  "id": "ai.specstream.connector.extract.v1",
+  "description": "Read the main text of 1 to 20 web pages, PDF, Word or Excel files with the SpecStream Extract API.",
+  "version": 1,
+  "documentationRef": "https://specstream.ai/docs/api",
+  "category": {
+    "id": "connectors",
+    "name": "Connectors"
+  },
+  "appliesTo": [
+    "bpmn:Task"
+  ],
+  "elementType": {
+    "value": "bpmn:ServiceTask"
+  },
+  "groups": [
+    {
+      "id": "authentication",
+      "label": "Authentication"
+    },
+    {
+      "id": "extract",
+      "label": "Pages"
+    },
+    {
+      "id": "output",
+      "label": "Output mapping"
+    },
+    {
+      "id": "errors",
+      "label": "Error handling"
+    },
+    {
+      "id": "retries",
+      "label": "Retries"
+    }
+  ],
+  "properties": [
+    {
+      "type": "Hidden",
+      "value": "io.camunda:http-json:1",
+      "binding": {
+        "type": "zeebe:taskDefinition",
+        "property": "type"
+      }
+    },
+    {
+      "type": "Hidden",
+      "value": "bearer",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "authentication.type"
+      }
+    },
+    {
+      "id": "apiKey",
+      "label": "API key",
+      "description": "Your SpecStream API key. Keep it in a Connectors secret and refer to it here, for example {{secrets.SPECSTREAM_API_KEY}}.",
+      "type": "String",
+      "feel": "optional",
+      "group": "authentication",
+      "value": "{{secrets.SPECSTREAM_API_KEY}}",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "authentication.token"
+      },
+      "constraints": {
+        "notEmpty": true
+      }
+    },
+    {
+      "type": "Hidden",
+      "value": "POST",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "method"
+      }
+    },
+    {
+      "type": "Hidden",
+      "value": "https://api.specstream.ai/v1/extract",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "url"
+      }
+    },
+    {
+      "id": "urls",
+      "label": "URLs",
+      "description": "A FEEL list of 1 to 20 http or https URLs, for example [\"https://example.com\"]. $0.80 per 1,000 pages; a page with no text is not charged.",
+      "type": "String",
+      "feel": "required",
+      "group": "extract",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "urls"
+      },
+      "constraints": {
+        "notEmpty": true
+      }
+    },
+    {
+      "id": "format",
+      "label": "Output format",
+      "type": "Dropdown",
+      "group": "extract",
+      "value": "markdown",
+      "choices": [
+        {
+          "name": "Markdown",
+          "value": "markdown"
+        },
+        {
+          "name": "Plain text",
+          "value": "text"
+        }
+      ],
+      "binding": {
+        "type": "zeebe:input",
+        "name": "format"
+      }
+    },
+    {
+      "type": "Hidden",
+      "value": "={urls: urls, format: format}",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "body"
+      }
+    },
+    {
+      "type": "Hidden",
+      "value": "={\"Accept\": \"application/json\", \"Content-Type\": \"application/json\", \"User-Agent\": \"specstream-camunda\"}",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "headers"
+      }
+    },
+    {
+      "type": "Hidden",
+      "value": "20",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "connectionTimeoutInSeconds"
+      }
+    },
+    {
+      "id": "resultVariable",
+      "label": "Result variable",
+      "description": "Name of the process variable that receives the whole response.",
+      "type": "String",
+      "group": "output",
+      "binding": {
+        "type": "zeebe:taskHeader",
+        "key": "resultVariable"
+      }
+    },
+    {
+      "id": "resultExpression",
+      "label": "Result expression",
+      "description": "A FEEL expression that maps the response to process variables. response.body.results holds one entry per URL with its status, title and text.",
+      "type": "Text",
+      "feel": "required",
+      "group": "output",
+      "value": "={specstreamPages: response.body.results}",
+      "binding": {
+        "type": "zeebe:taskHeader",
+        "key": "resultExpression"
+      }
+    },
+    {
+      "id": "errorExpression",
+      "label": "Error expression",
+      "description": "A FEEL expression that turns a failed call into a BPMN error.",
+      "type": "Text",
+      "feel": "required",
+      "group": "errors",
+      "binding": {
+        "type": "zeebe:taskHeader",
+        "key": "errorExpression"
+      }
+    },
+    {
+      "id": "retryCount",
+      "label": "Retries",
+      "description": "Number of retries after a failed call.",
+      "type": "String",
+      "feel": "optional",
+      "group": "retries",
+      "value": "3",
+      "binding": {
+        "type": "zeebe:taskDefinition",
+        "property": "retries"
+      },
+      "constraints": {
+        "notEmpty": true
+      }
+    },
+    {
+      "id": "retryBackoff",
+      "label": "Retry backoff",
+      "description": "ISO 8601 duration to wait between retries.",
+      "type": "String",
+      "group": "retries",
+      "value": "PT0S",
+      "binding": {
+        "type": "zeebe:taskHeader",
+        "key": "retryBackoff"
+      }
+    }
+  ],
+  "icon": {
+    "contents": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjIzNiAyODYgODAwIDU4MCIgd2lkdGg9IjgwMCIgaGVpZ2h0PSI1ODAiPjxkZWZzPjxtYXNrIGlkPSJtYXJrLWxpZ2h0IiBtYXNrVW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4PSIyMzYiIHk9IjI4NiIgd2lkdGg9IjgwMCIgaGVpZ2h0PSI1ODAiPgogICAgICAgIDxyZWN0IHg9IjIzNiIgeT0iMjg2IiB3aWR0aD0iODAwIiBoZWlnaHQ9IjU4MCIgZmlsbD0iI2ZmZiIvPgogICAgICAgIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDg3NCA3MjIpIHNjYWxlKDEuNikgdHJhbnNsYXRlKC04NzQgLTcyMikiPjxwYXRoIGQ9Ik04NDggNzIyQzg0OSA3MTIgODUyIDcwNCA4NDkgNjk2Qzg0NiA2OTAgODQzIDY4NCA4NDIgNjc2QzgzNyA2NzAgODM2IDY2MCA4MzggNjUyTDgzNiA2NDFMODQ2IDY0OUM4NTIgNjQ3IDg1OCA2NDcgODYyIDY0OUw4NzAgNjQwTDg3MSA2NTVDODczIDY2MyA4NzIgNjY4IDg2OCA2NzJDODg0IDY3OCA4OTcgNjkyIDkwMCA3MjJaIi8+PHBhdGggZD0iTTg1MiA3MTlMOTAwIDcyMEwxMDA0IDczNUw5NTAgNzkyWiIvPjwvZz4KICAgIDwvbWFzaz48L2RlZnM+CiAgICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwIDApIHNjYWxlKDEpIj48cGF0aCBmaWxsPSIjMjQyNzIyIiBtYXNrPSJ1cmwoI21hcmstbGlnaHQpIiBkPSJNNDcwIDI5OEM0MjAgMzAwIDMzMCAzMTIgMjkwIDMzNEMyNjUgMzQ4IDI3MiAzNjggMzA1IDM4MkMzNjAgNDA1IDQ0MCA0MzIgNDU1IDQ3MkM0NjggNTEwIDQyMCA1NDUgMzUwIDU5MEMyODUgNjMyIDI0OCA2NjggMjUwIDcxMkMyNTMgNzkwIDM5MCA4NTAgNjEwIDg1MUM4MjAgODUyIDk2MCA4MTAgMTAwMCA3NDBDMTAyMiA3MDAgMTAxOCA2NzIgOTk2IDY0MEM5NTAgNTg1IDg1MCA1MzAgNzAwIDQ4MEM1NjAgNDQwIDQyMCA0MDggMzQ1IDM4MEMzMTggMzcwIDMxMiAzNTYgMzMwIDM0NkMzNzAgMzI1IDQzMCAzMDYgNDcwIDI5OFoiLz48L2c+PC9zdmc+Cg=="
+  }
+}

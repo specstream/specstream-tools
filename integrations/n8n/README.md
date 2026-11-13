@@ -27,6 +27,7 @@ Deep Search returns structured rows. Its operations in the **SpecStream** node f
 | Operation | What it does |
 | --- | --- |
 | Find a List | Describes a list in plain words, prices it and starts it when the price is within your Maximum Price. Returns the List ID |
+| Find Rows | The rows of a list that hold a value in a column (any column when Column is empty), each with the page it was read from. Accepts the List ID or the list's link |
 | Get List Results | One item per matching row, each with the page it was read from. Turn on Return All to follow every page of a long list, or set a Limit |
 | Read Request | Reads a request in your own words and returns how SpecStream understood it, with a request hash |
 | Review Quote | Prices that request, or more results, added details or a recheck on an earlier run (set Earlier Run ID for those). Returns the quote, its hash and the maximum |

@@ -1,0 +1,40 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "specstream-qdrant"
+version = "0.1.0"
+description = "Load web pages read with the SpecStream Extract API, and SpecStream Deep Search lists, into a Qdrant collection."
+readme = "README.md"
+license = "MIT"
+authors = [{ name = "SpecStream", email = "support@specstream.ai" }]
+requires-python = ">=3.10"
+keywords = ["qdrant", "specstream", "web data", "deep search", "extract", "web scraping", "rag", "vector database"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Topic :: Database",
+]
+dependencies = ["qdrant-client>=1.10"]
+
+[project.optional-dependencies]
+fastembed = ["fastembed>=0.4"]
+test = ["pytest>=8"]
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+[project.urls]
+Homepage = "https://specstream.ai"
+Documentation = "https://specstream.ai/docs/api"
+Source = "https://github.com/specstream/specstream-tools/tree/main/integrations/qdrant"
+
+[project.scripts]
+specstream-qdrant = "specstream_qdrant.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["specstream_qdrant"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

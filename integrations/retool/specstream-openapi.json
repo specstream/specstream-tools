@@ -1,0 +1,946 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "SpecStream",
+    "version": "1.0.0",
+    "description": "Research reports from the live web: a written answer to a question, in which each cited sentence links to the page it was read from. $0.10, $0.30 or $1.00 a report, by depth. Authenticate with a SpecStream API key as a Bearer token.",
+    "contact": {
+      "name": "SpecStream",
+      "url": "https://specstream.ai",
+      "email": "support@specstream.ai"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.specstream.ai"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Research",
+      "description": "Research reports with a source behind each cited sentence."
+    }
+  ],
+  "paths": {
+    "/v1/research": {
+      "post": {
+        "operationId": "startResearch",
+        "summary": "Start a research report",
+        "description": "Starts a written report that answers a question from the live web. Each cited sentence links to the page it was read from. Answers at once with the report's id. A report costs $0.10 (quick), $0.30 (standard) or $1.00 (deep), taken from the balance once, when the report is delivered. A cancelled report is not charged.",
+        "tags": [
+          "Research"
+        ],
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Your id for this run, at most 128 characters. The same id with the same body answers with the same run; with another body it is refused with 409.",
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResearchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "The run's id, its state and its price",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ResearchCreated"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error envelope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "get": {
+        "operationId": "listResearch",
+        "summary": "List research reports",
+        "description": "Lists the account's reports, newest first. Send next_after as after to read the next page.",
+        "tags": [
+          "Research"
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "required": false,
+            "description": "The run id next_after named: the page after it",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of runs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ResearchRunList"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error envelope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/research/{run_id}": {
+      "get": {
+        "operationId": "getResearch",
+        "summary": "Read a research report",
+        "description": "Reads a report by its id. Call it until status is completed: a quick report takes about a minute, a standard report about four minutes and a deep report about five. report.content is the text with [1] markers, report.citations gives each cited sentence its page, and report.sources lists every page read.",
+        "tags": [
+          "Research"
+        ],
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The run",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ResearchRun"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error envelope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/research/{run_id}/cancel": {
+      "post": {
+        "operationId": "cancelResearch",
+        "summary": "Cancel a research report",
+        "description": "Stops a report at its next step. A cancelled report is not charged.",
+        "tags": [
+          "Research"
+        ],
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The run",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ResearchRun"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error envelope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "Basis": {
+        "additionalProperties": false,
+        "description": "One filled field of a JSON report, in dot notation, with the citations behind it.",
+        "properties": {
+          "field": {
+            "title": "Field",
+            "type": "string"
+          },
+          "citations": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Citations",
+            "type": "array"
+          },
+          "supported": {
+            "title": "Supported",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "field",
+          "citations",
+          "supported"
+        ],
+        "title": "Basis",
+        "type": "object"
+      },
+      "Citation": {
+        "additionalProperties": false,
+        "description": "One cited sentence: start and end are its character offsets in the report's content.",
+        "properties": {
+          "n": {
+            "minimum": 1,
+            "title": "N",
+            "type": "integer"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "read_at": {
+            "format": "date-time",
+            "title": "Read At",
+            "type": "string"
+          },
+          "excerpt": {
+            "title": "Excerpt",
+            "type": "string"
+          },
+          "start": {
+            "minimum": 0,
+            "title": "Start",
+            "type": "integer"
+          },
+          "end": {
+            "minimum": 0,
+            "title": "End",
+            "type": "integer"
+          },
+          "supported": {
+            "title": "Supported",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "n",
+          "url",
+          "title",
+          "read_at",
+          "excerpt",
+          "start",
+          "end",
+          "supported"
+        ],
+        "title": "Citation",
+        "type": "object"
+      },
+      "ErrorBody": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "$ref": "#/components/schemas/ErrorCode"
+          },
+          "message": {
+            "minLength": 1,
+            "title": "Message",
+            "type": "string"
+          },
+          "details": {
+            "additionalProperties": true,
+            "title": "Details",
+            "type": "object"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "ErrorBody",
+        "type": "object"
+      },
+      "ErrorCode": {
+        "enum": [
+          "unsupported_query",
+          "unsupported_predicate",
+          "unsupported_entity_family",
+          "ambiguous_geo",
+          "capability_pending",
+          "source_blocked",
+          "challenge_page",
+          "unquoted_plan",
+          "missing_api_key",
+          "owner_only",
+          "compiler_unavailable",
+          "parse_failed",
+          "payments_not_live",
+          "card_required",
+          "terms_changed",
+          "tax_id_refused",
+          "capacity",
+          "kill_switch",
+          "internal_failure",
+          "plan_required",
+          "invalid_token",
+          "insufficient_balance",
+          "not_found",
+          "bad_request",
+          "payment_required",
+          "in_progress",
+          "unavailable",
+          "rate_limited",
+          "idempotency_conflict",
+          "concurrency_limit",
+          "session_ended",
+          "already_connected",
+          "unknown_field"
+        ],
+        "title": "ErrorCode",
+        "type": "string"
+      },
+      "ErrorEnvelope": {
+        "additionalProperties": false,
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/ErrorBody"
+          }
+        },
+        "required": [
+          "error"
+        ],
+        "title": "ErrorEnvelope",
+        "type": "object"
+      },
+      "JsonOutput": {
+        "additionalProperties": false,
+        "description": "JSON that matches the caller's JSON Schema; each filled field carries its basis.",
+        "properties": {
+          "type": {
+            "title": "Type",
+            "type": "string",
+            "enum": [
+              "json"
+            ]
+          },
+          "schema": {
+            "title": "Schema",
+            "description": "One of: object, boolean."
+          }
+        },
+        "required": [
+          "type",
+          "schema"
+        ],
+        "title": "JsonOutput",
+        "type": "object"
+      },
+      "Links": {
+        "additionalProperties": false,
+        "properties": {
+          "self": {
+            "title": "Self",
+            "type": "string"
+          },
+          "events": {
+            "title": "Events",
+            "type": "string"
+          }
+        },
+        "required": [
+          "self",
+          "events"
+        ],
+        "title": "Links",
+        "type": "object"
+      },
+      "Progress": {
+        "additionalProperties": false,
+        "properties": {
+          "searches": {
+            "default": 0,
+            "title": "Searches",
+            "type": "integer"
+          },
+          "pages_read": {
+            "default": 0,
+            "title": "Pages Read",
+            "type": "integer"
+          },
+          "sources": {
+            "default": 0,
+            "title": "Sources",
+            "type": "integer"
+          }
+        },
+        "title": "Progress",
+        "type": "object"
+      },
+      "Report": {
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "format": {
+            "default": "markdown",
+            "title": "Format",
+            "type": "string",
+            "enum": [
+              "markdown"
+            ]
+          },
+          "content": {
+            "title": "Content",
+            "type": "string"
+          },
+          "structured": {
+            "default": null,
+            "title": "Structured"
+          },
+          "citations": {
+            "items": {
+              "$ref": "#/components/schemas/Citation"
+            },
+            "title": "Citations",
+            "type": "array"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/Source"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "basis": {
+            "items": {
+              "$ref": "#/components/schemas/Basis"
+            },
+            "title": "Basis",
+            "type": "array"
+          }
+        },
+        "required": [
+          "title",
+          "content"
+        ],
+        "title": "Report",
+        "type": "object"
+      },
+      "ResearchCreated": {
+        "additionalProperties": false,
+        "description": "The 202 reply of POST /v1/research.",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "queued",
+              "running",
+              "completed",
+              "failed",
+              "cancelled",
+              "payment_required"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "depth": {
+            "enum": [
+              "quick",
+              "standard",
+              "deep"
+            ],
+            "title": "Depth",
+            "type": "string"
+          },
+          "price_usd": {
+            "title": "Price Usd",
+            "type": "number"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "links": {
+            "$ref": "#/components/schemas/Links"
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "depth",
+          "price_usd",
+          "created_at",
+          "links"
+        ],
+        "title": "ResearchCreated",
+        "type": "object"
+      },
+      "ResearchRequest": {
+        "additionalProperties": false,
+        "description": "The body of POST /v1/research.",
+        "properties": {
+          "input": {
+            "maxLength": 15000,
+            "minLength": 1,
+            "title": "Input",
+            "type": "string"
+          },
+          "depth": {
+            "default": "standard",
+            "enum": [
+              "quick",
+              "standard",
+              "deep"
+            ],
+            "title": "Depth",
+            "type": "string"
+          },
+          "output": {
+            "title": "Output",
+            "description": "One of: TextOutput, JsonOutput."
+          },
+          "length": {
+            "default": "standard",
+            "enum": [
+              "short",
+              "standard",
+              "long"
+            ],
+            "title": "Length",
+            "type": "string"
+          },
+          "language": {
+            "default": null,
+            "title": "Language",
+            "maxLength": 35,
+            "minLength": 2,
+            "type": "string",
+            "nullable": true
+          },
+          "include_domains": {
+            "items": {
+              "maxLength": 253,
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 100,
+            "title": "Include Domains",
+            "type": "array"
+          },
+          "exclude_domains": {
+            "items": {
+              "maxLength": 253,
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 100,
+            "title": "Exclude Domains",
+            "type": "array"
+          },
+          "after_date": {
+            "default": null,
+            "title": "After Date",
+            "format": "date",
+            "type": "string",
+            "nullable": true
+          },
+          "webhook": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Webhook"
+              }
+            ],
+            "default": null,
+            "nullable": true
+          },
+          "metadata": {
+            "additionalProperties": {
+              "maxLength": 512,
+              "type": "string"
+            },
+            "title": "Metadata",
+            "type": "object"
+          }
+        },
+        "required": [
+          "input"
+        ],
+        "title": "ResearchRequest",
+        "type": "object"
+      },
+      "ResearchRun": {
+        "additionalProperties": false,
+        "description": "GET /v1/research/{id}. The report shows only when the run is completed.",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "queued",
+              "running",
+              "completed",
+              "failed",
+              "cancelled",
+              "payment_required"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "stage": {
+            "enum": [
+              "queued",
+              "planning",
+              "searching",
+              "reading",
+              "writing",
+              "checking",
+              "done"
+            ],
+            "title": "Stage",
+            "type": "string"
+          },
+          "depth": {
+            "enum": [
+              "quick",
+              "standard",
+              "deep"
+            ],
+            "title": "Depth",
+            "type": "string"
+          },
+          "progress": {
+            "$ref": "#/components/schemas/Progress"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "started_at": {
+            "default": null,
+            "title": "Started At",
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "completed_at": {
+            "default": null,
+            "title": "Completed At",
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "report": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Report"
+              }
+            ],
+            "default": null,
+            "nullable": true
+          },
+          "usage": {
+            "$ref": "#/components/schemas/Usage"
+          },
+          "metadata": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Metadata",
+            "type": "object"
+          },
+          "error": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RunError"
+              }
+            ],
+            "default": null,
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "stage",
+          "depth",
+          "progress",
+          "created_at",
+          "usage"
+        ],
+        "title": "ResearchRun",
+        "type": "object"
+      },
+      "ResearchRunList": {
+        "additionalProperties": false,
+        "description": "GET /v1/research: the account's runs, newest first; next_after pages on.",
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/ResearchRun"
+            },
+            "title": "Data",
+            "type": "array"
+          },
+          "has_more": {
+            "title": "Has More",
+            "type": "boolean"
+          },
+          "next_after": {
+            "default": null,
+            "title": "Next After",
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "data",
+          "has_more"
+        ],
+        "title": "ResearchRunList",
+        "type": "object"
+      },
+      "RunError": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "RunError",
+        "type": "object"
+      },
+      "Source": {
+        "additionalProperties": false,
+        "properties": {
+          "n": {
+            "minimum": 1,
+            "title": "N",
+            "type": "integer"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "read_at": {
+            "format": "date-time",
+            "title": "Read At",
+            "type": "string"
+          },
+          "cited": {
+            "title": "Cited",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "n",
+          "url",
+          "title",
+          "read_at",
+          "cited"
+        ],
+        "title": "Source",
+        "type": "object"
+      },
+      "TextOutput": {
+        "additionalProperties": false,
+        "description": "Markdown with numbered citations.",
+        "properties": {
+          "type": {
+            "default": "text",
+            "title": "Type",
+            "type": "string",
+            "enum": [
+              "text"
+            ]
+          }
+        },
+        "title": "TextOutput",
+        "type": "object"
+      },
+      "Usage": {
+        "additionalProperties": false,
+        "properties": {
+          "searches": {
+            "default": 0,
+            "title": "Searches",
+            "type": "integer"
+          },
+          "pages_read": {
+            "default": 0,
+            "title": "Pages Read",
+            "type": "integer"
+          },
+          "charged_usd": {
+            "default": 0.0,
+            "title": "Charged Usd",
+            "type": "number"
+          }
+        },
+        "title": "Usage",
+        "type": "object"
+      },
+      "Webhook": {
+        "additionalProperties": false,
+        "properties": {
+          "url": {
+            "maxLength": 2048,
+            "minLength": 1,
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "title": "Webhook",
+        "type": "object"
+      }
+    }
+  }
+}

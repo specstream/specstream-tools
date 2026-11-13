@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>ai.specstream</groupId>
+  <artifactId>kafka-connect-specstream</artifactId>
+  <version>1.0.0</version>
+  <packaging>jar</packaging>
+
+  <name>kafka-connect-specstream</name>
+  <description>Kafka Connect source connector for SpecStream, the live web data engine.</description>
+  <url>https://specstream.ai</url>
+
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>https://opensource.org/licenses/MIT</url>
+    </license>
+  </licenses>
+
+  <properties>
+    <maven.compiler.release>11</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <kafka.version>3.7.0</kafka.version>
+    <jackson.version>2.17.2</jackson.version>
+    <junit.version>5.10.3</junit.version>
+  </properties>
+
+  <dependencies>
+    <!-- The Connect worker supplies the Connect API. -->
+    <dependency>
+      <groupId>org.apache.kafka</groupId>
+      <artifactId>connect-api</artifactId>
+      <version>${kafka.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>1.7.36</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.13.0</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.3.1</version>
+      </plugin>
+      <!-- Builds target/components/packages/specstream-kafka-connect-specstream-<version>.zip, the archive Confluent Hub takes. -->
+      <plugin>
+        <groupId>io.confluent</groupId>
+        <artifactId>kafka-connect-maven-plugin</artifactId>
+        <version>0.12.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>kafka-connect</goal>
+            </goals>
+            <configuration>
+              <title>SpecStream</title>
+              <description>The live web data engine. This source connector writes your SpecStream lists to Kafka topics: each list, each record, and each value with the page it was read from and the time it was read. It only reads. It never starts a request and never spends from your balance.</description>
+              <documentationUrl>https://github.com/specstream/specstream-tools/tree/main/integrations/kafka-connect</documentationUrl>
+              <sourceUrl>https://github.com/specstream/specstream-tools/tree/main/integrations/kafka-connect</sourceUrl>
+              <logo>logos/specstream.png</logo>
+              <ownerUsername>specstream</ownerUsername>
+              <ownerType>organization</ownerType>
+              <ownerName>SpecStream</ownerName>
+              <ownerUrl>https://specstream.ai</ownerUrl>
+              <supportProviderName>SpecStream</supportProviderName>
+              <supportSummary>SpecStream supports this connector.</supportSummary>
+              <supportUrl>https://github.com/specstream/specstream-tools/issues</supportUrl>
+              <componentTypes>
+                <componentType>source</componentType>
+              </componentTypes>
+              <tags>
+                <tag>web data</tag>
+                <tag>datasets</tag>
+                <tag>enrichment</tag>
+                <tag>SpecStream</tag>
+              </tags>
+              <requirements>
+                <requirement>A SpecStream API key</requirement>
+              </requirements>
+              <confluentControlCenterIntegration>true</confluentControlCenterIntegration>
+              <deliveryGuarantee>
+                <deliveryGuarantee>atLeastOnce</deliveryGuarantee>
+              </deliveryGuarantee>
+              <singleMessageTransforms>true</singleMessageTransforms>
+              <kafkaConnectApi>true</kafkaConnectApi>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

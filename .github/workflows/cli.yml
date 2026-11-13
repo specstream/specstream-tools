@@ -1,0 +1,81 @@
+# Builds the single binary of the specstream command (packages/cli, npm @specstream/cli) for each system and
+# attaches the files to a release of this repository named cli-v<version>.
+# Run it from the Actions tab, or:  gh workflow run cli.yml
+#
+# The npm package goes out by release.yml (-f package=cli); this file is only the binaries.
+# Each binary is that runner's Node with bin/specstream.js inside it (a Node single executable application),
+# made by packages/cli/scripts/build-binary.js. No token is stored: the release is written with this run's
+# own GITHUB_TOKEN, and only the last job may write.
+#
+# A release tag is made once: raise "version" in packages/cli/package.json (and VERSION in bin/specstream.js)
+# before a new run, or the last job stops because the tag exists.
+name: cli
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Build and test the binaries only; make no release
+        type: boolean
+        default: false
+
+jobs:
+  binary:
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ubuntu-24.04, ubuntu-24.04-arm, macos-15, macos-15-intel, windows-2025]
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+    defaults:
+      run:
+        shell: bash
+        working-directory: packages/cli
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci --ignore-scripts
+      - run: npm test
+      - run: node scripts/build-binary.js
+      # The binary must answer by itself, with no Node on the PATH it could borrow.
+      - name: Run the binary
+        run: |
+          file=$(ls dist/specstream-*)
+          version=$(node -p 'require("./package.json").version')
+          test "$("$file" --version)" = "$version"
+          "$file" --help | grep -q "specstream search"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: binary-${{ matrix.os }}
+          path: packages/cli/dist/specstream-*
+          if-no-files-found: error
+
+  release:
+    needs: binary
+    if: ${{ !inputs.dry_run }}
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: packages/cli
+      - uses: actions/download-artifact@v4
+        with:
+          path: binaries
+          pattern: binary-*
+          merge-multiple: true
+      - name: Release the binaries as cli-v<version>
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(python3 -c 'import json; print(json.load(open("packages/cli/package.json"))["version"])')
+          cd binaries
+          sha256sum specstream-* > SHA256SUMS
+          gh release create "cli-v$version" specstream-* SHA256SUMS \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --latest=false \
+            --title "specstream command $version" \
+            --notes "Single binaries of the specstream command (npm @specstream/cli $version): web search, page reading and Deep Search with one key. See packages/cli/README.md."

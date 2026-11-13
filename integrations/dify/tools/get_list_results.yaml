@@ -6,7 +6,7 @@ identity:
 description:
   human:
     en_US: Get the matching rows of a list, each with the page it was read from.
-  llm: Reads the rows of a SpecStream list by its list ID (from Find a List). Returns the status (running, completed, partial, failed, canceled or expired), the number of matching rows and the rows keyed by column label, each with source_url and checked_at. Costs nothing.
+  llm: Reads the rows of a SpecStream list by its list ID (from Deep Search). Returns the status (running, completed, partial, failed, canceled or expired), the number of matching rows and the rows keyed by column label, each with source_url and checked_at. Costs nothing.
 parameters:
   - name: list_id
     type: string
@@ -15,8 +15,8 @@ parameters:
     label:
       en_US: List ID
     human_description:
-      en_US: The list ID returned by Find a List. It starts with fnd_.
-    llm_description: The list ID returned by Find a List, starting with fnd_.
+      en_US: The list ID returned by Deep Search. It starts with fnd_.
+    llm_description: The list ID returned by Deep Search, starting with fnd_.
 extra:
   python:
     source: tools/get_list_results.py

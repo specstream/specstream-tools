@@ -1,0 +1,16 @@
+{
+  "name": "specstream-stagehand-example",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Stagehand 3 on a SpecStream browser session: only the address and the key change.",
+  "license": "MIT",
+  "scripts": {
+    "start": "node run.cjs"
+  },
+  "dependencies": {
+    "@browserbasehq/stagehand": "3.7.3"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

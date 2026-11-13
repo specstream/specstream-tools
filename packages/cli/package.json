@@ -1,0 +1,46 @@
+{
+  "name": "@specstream/cli",
+  "version": "0.1.0",
+  "description": "The specstream command: web search, page reading and Deep Search from the terminal, with one key.",
+  "bin": {
+    "specstream": "bin/specstream.js"
+  },
+  "files": [
+    "bin",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "node --check bin/specstream.js && node bin/specstream.js --version",
+    "test": "node --test test/*.test.js",
+    "binary": "node scripts/build-binary.js"
+  },
+  "devDependencies": {
+    "postject": "1.0.0-alpha.6"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "specstream",
+    "cli",
+    "web-search",
+    "search-api",
+    "extract",
+    "deep-search",
+    "agents"
+  ],
+  "license": "MIT",
+  "homepage": "https://specstream.ai/docs/search-api",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/specstream/specstream-tools.git",
+    "directory": "packages/cli"
+  },
+  "bugs": {
+    "url": "https://github.com/specstream/specstream-tools/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

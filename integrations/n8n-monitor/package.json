@@ -1,0 +1,62 @@
+{
+  "name": "n8n-nodes-specstream-monitor",
+  "version": "1.0.0",
+  "description": "Starts an n8n workflow when a SpecStream monitor finds new or changed records on the live web.",
+  "license": "MIT",
+  "homepage": "https://specstream.ai/docs/integrations",
+  "keywords": [
+    "n8n-community-node-package",
+    "specstream",
+    "monitor",
+    "monitoring",
+    "trigger",
+    "web-data",
+    "live-web",
+    "change-detection"
+  ],
+  "author": {
+    "name": "SpecStream",
+    "email": "support@specstream.ai"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/specstream/specstream-tools.git",
+    "directory": "integrations/n8n-monitor"
+  },
+  "bugs": {
+    "url": "https://github.com/specstream/specstream-tools/issues"
+  },
+  "scripts": {
+    "build": "n8n-node build",
+    "build:watch": "tsc --watch",
+    "dev": "n8n-node dev",
+    "lint": "n8n-node lint",
+    "lint:fix": "n8n-node lint --fix",
+    "test": "n8n-node build && node test/base.test.js && node test/trigger.test.js",
+    "prepublishOnly": "n8n-node lint",
+    "release": "n8n-node release"
+  },
+  "files": [
+    "dist"
+  ],
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "strict": true,
+    "credentials": [
+      "dist/credentials/SpecstreamMonitorApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/SpecstreamMonitor/SpecstreamMonitorTrigger.node.js"
+    ]
+  },
+  "devDependencies": {
+    "@n8n/node-cli": "0.55.6",
+    "eslint": "9.32.0",
+    "prettier": "3.6.2",
+    "release-it": "^21.1.0",
+    "typescript": "5.9.2"
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  }
+}

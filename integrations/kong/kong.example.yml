@@ -1,0 +1,19 @@
+# A DB-less Kong configuration with one research route. Start Kong with:
+#   KONG_DATABASE=off KONG_DECLARATIVE_CONFIG=kong.example.yml KONG_PLUGINS=bundled,specstream-research
+# and the key in the environment of the Kong process as SPECSTREAM_API_KEY.
+_format_version: "3.0"
+
+services:
+  - name: specstream-research
+    # The plugin answers each request itself, so this address is never called.
+    url: https://api.specstream.ai
+    routes:
+      - name: research
+        paths:
+          - /research
+        plugins:
+          - name: specstream-research
+            config:
+              api_key: "{vault://env/specstream-api-key}"
+              default_depth: quick
+              max_depth: standard

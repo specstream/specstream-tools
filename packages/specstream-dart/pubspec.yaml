@@ -1,0 +1,25 @@
+name: specstream
+description: >-
+  Dart client for SpecStream's Deep Search, Search API and Extract API:
+  build lists from the live web, search it, and read pages as clean text.
+version: 0.1.0
+homepage: https://specstream.ai
+repository: https://github.com/specstream/specstream-tools/tree/main/packages/specstream-dart
+issue_tracker: https://github.com/specstream/specstream-tools/issues
+documentation: https://specstream.ai/docs/api
+topics:
+  - search
+  - web-search
+  - scraping
+  - api-client
+  - ai
+
+environment:
+  sdk: ^3.4.0
+
+dependencies:
+  http: ^1.2.0
+
+dev_dependencies:
+  lints: ^5.0.0
+  test: ^1.25.0

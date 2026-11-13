@@ -1,0 +1,37 @@
+<script type="text/javascript">
+RED.nodes.registerType("specstream research", {
+  category: "network",
+  color: "#a6bbcf",
+  defaults: {
+    name: { value: "" },
+    server: { value: "", type: "specstream-config", required: true },
+    question: { value: "" },
+    depth: { value: "standard" },
+    wait: { value: true },
+    waitMinutes: { value: 15, validate: RED.validators.number() }
+  },
+  inputs: 1, outputs: 1, icon: "white-globe.svg",
+  label: function () { return this.name || "specstream research"; }
+});
+</script>
+<script type="text/html" data-template-name="specstream research">
+  <div class="form-row"><label>Name</label><input type="text" id="node-input-name"></div>
+  <div class="form-row"><label>API key</label><input type="text" id="node-input-server"></div>
+  <div class="form-row"><label>Question</label><input type="text" id="node-input-question" placeholder="or set msg.payload"></div>
+  <div class="form-row"><label>Depth</label>
+    <select id="node-input-depth">
+      <option value="quick">Quick ($0.10)</option>
+      <option value="standard">Standard ($0.30)</option>
+      <option value="deep">Deep ($1.00)</option>
+    </select>
+  </div>
+  <div class="form-row"><label>Wait</label><input type="checkbox" id="node-input-wait" style="width:auto"> Wait for the report</div>
+  <div class="form-row"><label>Wait up to</label><input type="number" id="node-input-waitMinutes" min="1" style="width:80px"> minutes</div>
+</script>
+<script type="text/html" data-help-name="specstream research">
+  <p>Answers a question with a written report from the live web, with the page behind each cited sentence (<code>POST /v1/research</code>).</p>
+  <p>Set <code>msg.payload</code> to the question, or fill the Question field. <code>msg.depth</code> can be <code>quick</code>, <code>standard</code> or <code>deep</code>.</p>
+  <p>A report costs $0.10 (quick), $0.30 (standard) or $1.00 (deep). The price is taken from your balance once, when the report is delivered.</p>
+  <p>With Wait on, <code>msg.payload</code> is the finished report: <code>report.content</code> is the text in Markdown with <code>[1]</code> markers, and <code>report.citations</code> holds the page behind each marker. With Wait off, the node returns at once and sets <code>msg.reportId</code>.</p>
+  <p>To read a report that was started earlier, send a message with <code>msg.reportId</code>. Reading is free.</p>
+</script>

@@ -5,7 +5,7 @@ One platform to build, search, extract, enrich, map, and monitor data across the
 
 Ask for any dataset in plain words, and SpecStream builds it from the entire live web: every match found, extracted and enriched into structured records, then monitored for change.
 
-This gem is the Ruby client for the Deep Search API, the Search API and the Extract API.
+This gem is the Ruby client for the Deep Search API (with monitors that keep a list current on a schedule), the Search API and the Extract API.
 It has no dependencies outside Ruby's standard library and needs Ruby 3.1 or newer.
 
 ```sh
@@ -55,6 +55,68 @@ client.each_row(run["find_id"]) { |row| p row }  # every row, page after page
 `authorize_capacity_work` sends nothing unless the quote, its signature, the maximum and the key are all present.
 If the response is lost, `get_capacity_request(saved_request_key)` returns the same run; keep the original key when you retry and you do not pay twice.
 Reading and exporting results you own costs nothing.
+
+## Keep a list current on a schedule
+
+A monitor checks a list again on the live web every hour, day, week or month ("month" is every 30 days).
+Each check is a refresh: half the row rate for a row that changed or is new, and 1 cent for a row that comes back unchanged.
+
+```ruby
+monitor = client.monitor_list(run["find_id"],
+  every: "week",
+  max_price_per_run_usd: 2,
+  max_price_per_month_usd: 8)
+
+if monitor["status"] == "saved"
+  puts monitor["monitor_id"], monitor["next_run_at"]
+else
+  puts monitor["message"] # "over_maximum": one check costs more than max_price_per_run_usd, nothing was saved
+end
+```
+
+The client prices one check before it saves anything.
+When one check can cost more than `max_price_per_run_usd`, nothing is saved.
+`max_price_per_month_usd` is the most the monitor spends in one UTC calendar month, checks run on demand included.
+Without it, the limit is `max_price_per_run_usd` times the checks in 31 days.
+The first check runs one interval after the current hour began, and the monitor ends a year after it, unless you set `first_run_at:` and `ends_at:` (a `Time` or an ISO 8601 string).
+The same call again in the same hour returns the monitor already saved, not a second one.
+
+| Call | What it does | Cost |
+| --- | --- | --- |
+| `monitor_list(list_id, ...)` | Prices one check of the list and saves the schedule within your limits | Each check, within the limits |
+| `monitors` | Every monitor of the account, with its state, next check and last list | Free |
+| `monitor_runs(monitor_id)` | The recent checks, newest first: when, the outcome, the reason and the list each one made | Free |
+| `run_monitor_now(monitor_id)` | One check now, inside the monitor's limits. The regular times stay as they are | One check |
+| `pause_monitor(monitor_id)`, `resume_monitor(monitor_id)` | Stops and starts the checks. A missed check is never bought later | Free |
+| `delete_monitor(monitor_id)` | Ends the monitor. The lists it made stay yours | Free |
+| `revisit(list_id)` | Each record of a refreshed list: still matches, no longer matches, unresolved or unavailable | Free |
+
+A blocked or missed check is not an unchanged result, and it is not bought later.
+For a calendar schedule (for example Mondays at 9:00 in your time zone), call `create_capacity_schedule` with the API's own fields, including `calendar_schedule`; `list_capacity_schedules`, `update_capacity_schedule`, `list_capacity_occurrences` and `run_capacity_schedule_now` are there too.
+
+### Send new and changed records to a webhook
+
+```ruby
+delivery = client.set_monitor_delivery(monitor["monitor_id"], webhook: "https://example.com/hooks/specstream")
+signing_secret = delivery["webhook_secret"] # shown once: store it, never log it
+```
+
+`set_monitor_delivery` also takes `slack:` (a channel of your connected Slack workspace), `send_to:` (a connected tool) and `notify:` (SpecStream notifications). Nothing runs when you set it.
+Slack and webhook delivery need a plan that includes deliveries.
+
+Each delivery is a JSON POST with the headers `Specstream-Event-Id` and `Specstream-Signature: t=<unix time>,v1=<hex>`.
+Check it before you trust the body, and use the event id to drop repeats:
+
+```ruby
+# In a Rack or Rails endpoint
+body = request.body.read
+Specstream::Webhook.verify!(
+  secret: ENV.fetch("SPECSTREAM_WEBHOOK_SECRET"),
+  signature: request.get_header("HTTP_SPECSTREAM_SIGNATURE"),
+  body: body
+) # raises Specstream::Error when the signature is wrong or older than 5 minutes
+event = JSON.parse(body)
+```
 
 ## Search the web
 

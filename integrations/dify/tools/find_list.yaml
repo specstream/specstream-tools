@@ -2,11 +2,11 @@ identity:
   name: find_list
   author: specstream
   label:
-    en_US: Find a List
+    en_US: Deep Search
 description:
   human:
-    en_US: Ask for a list in plain words. SpecStream prices it first and starts it only if the price is within your maximum.
-  llm: Starts a SpecStream dataset request from plain words describing what every row must meet and the details to bring back. The run starts only if its price is at or below the maximum price set on this tool; otherwise it does not start, costs nothing, and the price is returned. Waits up to the given number of seconds and returns the rows found so far with the list ID, so Get List Results can fetch the rest later.
+    en_US: Ask in plain words. Get every match on the live web, in structured rows. SpecStream prices the request first and starts it only if the price is within your maximum.
+  llm: SpecStream Deep Search. Use it for a complete list or table, every match with the same facts on each row; for one fact or a quick answer use Web Search. Starts the request from plain words describing what every row must meet and the details to bring back. The run starts only if its price is at or below the maximum price set on this tool; otherwise it does not start, costs nothing, and the price is returned. Waits up to the given number of seconds and returns the rows found so far with the list ID, so Get List Results can fetch the rest later.
 parameters:
   - name: request
     type: string

@@ -1,0 +1,11 @@
+# yaml-language-server: $schema=https://sdk.netlify.com/sdk/config-schema.json
+config:
+  # Netlify gives a private extension a slug with a suffix when it is created (Extensions > Created by
+  # your team > Create an extension). Paste that slug here, then commit and deploy again.
+  slug: specstream
+  name: SpecStream
+  description: Web search and page reading for your Netlify functions, with one API key for the team.
+  use_cjs_shims: false
+  ui:
+    surfaces:
+      - extension-team-configuration

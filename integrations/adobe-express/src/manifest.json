@@ -1,0 +1,26 @@
+{
+  "testId": "specstream-adobe-express",
+  "name": "SpecStream",
+  "version": "1.0.0",
+  "manifestVersion": 2,
+  "requirements": {
+    "apps": [
+      {
+        "name": "Express",
+        "apiVersion": 1,
+        "supportedDeviceClass": ["desktop"]
+      }
+    ]
+  },
+  "entryPoints": [
+    {
+      "type": "panel",
+      "id": "panel1",
+      "main": "index.html",
+      "documentSandbox": "code.js",
+      "permissions": {
+        "sandbox": ["allow-popups", "allow-popups-to-escape-sandbox"]
+      }
+    }
+  ]
+}

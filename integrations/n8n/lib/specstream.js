@@ -78,6 +78,30 @@ function flattenRow(listId, record, flat) {
   return row;
 }
 
+// A list's ID, from the bare ID or from its link (https://specstream.ai/workspace/collections/<id>).
+function listIdOf(raw) {
+  const id = String(raw == null ? "" : raw).trim();
+  const link = /\/collections\/([^/?#]+)/.exec(id);
+  return link ? decodeURIComponent(link[1]) : id;
+}
+
+const norm = (value) => String(value == null ? "" : value).trim().toLowerCase();
+
+// The list's own columns in a flattened row: not the fields every row carries, not the value pages.
+function rowColumns(row) {
+  return Object.keys(row).filter((key) => !RESERVED.has(key) && !key.endsWith("_source"));
+}
+
+// A row matches when the named column (any column when none is named) holds the words, case aside.
+// No words match every row. A column renamed "<label> (column)" is still found by its label.
+function rowMatches(row, column, words) {
+  const wanted = norm(words);
+  if (!wanted) return true;
+  const name = norm(column);
+  const names = rowColumns(row).filter((key) => !name || norm(key) === name || norm(key).startsWith(`${name} (column`));
+  return names.some((key) => norm(row[key]).includes(wanted));
+}
+
 // True only when the API answered 404. n8n wraps the HTTP error, so the status is read from the error
 // and from the errors it wraps.
 function isNotFound(error) {
@@ -88,4 +112,4 @@ function isNotFound(error) {
   return false;
 }
 
-module.exports = { DEFAULT_BASE, columnName, flatRowsById, flattenRow, isNotFound, resolveBase, runKey };
+module.exports = { DEFAULT_BASE, columnName, flatRowsById, flattenRow, isNotFound, listIdOf, resolveBase, rowMatches, runKey };

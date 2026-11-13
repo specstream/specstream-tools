@@ -34,6 +34,12 @@ The extension adds the SpecStream MCP server (`https://api.specstream.ai/mcp`) t
 
 Sign-in is VS Code's own: start **SpecStream** from **MCP: List Servers** and approve in the browser. Prefer a key? Run **SpecStream: Use an API Key Instead of Signing In**. The key is kept in VS Code's secret storage.
 
+## A real browser for your agent
+
+Some pages need a real browser: a form, a click, a page drawn by scripts. Through the same MCP server your agent opens a browser session on SpecStream's server with `open_browser`, drives it with the `browser_` tools, and ends it with `close_browser`. Nothing runs on your machine.
+
+Browser sessions cost $0.10 an hour, charged by the second, and $1 per 1,000 steps. For the text of pages you already know, the Extract API is faster and cheaper.
+
 ## Get started
 
 Open the **Get your first list with SpecStream** walkthrough from the Command Palette (**Welcome: Open Walkthrough**). Your account starts with $10 of credit, no card.

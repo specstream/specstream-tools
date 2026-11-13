@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.9
+
+- Browser sessions: your agent opens a real browser on SpecStream's server with `open_browser`, for pages that need a form, a click or scripts. $0.10 an hour by the second, and $1 per 1,000 steps.
+- Deep Search in chat is unchanged: type `@specstream /find` and the data you need in plain words.
+
+## 0.1.8
+
+- Deep Search in chat: type `@specstream /find` and the data you need in plain words. You see the price before anything runs.
+- The listing gives the price of the Search API on the fast tier: $1 per 1,000 searches.
+- New versions reach Open VSX on the same day as the VS Code Marketplace.
+
 ## 0.1.7
 
 - The listing names the three products: Search API, Extract API and Deep Search, with their prices.

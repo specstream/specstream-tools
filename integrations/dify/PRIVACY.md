@@ -1,6 +1,6 @@
 # Privacy
 
-This plugin sends the text of each request you ask for (for example "roofing companies in Columbus, Ohio"), the number of results and your maximum price to SpecStream at `https://api.specstream.ai`, authenticated with your SpecStream API key. It reads back the list's status and rows. For public records, it sends the words you search for, the list page, the date and the maximum price, and reads back the matching lists and their rows.
+This plugin sends the text of each request you ask for (for example "roofing companies in Columbus, Ohio"), the number of results and your maximum price to SpecStream at `https://api.specstream.ai`, authenticated with your SpecStream API key. It reads back the list's status and rows. For public records, it sends the words you search for, the list page, the date and the maximum price, and reads back the matching lists and their rows. For a browser, it sends the address to open, the hosts you allow, the maximum minutes and each step with its arguments (what to click, the text to type), and reads back the text and screenshots of the pages the browser opens.
 
 The plugin itself stores nothing and logs nothing. It does not send data to any other service.
 

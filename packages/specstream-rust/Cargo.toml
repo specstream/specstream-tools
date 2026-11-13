@@ -1,0 +1,18 @@
+[package]
+name = "specstream"
+version = "0.1.0"
+edition = "2021"
+authors = ["SpecStream"]
+description = "Rust client for SpecStream's Deep Search API, Search API and Extract API: datasets from the entire live web, asked for in plain words."
+license = "MIT"
+homepage = "https://specstream.ai"
+documentation = "https://docs.rs/specstream"
+repository = "https://github.com/specstream/specstream-tools"
+readme = "README.md"
+keywords = ["specstream", "web-search", "web-scraping", "deep-search", "api"]
+categories = ["api-bindings", "web-programming::http-client"]
+include = ["src/**/*.rs", "examples/**/*.rs", "Cargo.toml", "README.md", "LICENSE"]
+
+[dependencies]
+serde_json = "1"
+ureq = { version = "2.10", default-features = false, features = ["tls"] }

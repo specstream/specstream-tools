@@ -1,0 +1,51 @@
+[project]
+name = "prefect-specstream"
+version = "0.1.0"
+description = "The live web data engine for Prefect: Search API ($5 per 1,000 searches of up to 10 results, $1 on the fast tier) and Extract API ($0.80 per 1,000 pages) as Prefect tasks with a credentials block."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "SpecStream", email = "support@specstream.ai" }]
+maintainers = [{ name = "SpecStream", email = "support@specstream.ai" }]
+keywords = ["prefect", "prefect-integration", "prefect-collection", "specstream", "web-search", "research", "deep-research", "search-api", "extract-api", "web-data", "live-web", "data-pipelines"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Topic :: Internet :: WWW/HTTP",
+  "Topic :: System :: Distributed Computing",
+  "Typing :: Typed",
+]
+dependencies = ["prefect>=3.0,<4", "httpx>=0.27"]
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+[project.entry-points."prefect.collections"]
+prefect_specstream = "prefect_specstream"
+
+[project.urls]
+Homepage = "https://specstream.ai"
+Documentation = "https://specstream.ai/docs/api"
+Repository = "https://github.com/specstream/specstream-tools/tree/main/packages/prefect-specstream"
+Issues = "https://github.com/specstream/specstream-tools/issues"
+Pricing = "https://specstream.ai/pricing"
+
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["prefect_specstream"]
+
+[tool.hatch.build.targets.sdist]
+include = ["prefect_specstream", "tests", "README.md", "LICENSE"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,15 @@
+<script type="text/javascript">
+RED.nodes.registerType("specstream-config", {
+  category: "config",
+  defaults: { name: { value: "" } },
+  credentials: { apiKey: { type: "password" } },
+  label: function () { return this.name || "SpecStream API key"; }
+});
+</script>
+<script type="text/html" data-template-name="specstream-config">
+  <div class="form-row"><label for="node-config-input-name">Name</label><input type="text" id="node-config-input-name"></div>
+  <div class="form-row"><label for="node-config-input-apiKey">API key</label><input type="password" id="node-config-input-apiKey"></div>
+</script>
+<script type="text/html" data-help-name="specstream-config">
+  <p>Your SpecStream API key. Create one at https://specstream.ai after sign-up ($10 of credit, no card).</p>
+</script>

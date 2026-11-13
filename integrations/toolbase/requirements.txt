@@ -1,0 +1,2 @@
+# The tools call the SpecStream API with the Python standard library only.
+orchestral-ai>=1.10

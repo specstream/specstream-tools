@@ -11,7 +11,7 @@ class GetListResultsTool(Tool):
     def _invoke(self, tool_parameters: dict[str, Any]) -> Generator[ToolInvokeMessage, None, None]:
         list_id = str(tool_parameters.get("list_id") or "").strip()
         if not list_id.startswith("fnd_"):
-            yield self.create_text_message("Pass the list ID from Find a List. It starts with fnd_.")
+            yield self.create_text_message("Pass the list ID from Deep Search. It starts with fnd_.")
             return
         client = SpecStreamClient(self.runtime.credentials["specstream_api_key"])
         page = client.get(f"/v1/finds/{list_id}/rows")

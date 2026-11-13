@@ -1,0 +1,46 @@
+[project]
+name = "griptape-specstream"
+version = "0.1.0"
+description = "SpecStream drivers for Griptape: a web search driver (Search API, $5 per 1,000 searches of up to 10 results, $1 on the fast tier) and a web scraper driver (Extract API, $0.80 per 1,000 pages)."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "SpecStream", email = "support@specstream.ai" }]
+keywords = ["griptape", "griptape-extension", "specstream", "agents", "web-search", "web-scraper", "search-api", "extract-api", "live-web"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Internet :: WWW/HTTP",
+]
+dependencies = ["griptape>=1.0,<2", "requests>=2.31"]
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[project.urls]
+Homepage = "https://specstream.ai"
+Documentation = "https://specstream.ai/docs/api"
+Repository = "https://github.com/specstream/specstream-tools/tree/main/packages/griptape-specstream"
+Issues = "https://github.com/specstream/specstream-tools/issues"
+Pricing = "https://specstream.ai/pricing"
+
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+# Griptape extensions live under the griptape namespace (griptape/<extension>/), as in
+# griptape-ai/griptape-extension-template. Only griptape/specstream ships: griptape/__init__.py
+# belongs to griptape itself, which extends its path to take in extensions.
+[tool.hatch.build.targets.wheel]
+only-include = ["griptape/specstream"]
+
+[tool.hatch.build.targets.sdist]
+only-include = ["griptape/specstream", "tests", "examples", "README.md", "LICENSE"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

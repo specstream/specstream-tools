@@ -60,8 +60,26 @@ jobs:
           python -m pip install -e ".[test]" build
           python -m pytest -q
           python -m build
+      - name: gptme plugin tests
+        working-directory: packages/gptme-specstream
+        run: |
+          python -m pip install -e ".[test]" build
+          python -m pytest -q
+          python -m build
       - name: Airflow provider tests
         working-directory: packages/airflow-provider-specstream
+        run: |
+          python -m pip install -e ".[test]" build
+          python -m pytest -q
+          python -m build
+      - name: Pipecat package tests
+        working-directory: packages/pipecat-specstream
+        run: |
+          python -m pip install -e ".[test]" build
+          python -m pytest -q
+          python -m build
+      - name: Prefect collection tests
+        working-directory: packages/prefect-specstream
         run: |
           python -m pip install -e ".[test]" build
           python -m pytest -q
@@ -72,6 +90,12 @@ jobs:
       - name: GitHub Action tests
         working-directory: actions/find-action
         run: python -m unittest test_run
+      - name: Griptape drivers tests
+        working-directory: packages/griptape-specstream
+        run: |
+          python -m pip install -e ".[test]" build
+          python -m pytest -q
+          python -m build
 
   typescript:
     runs-on: ubuntu-latest
@@ -145,3 +169,29 @@ jobs:
       - run: ruby --version
       - run: for f in test/test_*.rb; do ruby -Ilib -Itest "$f" || exit 1; done
       - run: gem build specstream.gemspec
+
+  rust:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/specstream-rust
+    steps:
+      - uses: actions/checkout@v4
+      # The runner's own Rust toolchain: the org allows only GitHub's and specstream/* actions.
+      - run: rustup component add clippy rustfmt
+      - run: cargo fmt --check
+      - run: cargo clippy --locked --all-targets -- -D warnings
+      - run: cargo test --locked
+      - run: cargo package --locked
+
+  dotnet:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/specstream-dotnet
+    steps:
+      - uses: actions/checkout@v4
+      # The runner's own .NET SDK: the org allows only GitHub's and specstream/* actions.
+      - run: dotnet --version
+      - run: dotnet run --project test/SpecStream.Tests -c Release
+      - run: dotnet pack src/SpecStream -c Release -o out

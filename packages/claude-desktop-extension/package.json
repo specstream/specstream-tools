@@ -1,0 +1,16 @@
+{
+  "name": "specstream-claude-desktop-extension",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SpecStream as a Claude Desktop extension (.mcpb): web search, page reading and structured web data.",
+  "license": "MIT",
+  "main": "server/index.js",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "test": "node --test",
+    "validate": "npx --yes @anthropic-ai/mcpb@2 validate manifest.json",
+    "pack": "npx --yes @anthropic-ai/mcpb@2 pack . specstream.mcpb"
+  }
+}

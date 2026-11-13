@@ -1,0 +1,43 @@
+{
+  "name": "specstream-netlify-extension",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "main": "src/index.ts",
+  "type": "module",
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "scripts": {
+    "build": "netlify-extension build",
+    "dev": "netlify-extension dev",
+    "dev:open": "netlify-extension dev --open",
+    "typecheck": "tsc -p tsconfig.backend.json && tsc -p tsconfig.ui.json",
+    "test": "node --test tests/*.test.mjs"
+  },
+  "dependencies": {
+    "@netlify/functions": "^6.1.1",
+    "@netlify/sdk": "^5.0.5",
+    "@tanstack/react-query": "^5.62.1",
+    "@trpc/client": "^11.4.3",
+    "@trpc/react-query": "^11.4.3",
+    "@trpc/server": "^11.4.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@netlify/netlify-plugin-netlify-extension": "1.2.3",
+    "@tsconfig/node18": "^18.2.4",
+    "@tsconfig/recommended": "^1.0.8",
+    "@tsconfig/vite-react": "^3.0.2",
+    "@types/node": "^22.0.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "autoprefixer": "^10.4.7",
+    "tailwindcss": "^3.4.3",
+    "typescript": "^5.9.3",
+    "vite": "^5.4.19"
+  }
+}

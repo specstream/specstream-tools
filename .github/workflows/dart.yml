@@ -1,0 +1,75 @@
+# The Dart package "specstream" in packages/specstream-dart: its tests, and its release to pub.dev.
+#
+# pub.dev accepts an upload from GitHub Actions only from a run that a tag push started, so this package
+# cannot go through release.yml (workflow_dispatch). A release is the tag specstream-dart-v<version> on the
+# commit whose pubspec.yaml holds that version:
+#   git tag specstream-dart-v0.1.0 && git push origin specstream-dart-v0.1.0
+#
+# No tokens: pub.dev trusts this repository and that tag pattern (the package's Admin tab on pub.dev,
+# "Automated publishing": repository specstream/specstream-tools, tag pattern specstream-dart-v{{version}}).
+# pub.dev has no pending publisher: the first version of a new package is uploaded once by hand with
+# `dart pub publish` from packages/specstream-dart, signed in to the Google account that will own it.
+name: dart
+
+on:
+  push:
+    branches: [main]
+    paths: ["packages/specstream-dart/**", ".github/workflows/dart.yml"]
+    tags: ["specstream-dart-v[0-9]+.[0-9]+.[0-9]+*"]
+  pull_request:
+    paths: ["packages/specstream-dart/**", ".github/workflows/dart.yml"]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/specstream-dart
+    steps:
+      - uses: actions/checkout@v4
+      # Dart from its own archive: the org allows only GitHub's and specstream/* actions.
+      - &dart
+        name: Install the Dart SDK
+        working-directory: ${{ runner.temp }}
+        run: |
+          curl -sSfLo dart.zip https://storage.googleapis.com/dart-archive/channels/stable/release/latest/sdk/dartsdk-linux-x64-release.zip
+          unzip -q dart.zip
+          echo "$PWD/dart-sdk/bin" >> "$GITHUB_PATH"
+      - run: dart --version
+      - run: dart pub get
+      - run: dart format --output=none --set-exit-if-changed .
+      - run: dart analyze --fatal-infos
+      - run: dart test
+      - run: dart pub publish --dry-run
+
+  publish:
+    needs: test
+    if: ${{ github.ref_type == 'tag' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    defaults:
+      run:
+        working-directory: packages/specstream-dart
+    steps:
+      - uses: actions/checkout@v4
+      - *dart
+      - name: The tag is the version in pubspec.yaml
+        run: |
+          version=$(sed -n 's/^version: //p' pubspec.yaml)
+          if [ "$GITHUB_REF_NAME" != "specstream-dart-v$version" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match pubspec.yaml version $version"; exit 1
+          fi
+      - run: dart pub get
+      # The same exchange as dart-lang/setup-dart: a GitHub OIDC token for the audience https://pub.dev.
+      - name: Give pub the GitHub OIDC token
+        run: |
+          jwt=$(curl -sSf -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=https://pub.dev" | python3 -c 'import json, sys; print(json.load(sys.stdin)["value"])')
+          echo "::add-mask::$jwt"
+          echo "PUB_TOKEN=$jwt" >> "$GITHUB_ENV"
+          dart pub token add https://pub.dev --env-var PUB_TOKEN
+      - run: dart pub publish --force

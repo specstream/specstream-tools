@@ -1,0 +1,39 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "specstream-pinecone"
+version = "0.1.0"
+description = "Load SpecStream Deep Search lists, public records, web pages read with the Extract API and research reports into a Pinecone index."
+readme = "README.md"
+license = "MIT"
+authors = [{ name = "SpecStream", email = "support@specstream.ai" }]
+requires-python = ">=3.10"
+keywords = ["pinecone", "specstream", "web data", "deep search", "public records", "extract", "web pages", "research reports", "vector database", "rag"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Topic :: Database",
+]
+dependencies = ["pinecone>=6"]
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+[project.urls]
+Homepage = "https://specstream.ai"
+Documentation = "https://specstream.ai/docs/api"
+Source = "https://github.com/specstream/specstream-tools/tree/main/integrations/pinecone/specstream-pinecone"
+
+[project.scripts]
+specstream-pinecone = "specstream_pinecone.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["specstream_pinecone"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

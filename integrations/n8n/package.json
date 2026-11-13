@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-specstream",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "The live web data engine. One platform to build, search, extract, enrich, map, and monitor data across the entire web.",
   "license": "MIT",
   "homepage": "https://specstream.ai/docs/integrations",
@@ -40,7 +40,7 @@
     "dev": "n8n-node dev",
     "lint": "n8n-node lint",
     "lint:fix": "n8n-node lint --fix",
-    "test": "n8n-node build && node test/confirm_max_usd.test.js && node test/specstream.test.js && node test/trigger.test.js && node test/node.test.js",
+    "test": "n8n-node build && node test/confirm_max_usd.test.js && node test/specstream.test.js && node test/trigger.test.js && node test/node.test.js && node test/find_rows.test.js",
     "prepublishOnly": "n8n-node prerelease",
     "release": "n8n-node release"
   },

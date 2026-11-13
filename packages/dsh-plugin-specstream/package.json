@@ -1,7 +1,7 @@
 {
   "name": "@specstream/dsh-plugin",
-  "version": "0.1.1",
-  "description": "SpecStream for DeepSeek Harness: live web data as rows with a source URL on every value. Registers the hosted SpecStream MCP server.",
+  "version": "0.3.0",
+  "description": "SpecStream for DeepSeek Harness: the web_search tool answers from SpecStream, the live web data engine, with a source URL on every result, and the specstream_research tool writes a research report with the page behind each cited sentence.",
   "type": "module",
   "main": "./src/index.js",
   "exports": {
@@ -46,6 +46,6 @@
     "access": "public"
   },
   "scripts": {
-    "test": "node --test test/plugin.test.js"
+    "test": "node --test test/plugin.test.js test/research.test.js"
   }
 }

@@ -1,0 +1,34 @@
+name: specstream
+version: 0.1.0
+description: "Live web search and page reading for agents: an answer with its source and ranked results in seconds, and the main text of any page, PDF or document."
+author: SpecStream
+email: support@specstream.ai
+license: MIT
+homepage: https://github.com/specstream/specstream-tools/tree/main/integrations/toolbase
+category: utils
+keywords:
+  - web-search
+  - search
+  - page-reading
+  - extract
+  - web-data
+python_version: "3.12"
+
+tools:
+  - name: web_search
+    function: tools.web.web_search
+    description: Search the live web and get an answer with its source, matching rows and ranked sources
+  - name: read_pages
+    function: tools.web.read_pages
+    description: Read the main text, title and published date of 1 to 20 web pages, PDFs or documents
+
+config:
+  - name: api_key
+    description: "Your SpecStream API key. Get one at https://specstream.ai/workspace?utm_source=toolbase"
+    type: secret
+    required: true
+  - name: api_base
+    description: "SpecStream API address. Change it only for a private deployment."
+    type: string
+    default: "https://api.specstream.ai"
+    required: false

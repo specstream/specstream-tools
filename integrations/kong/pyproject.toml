@@ -1,0 +1,16 @@
+# Only for the tests: they run the plugin's Lua files in LuaJIT (the wheel `lupa` carries it),
+# with a scripted Kong and a scripted SpecStream API. The plugin itself needs no Python.
+[project]
+name = "kong-plugin-specstream-research-tests"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = []
+
+[dependency-groups]
+dev = ["pytest>=8", "lupa>=2.2"]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,3 +1,14 @@
+# The @specstream/dsh-plugin bundle patch, applied after the official bundles.
+# It mounts the plugin, which registers the `specstream` search and fetch providers with ctx.web,
+# and selects SpecStream for search, so the harness's web_search tool answers from SpecStream.
+# A patch replaces the row's whole config, so fetch is restated as the base default (the local
+# fetcher). To read pages through SpecStream too, set fetchProvider: specstream in your profile's
+# own cordis.patch.yml, or pick it on the Web search and fetch settings page.
 - insert:
     - id: specstream
       name: '@specstream/dsh-plugin'
+
+- id: web
+  config:
+    searchProvider: specstream
+    fetchProvider: http

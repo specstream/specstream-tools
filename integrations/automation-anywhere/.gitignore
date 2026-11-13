@@ -1,0 +1,7 @@
+.sdk/
+libs/
+build/
+.gradle/
+gradle/
+gradlew
+gradlew.bat

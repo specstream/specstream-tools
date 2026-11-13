@@ -1,6 +1,10 @@
 # Publishes one SDK or proxy package. Run it from the Actions tab, or:
 #   gh workflow run release.yml -f package=sdk-ts
 #
+# The packages are the files in .github/release/: <package>.json holds the registry (npm, pypi, rubygems, crates or nuget)
+# and the package's folder. A new package adds its own file there and no line here, so two packages added
+# at the same time do not change the same lines.
+#
 # The n8n node has its own workflow, publish.yml, because n8n requires that file name.
 #
 # No tokens: every package trusts this file (release.yml in specstream/specstream-tools)
@@ -11,39 +15,56 @@ on:
   workflow_dispatch:
     inputs:
       package:
-        description: Package to publish
-        type: choice
+        description: "Package to publish: a file name in .github/release/ without .json (sdk-ts, sdk-py, ruby, ...)"
+        type: string
         required: true
-        options:
-          - sdk-ts
-          - sdk-py
-          - mcp-stdio
-          - langchain
-          - llamaindex
-          - crewai
-          - haystack
-          - ai-sdk
-          - langchain-js
-          - gpt-researcher
-          - pydantic-ai
-          - airflow
-          - ruby
       rubygems_owner:
         description: "ruby, first publish only: the RubyGems.org account ID shown on that account's Pending Trusted Publishers page"
         type: string
         required: false
         default: ""
+      nuget_user:
+        description: "nuget packages: the nuget.org account (profile name) whose Trusted Publishing policy names this workflow"
+        type: string
+        required: false
+        default: ""
 
 jobs:
+  package:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      registry: ${{ steps.read.outputs.registry }}
+      dir: ${{ steps.read.outputs.dir }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github/release
+      - id: read
+        env:
+          PACKAGE: ${{ inputs.package }}
+        run: |
+          case "$PACKAGE" in
+            ""|*[!a-z0-9-]*) echo "package must be a file name in .github/release/ without .json"; exit 1 ;;
+          esac
+          file=".github/release/$PACKAGE.json"
+          if [ ! -f "$file" ]; then
+            echo "No $file. Packages: $(ls .github/release | sed 's/[.]json$//' | tr '\n' ' ')"
+            exit 1
+          fi
+          python3 -c 'import json, sys; d = json.load(open(sys.argv[1])); print("registry=" + d["registry"]); print("dir=" + d["dir"])' "$file" >> "$GITHUB_OUTPUT"
+
   npm:
-    if: ${{ contains(fromJSON('["sdk-ts","ai-sdk","langchain-js"]'), inputs.package) }}
+    needs: package
+    if: ${{ needs.package.outputs.registry == 'npm' }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
       id-token: write
     defaults:
       run:
-        working-directory: ${{ fromJSON('{"sdk-ts":"packages/sdk-ts","ai-sdk":"packages/ai-sdk","langchain-js":"packages/langchain-js"}')[inputs.package] }}
+        working-directory: ${{ needs.package.outputs.dir }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -59,14 +80,15 @@ jobs:
         run: npm publish --access public --provenance
 
   pypi:
-    if: ${{ contains(fromJSON('["sdk-py","mcp-stdio","langchain","llamaindex","crewai","haystack","gpt-researcher","pydantic-ai","airflow"]'), inputs.package) }}
+    needs: package
+    if: ${{ needs.package.outputs.registry == 'pypi' }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
       id-token: write
     defaults:
       run:
-        working-directory: ${{ fromJSON('{"sdk-py":"packages/sdk-py","mcp-stdio":"packages/mcp-stdio","langchain":"packages/langchain-specstream","llamaindex":"packages/llama-index-tools-specstream","crewai":"packages/crewai-specstream","haystack":"packages/specstream-haystack","gpt-researcher":"packages/gpt-researcher-specstream","pydantic-ai":"packages/pydantic-ai-specstream","airflow":"packages/airflow-provider-specstream"}')[inputs.package] }}
+        working-directory: ${{ needs.package.outputs.dir }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -84,14 +106,15 @@ jobs:
   # (release.yml in specstream/specstream-tools), so no API key is stored here.
   # A new gem needs a pending trusted publisher on rubygems.org first.
   rubygems:
-    if: ${{ inputs.package == 'ruby' }}
+    needs: package
+    if: ${{ needs.package.outputs.registry == 'rubygems' }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
       id-token: write
     defaults:
       run:
-        working-directory: packages/specstream-ruby
+        working-directory: ${{ needs.package.outputs.dir }}
     steps:
       - uses: actions/checkout@v4
       # The runner's own Ruby (3.2 on ubuntu-24.04) and a plain OIDC exchange, the same calls as
@@ -112,3 +135,77 @@ jobs:
           echo "::add-mask::$gemkey"
           echo "GEM_HOST_API_KEY=$gemkey" >> "$GITHUB_ENV"
       - run: gem push specstream-*.gem
+
+  # crates.io trusted publishing (OIDC): the crate "specstream" trusts this file
+  # (release.yml in specstream/specstream-tools), so no token is stored here.
+  # The runner's own cargo and a plain OIDC exchange, the same calls as rust-lang/crates-io-auth-action:
+  # the org allows only GitHub's and specstream/* actions.
+  # crates.io lets a crate trust a workflow only after it exists: the very first
+  # publish uses the repository secret CARGO_REGISTRY_TOKEN, which is deleted after.
+  crates:
+    needs: package
+    if: ${{ needs.package.outputs.registry == 'crates' }}
+    runs-on: ubuntu-latest
+    env:
+      FIRST_PUBLISH_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+    permissions:
+      contents: read
+      id-token: write
+    defaults:
+      run:
+        working-directory: ${{ needs.package.outputs.dir }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: cargo --version
+      - run: cargo test --locked
+      - run: cargo package --locked
+      - name: Exchange the GitHub OIDC token for a short-lived crates.io token
+        if: ${{ env.FIRST_PUBLISH_TOKEN == '' }}
+        run: |
+          jwt=$(curl -sSf -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=crates.io" | python3 -c 'import json, sys; print(json.load(sys.stdin)["value"])')
+          echo "::add-mask::$jwt"
+          body=$(JWT="$jwt" python3 -c 'import json, os; print(json.dumps({"jwt": os.environ["JWT"]}))')
+          reply=$(curl -sS -X POST -H "Content-Type: application/json" -H "User-Agent: specstream-tools-release" -d "$body" https://crates.io/api/v1/trusted_publishing/tokens)
+          token=$(printf '%s' "$reply" | python3 -c 'import json, sys; print(json.load(sys.stdin).get("token", ""))' 2>/dev/null || true)
+          if [ -z "$token" ]; then echo "No trusted publisher on crates.io accepted this workflow: $(printf '%s' "$reply" | head -c 300)"; exit 1; fi
+          echo "::add-mask::$token"
+          echo "CARGO_REGISTRY_TOKEN=$token" >> "$GITHUB_ENV"
+      - name: Publish
+        run: |
+          if [ -n "$FIRST_PUBLISH_TOKEN" ]; then export CARGO_REGISTRY_TOKEN="$FIRST_PUBLISH_TOKEN"; fi
+          cargo publish --locked
+
+  # NuGet trusted publishing (OIDC): the package "SpecStream" trusts this file
+  # (release.yml in specstream/specstream-tools) through a Trusted Publishing policy on nuget.org,
+  # so no API key is stored here. The same exchange as NuGet/login, done with curl because the org
+  # allows only GitHub's and specstream/* actions.
+  nuget:
+    needs: package
+    if: ${{ needs.package.outputs.registry == 'nuget' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    defaults:
+      run:
+        working-directory: ${{ needs.package.outputs.dir }}
+    steps:
+      - uses: actions/checkout@v4
+      # The runner's own .NET SDK (8 or newer on ubuntu-24.04).
+      - run: dotnet --info
+      - run: dotnet run --project test/SpecStream.Tests -c Release
+      - run: dotnet pack src/SpecStream -c Release -o out
+      - name: Exchange the GitHub OIDC token for a short-lived NuGet key
+        env:
+          NUGET_USER: ${{ inputs.nuget_user }}
+        run: |
+          if [ -z "$NUGET_USER" ]; then echo "Set nuget_user: the nuget.org account whose Trusted Publishing policy names this workflow"; exit 1; fi
+          jwt=$(curl -sSf -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=https%3A%2F%2Fwww.nuget.org" | python3 -c 'import json, sys; print(json.load(sys.stdin)["value"])')
+          echo "::add-mask::$jwt"
+          body=$(USER_NAME="$NUGET_USER" python3 -c 'import json, os; print(json.dumps({"username": os.environ["USER_NAME"], "tokenType": "ApiKey"}))')
+          reply=$(curl -sS -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $jwt" -H "User-Agent: specstream-release" -d "$body" https://www.nuget.org/api/v2/token)
+          nugetkey=$(printf '%s' "$reply" | python3 -c 'import json, sys; print(json.load(sys.stdin).get("apiKey", ""))' 2>/dev/null || true)
+          if [ -z "$nugetkey" ]; then echo "No Trusted Publishing policy on nuget.org accepted this workflow: $(printf '%s' "$reply" | head -c 300)"; exit 1; fi
+          echo "::add-mask::$nugetkey"
+          echo "NUGET_API_KEY=$nugetkey" >> "$GITHUB_ENV"
+      - run: dotnet nuget push "out/*.nupkg" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate

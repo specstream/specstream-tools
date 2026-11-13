@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <RootNamespace>SpecStream</RootNamespace>
+    <AssemblyName>SpecStream</AssemblyName>
+
+    <PackageId>SpecStream</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>SpecStream</Authors>
+    <Company>SpecStream SAS</Company>
+    <Description>.NET client for SpecStream's Deep Search API, monitors, Search API, Extract API and browser sessions. Ask for any dataset in plain words, and SpecStream builds it from the entire live web: every match found, extracted and enriched into structured records, then monitored for change. No dependencies outside .NET.</Description>
+    <PackageTags>specstream;web-search;web-data;extract;monitor;browser;headless-browser;api-client</PackageTags>
+    <PackageProjectUrl>https://specstream.ai</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/specstream/specstream-tools</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../../README.md" Pack="true" PackagePath="/" />
+    <None Include="../../LICENSE" Pack="true" PackagePath="/" />
+  </ItemGroup>
+
+</Project>

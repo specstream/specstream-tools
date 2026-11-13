@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SpecStream</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main>
+      <section id="key-view" hidden>
+        <h1>Connect SpecStream</h1>
+        <p>Paste your SpecStream API key. It stays in Adobe Express on this device and is sent only to api.specstream.ai.</p>
+        <label for="key">API key</label>
+        <input id="key" type="password" autocomplete="off" spellcheck="false" />
+        <button id="save-key" class="primary">Save key</button>
+        <p class="small"><a href="https://specstream.ai" target="_blank" rel="noopener">Create a key in your SpecStream account</a>. New accounts start with $10 of credit and no card.</p>
+      </section>
+
+      <section id="work-view" hidden>
+        <div class="tabs" role="tablist">
+          <button id="tab-search" role="tab" aria-selected="true" aria-controls="search-pane">Search</button>
+          <button id="tab-extract" role="tab" aria-selected="false" aria-controls="extract-pane">Extract</button>
+        </div>
+
+        <div id="search-pane" role="tabpanel">
+          <label for="q">Question</label>
+          <textarea id="q" rows="3" placeholder="Largest coffee chains in Europe by number of stores"></textarea>
+          <button id="run-search" class="primary">Search the web</button>
+          <ul id="hits" aria-label="Results"></ul>
+          <button id="add-hits" class="primary" hidden>Add to design</button>
+        </div>
+
+        <div id="extract-pane" role="tabpanel" hidden>
+          <label for="urls">Page URLs (up to 20)</label>
+          <textarea id="urls" rows="4" placeholder="https://example.com/pricing"></textarea>
+          <button id="run-extract" class="primary">Extract the text</button>
+          <ul id="pages" aria-label="Pages"></ul>
+          <button id="add-pages" class="primary" hidden>Add to design</button>
+        </div>
+
+        <p class="small"><button id="change-key" class="link">Change API key</button></p>
+      </section>
+
+      <p id="status" role="status" aria-live="polite"></p>
+    </main>
+    <script type="module" src="ui.js"></script>
+  </body>
+</html>

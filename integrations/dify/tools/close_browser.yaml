@@ -1,0 +1,22 @@
+identity:
+  name: close_browser
+  author: specstream
+  label:
+    en_US: Close Browser
+description:
+  human:
+    en_US: Close a browser and get what it cost. An open browser is charged until it closes.
+  llm: Closes a browser opened by Open Browser and settles its charge for the seconds it ran and its steps. Call it when the task is done, because an open browser is charged until it times out. Returns the seconds, the steps and the charge. A repeat call returns the same and costs nothing.
+parameters:
+  - name: session_id
+    type: string
+    required: true
+    form: llm
+    label:
+      en_US: Session ID
+    human_description:
+      en_US: The session ID returned by Open Browser. It starts with brs_.
+    llm_description: The session ID returned by Open Browser, starting with brs_.
+extra:
+  python:
+    source: tools/close_browser.py

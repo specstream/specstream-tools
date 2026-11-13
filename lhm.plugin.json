@@ -5859,7 +5859,7 @@
     {
       "name": "set_schedule_delivery",
       "title": "Choose where a monitor reports",
-      "description": "Choose where new and changed records go when a monitor finds them: notifications, Slack, a connected tool or a signed webhook. Nothing runs.",
+      "description": "Choose where new and changed records go when a monitor finds them: notifications, Slack, a connected tool or a signed webhook. SpecStream keeps this choice on the monitor in the workspace database. Nothing runs.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {

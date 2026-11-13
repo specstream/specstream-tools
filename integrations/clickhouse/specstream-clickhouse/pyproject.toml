@@ -1,0 +1,39 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "specstream-clickhouse"
+version = "0.1.0"
+description = "Load SpecStream Deep Search lists into ClickHouse tables."
+readme = "README.md"
+license = "MIT"
+authors = [{ name = "SpecStream", email = "support@specstream.ai" }]
+requires-python = ">=3.10"
+keywords = ["clickhouse", "specstream", "web data", "deep search"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Topic :: Database",
+]
+dependencies = ["clickhouse-connect>=0.8"]
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+[project.urls]
+Homepage = "https://specstream.ai"
+Documentation = "https://specstream.ai/docs/api"
+Source = "https://github.com/specstream/specstream-tools/tree/main/integrations/clickhouse"
+
+[project.scripts]
+specstream-clickhouse = "specstream_clickhouse.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["specstream_clickhouse"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

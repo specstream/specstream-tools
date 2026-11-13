@@ -1,0 +1,22 @@
+identity:
+  name: get_research_report
+  author: specstream
+  label:
+    en_US: Get Research Report
+description:
+  human:
+    en_US: Get a research report by its report ID, with the page behind each cited sentence.
+  llm: Reads a SpecStream research report by its report ID (from Research Report). Returns the status (queued, running, completed, failed, cancelled or payment_required), the stage, and when it is completed the report in markdown with numbered citations and its sources with the time each page was read. Costs nothing.
+parameters:
+  - name: report_id
+    type: string
+    required: true
+    form: llm
+    label:
+      en_US: Report ID
+    human_description:
+      en_US: The report ID returned by Research Report. It starts with rr_.
+    llm_description: The report ID returned by Research Report, starting with rr_.
+extra:
+  python:
+    source: tools/get_research_report.py

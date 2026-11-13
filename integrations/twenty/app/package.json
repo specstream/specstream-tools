@@ -1,0 +1,58 @@
+{
+  "name": "@specstream/twenty-app",
+  "version": "0.1.0",
+  "description": "SpecStream for Twenty: fill in a company record from the live web, with the page each fact was read from.",
+  "license": "MIT",
+  "author": "SpecStream",
+  "homepage": "https://specstream.ai",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/specstream/specstream-tools.git",
+    "directory": "integrations/twenty/app"
+  },
+  "bugs": {
+    "email": "support@specstream.ai"
+  },
+  "keywords": [
+    "twenty-app",
+    "twenty",
+    "crm",
+    "enrichment",
+    "company-data",
+    "specstream"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": "^24.5.0 || ^26.5.1",
+    "npm": "please-use-yarn",
+    "yarn": ">=4.0.2",
+    "twenty": ">=2.58.0"
+  },
+  "packageManager": "yarn@4.18.1",
+  "scripts": {
+    "twenty": "twenty",
+    "lint": "oxlint -c .oxlintrc.json .",
+    "lint:fix": "oxlint --fix -c .oxlintrc.json .",
+    "typecheck": "tsgo --noEmit -p tsconfig.spec.json",
+    "test": "vitest run --config vitest.unit.config.ts",
+    "test:watch": "vitest",
+    "test:unit": "vitest run --config vitest.unit.config.ts",
+    "test:integration": "vitest run"
+  },
+  "devDependencies": {
+    "@types/node": "^24.7.2",
+    "@types/react": "^19.0.0",
+    "@typescript/native-preview": "^7.0.0-dev.20260116.1",
+    "oxlint": "^0.16.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "twenty-client-sdk": "2.58.0",
+    "twenty-sdk": "2.58.0",
+    "twenty-ui": "2.58.0",
+    "typescript": "^5.9.3",
+    "vite-tsconfig-paths": "^4.2.1",
+    "vitest": "^4.1.12"
+  }
+}

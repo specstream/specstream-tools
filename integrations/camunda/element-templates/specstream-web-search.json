@@ -1,0 +1,240 @@
+{
+  "$schema": "https://unpkg.com/@camunda/zeebe-element-templates-json-schema/resources/schema.json",
+  "name": "SpecStream Web Search",
+  "id": "ai.specstream.connector.websearch.v1",
+  "description": "Answer a question from the live web with the SpecStream Search API. Every value comes with its source URL and read time.",
+  "version": 1,
+  "documentationRef": "https://specstream.ai/docs/api",
+  "category": {
+    "id": "connectors",
+    "name": "Connectors"
+  },
+  "appliesTo": [
+    "bpmn:Task"
+  ],
+  "elementType": {
+    "value": "bpmn:ServiceTask"
+  },
+  "groups": [
+    {
+      "id": "authentication",
+      "label": "Authentication"
+    },
+    {
+      "id": "search",
+      "label": "Search"
+    },
+    {
+      "id": "output",
+      "label": "Output mapping"
+    },
+    {
+      "id": "errors",
+      "label": "Error handling"
+    },
+    {
+      "id": "retries",
+      "label": "Retries"
+    }
+  ],
+  "properties": [
+    {
+      "type": "Hidden",
+      "value": "io.camunda:http-json:1",
+      "binding": {
+        "type": "zeebe:taskDefinition",
+        "property": "type"
+      }
+    },
+    {
+      "type": "Hidden",
+      "value": "bearer",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "authentication.type"
+      }
+    },
+    {
+      "id": "apiKey",
+      "label": "API key",
+      "description": "Your SpecStream API key. Keep it in a Connectors secret and refer to it here, for example {{secrets.SPECSTREAM_API_KEY}}.",
+      "type": "String",
+      "feel": "optional",
+      "group": "authentication",
+      "value": "{{secrets.SPECSTREAM_API_KEY}}",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "authentication.token"
+      },
+      "constraints": {
+        "notEmpty": true
+      }
+    },
+    {
+      "type": "Hidden",
+      "value": "GET",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "method"
+      }
+    },
+    {
+      "type": "Hidden",
+      "value": "https://api.specstream.ai/v1/web-search",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "url"
+      }
+    },
+    {
+      "id": "q",
+      "label": "Search query",
+      "description": "The question or search query in everyday words, 1 to 2,000 characters. Quoted phrases are searched as phrases.",
+      "type": "String",
+      "feel": "optional",
+      "group": "search",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "q"
+      },
+      "constraints": {
+        "notEmpty": true
+      }
+    },
+    {
+      "id": "speed",
+      "label": "Speed",
+      "description": "Default costs $5 per 1,000 searches of up to 10 results. Fast costs $1 per 1,000.",
+      "type": "Dropdown",
+      "group": "search",
+      "value": "default",
+      "choices": [
+        {
+          "name": "Default",
+          "value": "default"
+        },
+        {
+          "name": "Fast",
+          "value": "fast"
+        }
+      ],
+      "binding": {
+        "type": "zeebe:input",
+        "name": "speed"
+      }
+    },
+    {
+      "id": "passages",
+      "label": "Include passages",
+      "description": "Add the main text passages of the top matching pages to the response.",
+      "type": "Dropdown",
+      "group": "search",
+      "value": "false",
+      "choices": [
+        {
+          "name": "No",
+          "value": "false"
+        },
+        {
+          "name": "Yes",
+          "value": "true"
+        }
+      ],
+      "binding": {
+        "type": "zeebe:input",
+        "name": "passages"
+      }
+    },
+    {
+      "type": "Hidden",
+      "value": "={q: q, speed: speed, passages: passages}",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "queryParameters"
+      }
+    },
+    {
+      "type": "Hidden",
+      "value": "={\"Accept\": \"application/json\", \"User-Agent\": \"specstream-camunda\"}",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "headers"
+      }
+    },
+    {
+      "type": "Hidden",
+      "value": "20",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "connectionTimeoutInSeconds"
+      }
+    },
+    {
+      "id": "resultVariable",
+      "label": "Result variable",
+      "description": "Name of the process variable that receives the whole response.",
+      "type": "String",
+      "group": "output",
+      "binding": {
+        "type": "zeebe:taskHeader",
+        "key": "resultVariable"
+      }
+    },
+    {
+      "id": "resultExpression",
+      "label": "Result expression",
+      "description": "A FEEL expression that maps the response to process variables. response.body holds the answer, its rows and the ranked sources.",
+      "type": "Text",
+      "feel": "required",
+      "group": "output",
+      "value": "={specstreamSearch: response.body}",
+      "binding": {
+        "type": "zeebe:taskHeader",
+        "key": "resultExpression"
+      }
+    },
+    {
+      "id": "errorExpression",
+      "label": "Error expression",
+      "description": "A FEEL expression that turns a failed call into a BPMN error.",
+      "type": "Text",
+      "feel": "required",
+      "group": "errors",
+      "binding": {
+        "type": "zeebe:taskHeader",
+        "key": "errorExpression"
+      }
+    },
+    {
+      "id": "retryCount",
+      "label": "Retries",
+      "description": "Number of retries after a failed call.",
+      "type": "String",
+      "feel": "optional",
+      "group": "retries",
+      "value": "3",
+      "binding": {
+        "type": "zeebe:taskDefinition",
+        "property": "retries"
+      },
+      "constraints": {
+        "notEmpty": true
+      }
+    },
+    {
+      "id": "retryBackoff",
+      "label": "Retry backoff",
+      "description": "ISO 8601 duration to wait between retries.",
+      "type": "String",
+      "group": "retries",
+      "value": "PT0S",
+      "binding": {
+        "type": "zeebe:taskHeader",
+        "key": "retryBackoff"
+      }
+    }
+  ],
+  "icon": {
+    "contents": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjIzNiAyODYgODAwIDU4MCIgd2lkdGg9IjgwMCIgaGVpZ2h0PSI1ODAiPjxkZWZzPjxtYXNrIGlkPSJtYXJrLWxpZ2h0IiBtYXNrVW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4PSIyMzYiIHk9IjI4NiIgd2lkdGg9IjgwMCIgaGVpZ2h0PSI1ODAiPgogICAgICAgIDxyZWN0IHg9IjIzNiIgeT0iMjg2IiB3aWR0aD0iODAwIiBoZWlnaHQ9IjU4MCIgZmlsbD0iI2ZmZiIvPgogICAgICAgIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDg3NCA3MjIpIHNjYWxlKDEuNikgdHJhbnNsYXRlKC04NzQgLTcyMikiPjxwYXRoIGQ9Ik04NDggNzIyQzg0OSA3MTIgODUyIDcwNCA4NDkgNjk2Qzg0NiA2OTAgODQzIDY4NCA4NDIgNjc2QzgzNyA2NzAgODM2IDY2MCA4MzggNjUyTDgzNiA2NDFMODQ2IDY0OUM4NTIgNjQ3IDg1OCA2NDcgODYyIDY0OUw4NzAgNjQwTDg3MSA2NTVDODczIDY2MyA4NzIgNjY4IDg2OCA2NzJDODg0IDY3OCA4OTcgNjkyIDkwMCA3MjJaIi8+PHBhdGggZD0iTTg1MiA3MTlMOTAwIDcyMEwxMDA0IDczNUw5NTAgNzkyWiIvPjwvZz4KICAgIDwvbWFzaz48L2RlZnM+CiAgICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwIDApIHNjYWxlKDEpIj48cGF0aCBmaWxsPSIjMjQyNzIyIiBtYXNrPSJ1cmwoI21hcmstbGlnaHQpIiBkPSJNNDcwIDI5OEM0MjAgMzAwIDMzMCAzMTIgMjkwIDMzNEMyNjUgMzQ4IDI3MiAzNjggMzA1IDM4MkMzNjAgNDA1IDQ0MCA0MzIgNDU1IDQ3MkM0NjggNTEwIDQyMCA1NDUgMzUwIDU5MEMyODUgNjMyIDI0OCA2NjggMjUwIDcxMkMyNTMgNzkwIDM5MCA4NTAgNjEwIDg1MUM4MjAgODUyIDk2MCA4MTAgMTAwMCA3NDBDMTAyMiA3MDAgMTAxOCA2NzIgOTk2IDY0MEM5NTAgNTg1IDg1MCA1MzAgNzAwIDQ4MEM1NjAgNDQwIDQyMCA0MDggMzQ1IDM4MEMzMTggMzcwIDMxMiAzNTYgMzMwIDM0NkMzNzAgMzI1IDQzMCAzMDYgNDcwIDI5OFoiLz48L2c+PC9zdmc+Cg=="
+  }
+}

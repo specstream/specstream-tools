@@ -1,0 +1,54 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# NemoClaw network policy preset for the SpecStream API: web search, page reading,
+# research reports and browser sessions.
+# Format: nemoclaw-blueprint/policies/presets/*.yaml in NVIDIA/NemoClaw.
+# Apply to a sandbox: nemoclaw <sandbox> policy add --from-file ./specstream.yaml --yes
+
+preset:
+  name: specstream
+  description: "SpecStream web search, page reading, research report and browser session API access (opt-in)"
+
+network_policies:
+  specstream:
+    name: specstream
+    endpoints:
+      - host: api.specstream.ai
+        port: 443
+        protocol: rest
+        enforcement: enforce
+        # Tavily-style clients send the resolver placeholder as the JSON `api_key` field;
+        # every other route reads `Authorization: Bearer`.
+        request_body_credential_rewrite: true
+        rules:
+          # SpecStream's own Search API and Extract API.
+          - allow: { method: GET, path: "/v1/web-search" }
+          - allow: { method: POST, path: "/v1/extract" }
+          # Research reports: start one, list them, read one or its events, cancel one.
+          - allow: { method: POST, path: "/v1/research" }
+          - allow: { method: GET, path: "/v1/research" }
+          - allow: { method: GET, path: "/v1/research/**" }
+          - allow: { method: POST, path: "/v1/research/**" }
+          # Browser sessions: open one, list them, read one, send it actions, release it.
+          - allow: { method: POST, path: "/v1/browser/sessions" }
+          - allow: { method: GET, path: "/v1/browser/sessions" }
+          - allow: { method: GET, path: "/v1/browser/sessions/**" }
+          - allow: { method: POST, path: "/v1/browser/sessions/**" }
+          # Drop-in addresses: a Tavily or Exa client moves by changing its base URL.
+          - allow: { method: POST, path: "/tavily/search" }
+          - allow: { method: POST, path: "/tavily/extract" }
+          - allow: { method: POST, path: "/exa/search" }
+          - allow: { method: POST, path: "/exa/contents" }
+          # Remote MCP server (Streamable HTTP).
+          - allow: { method: GET, path: "/mcp" }
+          - allow: { method: POST, path: "/mcp" }
+          - allow: { method: DELETE, path: "/mcp" }
+    binaries:
+      # Agent runtimes: Deep Agents Code's managed Python, Hermes' venv Python,
+      # and OpenClaw's Node paths.
+      - { path: /opt/venv/bin/python3* }
+      - { path: /opt/hermes/.venv/bin/python }
+      - { path: /usr/local/bin/node }
+      - { path: /usr/bin/node }
+      - { path: /usr/local/bin/curl }
+      - { path: /usr/bin/curl }

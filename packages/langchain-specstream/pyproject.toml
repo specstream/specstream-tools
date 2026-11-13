@@ -1,13 +1,13 @@
 [project]
 name = "langchain-specstream"
-version = "0.2.2"
+version = "0.4.0"
 description = "The live web data engine for LangChain: Search API ($5 per 1,000 searches of up to 10 results, or $1 on the fast tier), Extract API ($0.80 per 1,000 pages) and Deep Search."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 license-files = ["LICENSE"]
 authors = [{ name = "SpecStream", email = "support@specstream.ai" }]
-keywords = ["langchain", "specstream", "agents", "tools", "retriever", "web-data", "live-web", "lead-lists", "research", "lead-generation", "lead-list", "company-list", "grants"]
+keywords = ["langchain", "specstream", "agents", "tools", "retriever", "web-data", "live-web", "lead-lists", "research", "browser", "browser-automation", "lead-generation", "lead-list", "company-list", "grants"]
 classifiers = [
   "Development Status :: 4 - Beta",
   "Intended Audience :: Developers",

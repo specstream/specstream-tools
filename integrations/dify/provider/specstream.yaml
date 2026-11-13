@@ -25,6 +25,11 @@ tools:
   - tools/extract_pages.yaml
   - tools/find_list.yaml
   - tools/get_list_results.yaml
+  - tools/research_report.yaml
+  - tools/get_research_report.yaml
+  - tools/open_browser.yaml
+  - tools/browser_step.yaml
+  - tools/close_browser.yaml
   - tools/find_public_records.yaml
   - tools/get_public_records.yaml
   - tools/create_monitor.yaml

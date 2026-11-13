@@ -1,0 +1,50 @@
+[project]
+name = "temporal-specstream"
+version = "0.1.0"
+description = "SpecStream for Temporal: live web search and page reading as durable Activities, in one Plugin."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "SpecStream", email = "support@specstream.ai" }]
+keywords = ["temporal", "temporalio", "plugin", "activities", "specstream", "agents", "web-search", "search-api", "extract-api", "web-data", "live-web"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Internet :: WWW/HTTP",
+  "Typing :: Typed",
+]
+dependencies = ["temporalio>=1.19,<2", "httpx>=0.27"]
+
+[project.optional-dependencies]
+test = ["pytest>=8", "pytest-asyncio>=0.24"]
+
+[project.urls]
+Homepage = "https://specstream.ai"
+Documentation = "https://specstream.ai/docs/api"
+Repository = "https://github.com/specstream/specstream-tools/tree/main/packages/temporal-specstream"
+Issues = "https://github.com/specstream/specstream-tools/issues"
+Changelog = "https://github.com/specstream/specstream-tools/blob/main/packages/temporal-specstream/CHANGELOG.md"
+Pricing = "https://specstream.ai/pricing"
+
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["temporal_specstream"]
+
+[tool.hatch.build.targets.sdist]
+include = ["temporal_specstream", "examples", "tests", "README.md", "CHANGELOG.md", "LICENSE"]
+
+[tool.ruff]
+line-length = 120
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"

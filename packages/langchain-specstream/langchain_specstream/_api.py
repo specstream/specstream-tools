@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from typing import Any, Callable
 
 DEFAULT_BASE_URL = "https://api.specstream.ai"
-USER_AGENT = "langchain-specstream/0.2.2"
+USER_AGENT = "langchain-specstream/0.4.0"
 # A list runs for up to about five minutes, so the tools wait a little longer than that by default.
 DEFAULT_WAIT_SECONDS = 420.0
 FINISHED = {"completed", "partial"}
@@ -76,7 +76,7 @@ class SpecStreamAPI:
     sleep: Callable[[float], None] = time.sleep
     clock: Callable[[], float] = time.monotonic
 
-    def request(self, method: str, path: str, body: dict[str, Any] | None = None, *, allow_404: bool = False) -> dict[str, Any] | None:
+    def request(self, method: str, path: str, body: dict[str, Any] | None = None, *, allow_404: bool = False, headers: dict[str, str] | None = None) -> dict[str, Any] | None:
         key = (self.api_key or "").strip()
         if not key:
             raise SpecStreamError("Set SPECSTREAM_API_KEY or pass api_key. Create a key under Agents & API in your SpecStream workspace.")
@@ -89,6 +89,7 @@ class SpecStreamAPI:
                 "Accept": "application/json",
                 "Content-Type": "application/json",
                 "User-Agent": USER_AGENT,
+                **(headers or {}),
             },
         )
         open_ = self.opener or (lambda req, timeout: urllib.request.urlopen(req, timeout=timeout))

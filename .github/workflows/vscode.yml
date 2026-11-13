@@ -1,0 +1,78 @@
+# Publishes the VS Code extension (integrations/vscode, SpecStream.specstream) to the Visual Studio Marketplace
+# and to Open VSX (open-vsx.org, which Cursor, Windsurf and VSCodium read) in one run, so a new version is on
+# both on the same day.
+# Run it from the Actions tab, or:  gh workflow run vscode.yml
+#
+# Marketplace, no token: the Marketplace publisher "specstream" trusts this file (vscode.yml in
+# specstream/specstream-tools) through a Trusted Publishing policy, and vsce exchanges this run's GitHub OIDC token
+# for a Marketplace credential that lasts 15 minutes. This replaces the global Azure DevOps personal access token
+# that was typed at `vsce login` on a laptop; Microsoft retires those tokens (December 1, 2026, later moved to
+# January 27, 2027).
+# The policy is made once at https://marketplace.visualstudio.com/manage, publisher specstream, Trusted Publishing,
+# Create: repository owner specstream, repository specstream-tools, workflow vscode.yml, environment left empty.
+# Until it exists the publish step fails at the token exchange and nothing is uploaded.
+#
+# Open VSX, one of two ways, and ovsx chooses: with the repository secret OVSX_PAT when it is set (an access token
+# of the SpecStream namespace, made at https://open-vsx.org/user-settings/tokens), else with Open VSX trusted
+# publishing, where ovsx exchanges this run's GitHub OIDC token for a short-lived one. Until one of the two exists
+# the Open VSX job fails and uploads nothing; the Marketplace job does not wait for it, and the other way round.
+# A version that is already on Open VSX is skipped, so the run can be started again after one side failed.
+#
+# A version number cannot be published twice: raise "version" in integrations/vscode/package.json and add its
+# CHANGELOG.md entry first. The registries show CHANGELOG.md as the notes of the version; check-notes.mjs stops
+# the run unless the entry of this version names Deep Search and its command, `@specstream /find`.
+# The extension bundles packages/sdk-ts/src, so the checkout is the whole repository.
+name: vscode
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Build and package only; upload nothing
+        type: boolean
+        default: false
+
+jobs:
+  marketplace:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    defaults:
+      run:
+        working-directory: integrations/vscode
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: node check-notes.mjs
+      # Builds the same .vsix the publish step uploads, so a broken build stops before the token exchange.
+      - run: npx vsce package
+      - name: Publish with Trusted Publishing
+        if: ${{ !inputs.dry_run }}
+        run: npx vsce publish --oidc
+
+  open-vsx:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    defaults:
+      run:
+        working-directory: integrations/vscode
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: node check-notes.mjs
+      - run: npx vsce package --out specstream.vsix
+      - name: Publish to Open VSX
+        if: ${{ !inputs.dry_run }}
+        run: npx ovsx publish specstream.vsix --skip-duplicate
+        env:
+          # Empty when the secret is not set; ovsx then uses trusted publishing.
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}

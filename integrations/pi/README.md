@@ -7,7 +7,7 @@ Ask for any dataset in plain words, and SpecStream builds it from the entire liv
 - Source URL and read time on every value.
 - You see the price before anything runs and pay for each row delivered, from 5 cents each.
 
-This is a [Pi package](https://pi.dev/packages). It adds the hosted [SpecStream](https://specstream.ai) MCP server and six skills. Search the web and read pages work with no quote. For lists, Pi shows how SpecStream read your request, gets the price, asks you to approve it, and returns the rows.
+This is a [Pi package](https://pi.dev/packages). It adds the hosted [SpecStream](https://specstream.ai) MCP server, seven skills and the `/research` command. Search the web and read pages work with no quote. A research report shows its price and waits for your approval. For lists, Pi shows how SpecStream read your request, gets the price, asks you to approve it, and returns the rows.
 
 ## Install
 
@@ -22,13 +22,15 @@ Try it for one run without installing: `pi -e npm:@specstream/pi-package`.
 
 ## What you get
 
-- **The SpecStream MCP server** at `https://api.specstream.ai/mcp`, registered by a small extension (`extensions/specstream.ts`). It uses Pi's built-in MCP support, OAuth 2.1 with dynamic client registration, and no stored credentials. Seven tools stay in view (`search_web`, `read_pages`, `compile`, `quote_capacity_work`, `authorize_capacity_work`, `get_find`, `list_find_rows`); the rest load on demand through `tool_search`. In Pi they are named `mcp__specstream__<tool>`.
-- **Six skills**, loaded when the task calls for them or by name:
+- **The SpecStream MCP server** at `https://api.specstream.ai/mcp`, registered by a small extension (`extensions/specstream.ts`). It uses Pi's built-in MCP support, OAuth 2.1 with dynamic client registration, and no stored credentials. Ten tools stay in view (`search_web`, `read_pages`, `compile`, `quote_capacity_work`, `authorize_capacity_work`, `get_find`, `list_find_rows`, `research_price`, `start_research`, `get_research`); the rest load on demand through `tool_search`. In Pi they are named `mcp__specstream__<tool>`.
+- **The `/research` command**: `/research [quick|standard|deep] <question>` asks SpecStream for a written report from the live web, with the page behind each cited sentence. Pi shows the price ($0.10 quick, $0.30 standard, $1.00 deep) and starts the report only after you approve it. Without a depth the report is standard.
+- **Seven skills**, loaded when the task calls for them or by name:
 
 | Skill | What it does |
 |---|---|
 | `/skill:specstream-search-web` | Answers a question from the live web with sources ($5 per 1,000 searches of up to 10 results, or $1 on the fast tier) |
 | `/skill:specstream-extract-pages` | Reads up to 20 web pages, PDFs, Word or Excel files ($0.80 per 1,000 pages) |
+| `/skill:specstream-research` | Writes a research report with the page behind each cited sentence ($0.10, $0.30 or $1.00 a report, after you approve the price) |
 | `/skill:specstream-compile` | Shows how SpecStream read your request before anything runs |
 | `/skill:specstream-review-work` | Gets the exact price and its expiry |
 | `/skill:specstream-approve-work` | Starts the list after you approve that price |
@@ -38,6 +40,10 @@ Try it for one run without installing: `pi -e npm:@specstream/pi-package`.
 
 ```text
 Find open grants for climate research in the EU, with the deadline and the award size.
+```
+
+```text
+/research deep How do the EU and the US regulate carbon removal credits?
 ```
 
 Reading a request and getting its price are free. Nothing that costs money runs until you approve an exact maximum.
@@ -67,7 +73,7 @@ Your request and your answers to the price go to `api.specstream.ai` over HTTPS,
 
 ## Price
 
-A list runs only after you approve its maximum price. Results cost 5 cents, 15 cents or $1 each depending on the kind of work, plus 5 cents for a person's email and 15 cents for a phone. Nothing is charged when nothing matches, and possible matches that were not confirmed are never billed. [Pricing](https://specstream.ai/pricing)
+A list runs only after you approve its maximum price. Results cost 5 cents, 15 cents or $1 each depending on the kind of work, plus 5 cents for a person's email and 15 cents for a phone. Nothing is charged when nothing matches, and possible matches that were not confirmed are never billed. A research report costs $0.10, $0.30 or $1.00 by depth, charged once when the report is delivered; a cancelled report is not charged. [Pricing](https://specstream.ai/pricing)
 
 ## Links
 
