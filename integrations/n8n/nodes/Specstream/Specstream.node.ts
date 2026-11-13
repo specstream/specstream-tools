@@ -75,7 +75,7 @@ export class Specstream implements INodeType {
         displayOptions: { show: { resource: ["web"] } },
         options: [
           { name: "Extract Pages", value: "extractPages", action: "Extract pages", description: "Read the main text, title and published date of 1 to 20 web pages, PDFs, Word or Excel files live ($0.80 per 1,000 pages)" },
-          { name: "Web Search", value: "webSearch", action: "Search the web", description: "Answer a question from the live web in seconds with the Search API ($5 per 1,000 searches of up to 10 results, or $1 on the fast tier)" },
+          { name: "Web Search", value: "webSearch", action: "Search the web", description: "Answer a question from the live web in seconds with the Search API ($5 per 1,000 searches of up to 10 results, $1 per 1,000 on the fast speed)" },
         ],
         default: "webSearch",
       },
@@ -94,6 +94,18 @@ export class Specstream implements INodeType {
         type: "boolean",
         default: false,
         description: "Whether to include the main text passages of the top matching pages in the response",
+        displayOptions: { show: { operation: ["webSearch"] } },
+      },
+      {
+        displayName: "Speed",
+        name: "speed",
+        type: "options",
+        options: [
+          { name: "Default", value: "default", description: "The answer read from the pages, $5 per 1,000 searches" },
+          { name: "Fast", value: "fast", description: "The ranked results in about a second, $1 per 1,000 searches" },
+        ],
+        default: "default",
+        description: "Fast returns the ranked results in about a second and costs $1 per 1,000 searches",
         displayOptions: { show: { operation: ["webSearch"] } },
       },
       {
@@ -376,7 +388,10 @@ export class Specstream implements INodeType {
         const q = String(this.getNodeParameter("search_query", i) || "").trim();
         if (!q || q.length > 2000) throw fail("Search Query must be 1 to 2,000 characters");
         const passages = Boolean(this.getNodeParameter("passages", i, false));
-        const query = `q=${encodeURIComponent(q)}${passages ? "&passages=true" : ""}`;
+        // Only the fast speed is sent: the default speed stays the API's own default.
+        const speed = String(this.getNodeParameter("speed", i, "default") || "default");
+        if (speed !== "fast" && speed !== "default") throw fail('Speed must be "fast" or "default"');
+        const query = `q=${encodeURIComponent(q)}${passages ? "&passages=true" : ""}${speed === "fast" ? "&speed=fast" : ""}`;
         const data = await call("GET", `/v1/web-search?${query}`);
         out.push({ json: data, pairedItem: { item: i } });
         continue;

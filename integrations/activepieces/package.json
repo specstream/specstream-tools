@@ -1,6 +1,6 @@
 {
   "name": "@specstream/piece-specstream",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "The live web data engine. Search API: the most accurate web search API in the world, $5 per 1,000 searches of up to 10 results, or $1 on the fast tier (specstream.ai/benchmarks). Extract API: $0.80 per 1,000 pages. Deep Search: structured rows.",
   "license": "MIT",
   "homepage": "https://specstream.ai/docs/integrations",
@@ -28,7 +28,7 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "tsc -p tsconfig.test.json && node --test .test-build/test/piece.test.js"
+    "test": "tsc -p tsconfig.test.json && node --test .test-build/test/piece.test.js .test-build/test/speed.test.js"
   },
   "devDependencies": {
     "typescript": "^5.6.0",

@@ -109,7 +109,7 @@ def test_tool_calls_run_without_ipython(seen):
     subtools = {sub.name: sub for sub in tool.as_function_subtoolspecs()}
     assert set(subtools) == {"specstream.search_web", "specstream.read_pages"}
     assert isinstance(subtools["specstream.search_web"], ToolSpec)
-    assert {p.name for p in subtools["specstream.search_web"].parameters} == {"query", "passages"}
+    assert {p.name for p in subtools["specstream.search_web"].parameters} == {"query", "passages", "speed"}
     assert "search_web" in tool.get_functions_description()
 
 

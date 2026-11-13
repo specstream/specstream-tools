@@ -26,6 +26,6 @@ The same message sent again returns the same report. It does not start a second 
 
 ## Pricing
 
-A search costs $5 per 1,000 searches of up to 10 results. Extract costs $0.80 per 1,000 pages. New accounts start with $10 of credit, no card. See [pricing](https://specstream.ai/pricing).
+A search costs $5 per 1,000 searches of up to 10 results. With the search node's Speed field (or `msg.speed`) set to `fast`, the ranked results come back in about a second and a fast search costs $1 per 1,000. Extract costs $0.80 per 1,000 pages. New accounts start with $10 of credit, no card. See [pricing](https://specstream.ai/pricing).
 
 Docs: https://specstream.ai/docs/api

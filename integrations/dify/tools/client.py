@@ -17,7 +17,7 @@ class SpecStreamClient:
             {
                 "Authorization": f"Bearer {api_key.strip()}",
                 "Content-Type": "application/json",
-                "User-Agent": "specstream-dify/0.5.0",
+                "User-Agent": "specstream-dify/0.6.0",
             }
         )
 

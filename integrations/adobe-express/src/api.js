@@ -48,15 +48,21 @@ async function call(f, url, key, init) {
   return body;
 }
 
-export function searchUrl(q) {
-  return `${API}/v1/web-search?q=${encodeURIComponent(q.trim())}`;
+// The Search API's speed: 'fast' returns ranked results in about a second at $1 per 1,000 searches.
+// Left out, nothing is sent and the API's default search runs.
+export const SPEEDS = ['fast', 'default'];
+
+export function searchUrl(q, speed) {
+  const tail = speed ? `&speed=${speed}` : '';
+  return `${API}/v1/web-search?q=${encodeURIComponent(q.trim())}${tail}`;
 }
 
-export async function webSearch(f, key, q) {
+export async function webSearch(f, key, q, speed) {
   const query = String(q || '').trim();
   if (!query) throw new ApiError('Type a question first.', 0);
   if (query.length > MAX_QUESTION) throw new ApiError('Keep the question under 2,000 characters.', 0);
-  const body = await call(f, searchUrl(query), key, { method: 'GET' });
+  if (speed && SPEEDS.indexOf(speed) === -1) throw new ApiError('Speed is fast or default.', 0);
+  const body = await call(f, searchUrl(query, speed), key, { method: 'GET' });
   const sources = Array.isArray(body && body.sources) ? body.sources : [];
   return sources
     .filter((s) => s && typeof s.url === 'string')

@@ -4,7 +4,7 @@ An Adobe Express add-on that puts live web data into a design. Ask a question an
 
 It uses two SpecStream APIs with your own API key:
 
-- Search API: `GET /v1/web-search`, $5 per 1,000 searches of up to 10 results.
+- Search API: `GET /v1/web-search`, $5 per 1,000 searches of up to 10 results. Tick **Fast** and the search sends `speed=fast`: ranked results in about a second, and a fast search costs $1 per 1,000. Unticked, no speed is sent and the API's default search runs.
 - Extract API: `POST /v1/extract`, up to 20 URLs a call, $0.80 per 1,000 pages. A page with no text is not charged.
 
 New SpecStream accounts start with $10 of credit and no card. Create a key at https://specstream.ai.

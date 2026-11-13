@@ -9,5 +9,5 @@
     "outDir": ".test-build",
     "types": ["node"]
   },
-  "include": ["pack.ts", "records.ts", "test/*.ts"]
+  "include": ["pack.ts", "records.ts", "search.ts", "test/*.ts"]
 }

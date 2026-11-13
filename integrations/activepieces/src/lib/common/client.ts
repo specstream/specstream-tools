@@ -35,6 +35,7 @@ async function call<T>({
       headers: {
         Authorization: `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
+        'User-Agent': 'specstream-activepieces/0.2.1',
       },
       body,
     });

@@ -1,5 +1,6 @@
 import * as coda from "@codahq/packs-sdk";
 import { codaRow, columnsOf, dollars, listIdOf, readRecord, runKey, shownColumns, withCount } from "./records";
+import { searchAnswer, searchQuery } from "./search";
 
 export const pack = coda.newPack();
 
@@ -341,18 +342,29 @@ pack.addFormula({
 pack.addFormula({
   name: "WebSearch",
   description:
-    "Searches the live web in seconds with the SpecStream Search API ($5 per 1,000 searches of up to 10 results, or $1 on the fast tier) and returns the answer or top matching row.",
+    "Searches the live web in seconds with the SpecStream Search API ($5 per 1,000 searches of up to 10 results, $1 per 1,000 with speed \"fast\") and returns the answer or top matching row.",
   parameters: [
     coda.makeParameter({ type: coda.ParameterType.String, name: "question", description: "The question in everyday words (1 to 2,000 characters)." }),
+    coda.makeParameter({
+      type: coda.ParameterType.String,
+      name: "speed",
+      description: '"fast" returns the top ranked result in about a second and costs $1 per 1,000 searches. Leave empty for the default search.',
+      optional: true,
+      autocomplete: ["fast", "default"],
+    }),
   ],
   resultType: coda.ValueType.String,
-  execute: async function ([question], context) {
+  execute: async function ([question, speed], context) {
     const q = String(question || "").trim();
     if (!q || q.length > 2000) throw new coda.UserVisibleError("Write the question in 1 to 2,000 characters.");
-    const data = await call(context, "GET", coda.withQueryParams("/v1/web-search", { q }));
-    if (data?.answer?.value != null && data.answer.value !== "") return String(data.answer.value);
-    const rows = data?.rows || [];
-    return rows.length ? String(rows[0].name || "") : "";
+    let query;
+    try {
+      query = searchQuery(q, speed);
+    } catch (error: any) {
+      throw new coda.UserVisibleError(error.message);
+    }
+    const data = await call(context, "GET", coda.withQueryParams("/v1/web-search", query));
+    return searchAnswer(data);
   },
 });
 

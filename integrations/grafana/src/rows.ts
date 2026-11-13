@@ -12,7 +12,15 @@ function cellValue(v: any): { value: string; source: string } {
 
 /** Search API reply to one table: a row per result, the page each value was read from in "Source". */
 export function searchFrame(refId: string, reply: Json): DataFrame {
-  const rows: Json[] = Array.isArray(reply?.rows) ? reply.rows : [];
+  // The API wraps its answer in `data`.
+  const body: Json = reply?.data ?? reply;
+  let rows: Json[] = Array.isArray(body?.rows) ? body.rows : [];
+  // A fast search reads no rows from the pages: its ranked results are the table.
+  if (!rows.length && Array.isArray(body?.sources)) {
+    rows = body.sources
+      .filter((s: Json) => s && typeof s.url === 'string')
+      .map((s: Json) => ({ name: s.title ?? s.url, snippet: s.snippet, page: s.url }));
+  }
   const factNames: string[] = [];
   for (const row of rows) {
     for (const key of Object.keys(row.fields ?? {})) {
@@ -28,12 +36,16 @@ export function searchFrame(refId: string, reply: Json): DataFrame {
       type: FieldType.string,
       values: rows.map((r) => cellValue(r.fields?.[key]).value),
     })),
-    { name: 'Match', type: FieldType.number, values: rows.map((r) => (typeof r.probability === 'number' ? r.probability : null)) },
+    {
+      name: 'Match',
+      type: FieldType.number,
+      values: rows.map((r) => (typeof r.probability === 'number' ? r.probability : null)),
+    },
     { name: 'Snippet', type: FieldType.string, values: rows.map((r) => String(r.snippet ?? '')) },
     {
       name: 'Source',
       type: FieldType.string,
-      values: rows.map((r) => String(r.page ?? (Array.isArray(r.sources) ? r.sources[0] ?? '' : ''))),
+      values: rows.map((r) => String(r.page ?? (Array.isArray(r.sources) ? (r.sources[0] ?? '') : ''))),
     },
   ];
   return createDataFrame({ refId, name: 'SpecStream search', fields });
@@ -69,7 +81,11 @@ export function listFrame(refId: string, detail: Json): DataFrame {
     return { values, source: sources[0] ?? '' };
   });
   const fields = [
-    ...labels.map((label) => ({ name: label, type: FieldType.string, values: perRow.map((r) => r.values[label] ?? '') })),
+    ...labels.map((label) => ({
+      name: label,
+      type: FieldType.string,
+      values: perRow.map((r) => r.values[label] ?? ''),
+    })),
     { name: 'Source', type: FieldType.string, values: perRow.map((r) => r.source) },
   ];
   return createDataFrame({ refId, name: String(detail?.name ?? 'SpecStream list'), fields });

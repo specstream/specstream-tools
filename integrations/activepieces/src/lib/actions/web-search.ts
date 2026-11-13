@@ -7,7 +7,7 @@ export const webSearchAction = createAction({
   auth: specstreamAuth,
   name: 'web_search',
   displayName: 'Web Search',
-  description: 'Answer a question from the live web in seconds with the SpecStream Search API ($5 per 1,000 searches of up to 10 results, or $1 on the fast tier, source URL and read time on every value).',
+  description: 'Answer a question from the live web in seconds with the SpecStream Search API ($5 per 1,000 searches of up to 10 results, or $1 per 1,000 on the fast speed, source URL and read time on every value).',
   props: {
     q: Property.ShortText({
       displayName: 'Search Query',
@@ -20,15 +20,33 @@ export const webSearchAction = createAction({
       required: false,
       defaultValue: false,
     }),
+    speed: Property.StaticDropdown({
+      displayName: 'Speed',
+      description: 'Fast returns the ranked results in about a second and costs $1 per 1,000 searches. Left empty, the default search runs.',
+      required: false,
+      options: {
+        options: [
+          { label: 'Fast ($1 per 1,000 searches)', value: 'fast' },
+          { label: 'Default ($5 per 1,000 searches)', value: 'default' },
+        ],
+      },
+    }),
   },
   async run(context) {
     const q = String(context.propsValue.q ?? '').trim();
     if (!q || q.length > 2000) {
       throw new Error('Search Query must be between 1 and 2,000 characters.');
     }
+    const speed = String(context.propsValue.speed ?? '').trim();
+    if (speed && speed !== 'fast' && speed !== 'default') {
+      throw new Error('Speed must be Fast or Default.');
+    }
     const params = new URLSearchParams({ q });
     if (context.propsValue.passages) {
       params.set('passages', 'true');
+    }
+    if (speed) {
+      params.set('speed', speed);
     }
     return specstreamApi.call({
       apiKey: context.auth.secret_text,

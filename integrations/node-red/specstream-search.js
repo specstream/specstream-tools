@@ -11,7 +11,8 @@ module.exports = function (RED) {
         const query = msg.payload && typeof msg.payload === "string" ? msg.payload : msg.query || config.query;
         if (!query) throw new Error("No query: set msg.payload or the Query field");
         const limit = msg.limit || config.limit;
-        msg.payload = await lib.search(node.fetchImpl || fetch, key, query, limit);
+        const speed = msg.speed || config.speed || "";
+        msg.payload = await lib.search(node.fetchImpl || fetch, key, query, limit, speed);
         send(msg);
         done();
       } catch (e) {

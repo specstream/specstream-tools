@@ -24,9 +24,15 @@ async function call(fetchImpl, key, method, path, body, extraHeaders) {
   return data;
 }
 
-function search(fetchImpl, key, query, limit) {
+// speed "fast" returns the first ranked results in about a second, at $1 per 1,000 searches;
+// left out, the API's default search runs ($5 per 1,000).
+function search(fetchImpl, key, query, limit, speed) {
+  if (speed && speed !== "fast" && speed !== "default") {
+    return Promise.reject(new Error('speed must be "fast" or "default"'));
+  }
   const p = new URLSearchParams({ q: query });
   if (limit) p.set("limit", String(limit));
+  if (speed) p.set("speed", speed);
   return call(fetchImpl, key, "GET", "/v1/web-search?" + p.toString());
 }
 

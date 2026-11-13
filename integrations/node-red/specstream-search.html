@@ -2,7 +2,7 @@
 RED.nodes.registerType("specstream search", {
   category: "network",
   color: "#a6bbcf",
-  defaults: { name: { value: "" }, server: { value: "", type: "specstream-config", required: true }, query: { value: "" }, limit: { value: "" } },
+  defaults: { name: { value: "" }, server: { value: "", type: "specstream-config", required: true }, query: { value: "" }, limit: { value: "" }, speed: { value: "" } },
   inputs: 1, outputs: 1, icon: "white-globe.svg",
   label: function () { return this.name || "specstream search"; }
 });
@@ -12,7 +12,9 @@ RED.nodes.registerType("specstream search", {
   <div class="form-row"><label>API key</label><input type="text" id="node-input-server"></div>
   <div class="form-row"><label>Query</label><input type="text" id="node-input-query" placeholder="or msg.payload"></div>
   <div class="form-row"><label>Limit</label><input type="text" id="node-input-limit"></div>
+  <div class="form-row"><label>Speed</label><select id="node-input-speed"><option value="">Default ($5 per 1,000 searches)</option><option value="fast">Fast ($1 per 1,000 searches)</option></select></div>
 </script>
 <script type="text/html" data-help-name="specstream search">
   <p>Runs <code>GET /v1/web-search</code> on the SpecStream Search API. The query comes from <code>msg.payload</code> or the Query field. The result is in <code>msg.payload</code>.</p>
+  <p>Speed: Fast returns the ranked results in about a second and costs $1 per 1,000 searches. Default is $5 per 1,000. <code>msg.speed</code> (<code>fast</code> or <code>default</code>) overrides the field.</p>
 </script>

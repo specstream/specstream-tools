@@ -14,7 +14,7 @@ The plugin connects only to `https://api.specstream.ai` over HTTPS.
 
 ## Tools
 
-**Web Search** (`GET /v1/web-search`, $5 per 1,000 searches of up to 10 results, or $1 on the fast tier) answers a question from the live web in seconds, with an answer, matching rows, ranked sources and optional page passages. No quote is needed.
+**Web Search** (`GET /v1/web-search`, $5 per 1,000 searches of up to 10 results) answers a question from the live web in seconds, with an answer, matching rows, ranked sources and optional page passages. No quote is needed. Set **Speed** to Fast for the ranked results in about a second: a fast search costs $1 per 1,000.
 
 **Extract Pages** (`POST /v1/extract`, $0.80 per 1,000 pages) reads the main text, title and published date of 1 to 20 web pages, PDFs, Word documents or Excel spreadsheets live. A page with no text is not charged, and no quote is needed.
 

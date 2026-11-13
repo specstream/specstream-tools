@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-specstream",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Node-RED nodes for SpecStream, the live web data engine: Search API, Extract API and research reports.",
   "keywords": [
     "node-red",
@@ -32,7 +32,7 @@
     "node": ">=18"
   },
   "scripts": {
-    "test": "node --test test/lib.test.js test/research.test.js",
+    "test": "node --test test/lib.test.js test/research.test.js test/speed.test.js",
     "build": "node --check lib.js && node --check specstream-config.js && node --check specstream-search.js && node --check specstream-extract.js && node --check specstream-research.js"
   },
   "node-red": {

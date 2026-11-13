@@ -7,19 +7,26 @@ from gptme.tools.base import ToolFunction, ToolSpec
 from gptme_specstream.client import MAX_EXTRACT_URLS, MAX_QUERY_CHARS, SpecStreamError, as_text, call
 
 
-def search_web(query: str, passages: bool = False) -> str:
+def search_web(query: str, passages: bool = False, speed: str | None = None) -> str:
     """Search the live web with SpecStream and return the answer, matching rows and ranked sources as JSON.
 
     Args:
         query: The question or request in everyday words, 1 to 2,000 characters.
         passages: True adds the text of the top pages to the reply.
+        speed: "fast" returns the ranked results in about a second; a fast search costs $1 per 1,000.
+            "default", or left out, runs the default search ($5 per 1,000).
     """
     question = (query or "").strip()[:MAX_QUERY_CHARS]
     if not question:
         raise SpecStreamError("Send the question in query, 1 to 2,000 characters.")
+    speed = (speed or "").strip().lower() or None
+    if speed not in (None, "default", "fast"):
+        raise SpecStreamError('speed is "fast" or "default". Leave it out for the default search.')
     params = {"q": question}
     if passages:
         params["passages"] = "true"
+    if speed:
+        params["speed"] = speed
     return as_text(call("GET", "/v1/web-search", params=params))
 
 
@@ -41,7 +48,8 @@ def read_pages(urls: list[str], format: str = "markdown") -> str:
 
 instructions = """
 Use the specstream tool to read the live web. Call search_web with the question in everyday words to get
-an answer, matching rows and ranked sources. Call read_pages with 1 to 20 URLs to read the main text of
+an answer, matching rows and ranked sources. With speed="fast" it returns the ranked results in about a
+second, and a fast search costs $1 per 1,000 instead of $5. Call read_pages with 1 to 20 URLs to read the main text of
 web pages, PDF, Word and Excel files. Name the source URL of each fact you report.
 """.strip()
 

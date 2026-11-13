@@ -1,7 +1,7 @@
 {
   "testId": "specstream-adobe-express",
   "name": "SpecStream",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "manifestVersion": 2,
   "requirements": {
     "apps": [

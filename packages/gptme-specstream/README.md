@@ -6,7 +6,7 @@ This package is a [gptme](https://github.com/gptme/gptme) plugin. It gives the a
 
 | Function | What it does | Cost |
 | --- | --- | --- |
-| `search_web(query, passages=False)` | Calls `GET /v1/web-search` and returns the answer, matching rows and ranked sources, with the text of the top pages when `passages=True` | $5 per 1,000 searches of up to 10 results |
+| `search_web(query, passages=False, speed=None)` | Calls `GET /v1/web-search` and returns the answer, matching rows and ranked sources, with the text of the top pages when `passages=True`. `speed="fast"` returns the ranked results in about a second | $5 per 1,000 searches of up to 10 results; a fast search costs $1 per 1,000 |
 | `read_pages(urls, format="markdown")` | Calls `POST /v1/extract` and returns the main text, title and published date of 1 to 20 web pages, PDF, Word or Excel files | $0.80 per 1,000 pages (pages with no text are free) |
 
 ## Install

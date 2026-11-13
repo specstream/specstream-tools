@@ -111,7 +111,7 @@ async function start() {
 
   $('run-search').addEventListener('click', () => busy($('run-search'), 'Searching...', async () => {
     say('');
-    hits = await webSearch(fetch.bind(window), key, $('q').value);
+    hits = await webSearch(fetch.bind(window), key, $('q').value, $('fast').checked ? 'fast' : undefined);
     $('hits').replaceChildren(...hits.map((h, i) => row([['t', h.title], ['s', h.snippet], ['u', h.url]], i < 5)));
     $('add-hits').hidden = hits.length === 0;
     say(hits.length ? `${hits.length} results. Tick the rows to add.` : 'No results for this question.');

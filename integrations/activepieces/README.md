@@ -10,7 +10,7 @@ In Activepieces, open **Platform admin → Pieces → Install piece**, choose **
 
 ## Actions
 
-- **Web Search**: answers a question from the live web in seconds with the Search API, the most accurate web search API in the world (`GET /v1/web-search`, $5 per 1,000 searches of up to 10 results, or $1 on the fast tier, [proof](https://specstream.ai/benchmarks)).
+- **Web Search**: answers a question from the live web in seconds with the Search API, the most accurate web search API in the world (`GET /v1/web-search`, $5 per 1,000 searches of up to 10 results, or $1 on the fast tier, [proof](https://specstream.ai/benchmarks)). Set **Speed** to Fast for the ranked results in about a second: a fast search costs $1 per 1,000.
 - **Extract Pages**: reads the main text, title and published date of 1 to 20 web pages, PDFs, Word or Excel files live with the Extract API (`POST /v1/extract`, $0.80 per 1,000 pages, empty pages free).
 - **Find a List**: reads the request, prices it, and starts it only if the price is at or below your **Maximum Price**. Returns the list ID and link. Retries are safe: identical requests within the same UTC hour share one run, or set your own **Run Key**.
 - **Get List Results**: the rows of a list, each with `source_url` and `checked_at`.

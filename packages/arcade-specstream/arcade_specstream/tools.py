@@ -123,9 +123,14 @@ async def web_search(
     context: Context,
     query: Annotated[str, "Search query or question in everyday words, up to 2,000 characters."],
     passages: Annotated[bool, "Include main text passages from the top matching pages."] = False,
+    speed: Annotated[
+        str,
+        'Search speed: "fast" returns the ranked results in about a second for $1 per 1,000 searches; '
+        '"default" also reads the answer from the pages, for $5 per 1,000. Leave it empty for the default search.',
+    ] = "",
 ) -> Annotated[dict[str, Any], "answer (value, page and seen_at), matching rows, ranked sources and optional passages"]:
-    """Search the live web in seconds with the SpecStream Search API ($5 per 1,000 searches of up to 10 results)."""
-    return await _call(_api(context).web_search, query, passages=passages)
+    """Search the live web in seconds with the SpecStream Search API ($5 per 1,000 searches of up to 10 results; a fast search costs $1 per 1,000)."""
+    return await _call(_api(context).web_search, query, passages=passages, speed=speed)
 
 
 @tool(

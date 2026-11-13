@@ -5,8 +5,8 @@ identity:
     en_US: Web Search
 description:
   human:
-    en_US: Answer a question from the live web in seconds with the SpecStream Search API ($5 per 1,000 searches of up to 10 results, or $1 on the fast tier, source URL and read time on every value).
-  llm: Searches the live web in seconds with the SpecStream Search API (GET /v1/web-search, $5 per 1,000 searches of up to 10 results, or $1 on the fast tier, no quote needed). Returns kind ('fact' or 'list'), answer (with value, page and seen_at), matching rows, ranked sources and optional page passages.
+    en_US: Answer a question from the live web in seconds with the SpecStream Search API ($5 per 1,000 searches of up to 10 results, source URL and read time on every value).
+  llm: Searches the live web in seconds with the SpecStream Search API (GET /v1/web-search, $5 per 1,000 searches of up to 10 results, no quote needed; speed 'fast' costs $1 per 1,000 and returns ranked results in about a second). Returns kind ('fact' or 'list'), answer (with value, page and seen_at), matching rows, ranked sources and optional page passages.
 parameters:
   - name: q
     type: string
@@ -27,6 +27,22 @@ parameters:
     human_description:
       en_US: Include the main text passages of the top matching pages in the response.
     llm_description: Set true to include the main text passages of the closest pages.
+  - name: speed
+    type: select
+    required: false
+    form: llm
+    options:
+      - value: fast
+        label:
+          en_US: Fast ($1 per 1,000 searches)
+      - value: default
+        label:
+          en_US: Default ($5 per 1,000 searches)
+    label:
+      en_US: Speed
+    human_description:
+      en_US: Fast returns the ranked results in about a second and costs $1 per 1,000 searches. Default also reads the answer from the pages. Left empty, the default search runs.
+    llm_description: '"fast" returns the first ranked results in about a second for $1 per 1,000 searches; "default" adds the answer read from the pages, for $5 per 1,000. Leave it out for the default search.'
 extra:
   python:
     source: tools/web_search.py

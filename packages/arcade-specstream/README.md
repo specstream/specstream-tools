@@ -14,7 +14,7 @@ A free account comes with $10 of credit and needs no card: [specstream.ai](https
 | --- | --- | --- |
 | `FindList` | Deep Search: a list of real things that meet conditions, from a plain-English request, with the page each row was read from | per delivered row, within the ceiling you set |
 | `GetListResults` | Every row found so far for a list | free |
-| `WebSearch` | Search the live web in seconds (Search API) | $5 per 1,000 searches of up to 10 results |
+| `WebSearch` | Search the live web in seconds (Search API). `speed` set to `fast` returns the ranked results in about a second | $5 per 1,000 searches of up to 10 results; a fast search costs $1 per 1,000 |
 | `ExtractPages` | Main text, title and date of 1 to 20 URLs, PDF, Word or Excel (Extract API) | $0.80 per 1,000 pages; empty pages free |
 
 ## Secrets
