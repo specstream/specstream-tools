@@ -15,7 +15,7 @@ The client has no dependencies and needs Python 3.12 or newer. It uses the same 
 pip install specstream-client
 ```
 
-The package installs the import name `specstream` and the command `specstream`.
+The package installs the import name `specstream_client` and the command `specstream`.
 
 Create an API key under **Agents & API** in your SpecStream workspace and keep it in the environment:
 
@@ -189,6 +189,52 @@ verify_webhook(
 )  # raises SpecstreamError when the signature is wrong or older than 5 minutes
 event = json.loads(raw_body)
 ```
+
+## Drive a real browser
+
+For a page that needs a real browser, `open_browser` starts a Chromium on SpecStream.
+You drive it one step at a time, and `browser_read` returns the page's text as it stands after its JavaScript ran.
+
+```python
+with client.browser(timeout_s=120) as session:
+    client.browser_navigate(session["id"], "https://example.com")
+    print(client.browser_read(session["id"]))  # Markdown; "text" for plain text
+```
+
+A session costs $0.10 an hour, charged by the second, plus $1 per 1,000 steps (0.1¢ a step).
+An open session is charged until `timeout_s` passes, so close it: the `with` block does, also when a step fails.
+
+| Call | What it does |
+| --- | --- |
+| `open_browser(timeout_s=..., allowed_domains=[...], ...)` | Opens a browser and returns the session, with its `id` and `connect_url` |
+| `browser_navigate(session_id, url)` | Opens the address |
+| `browser_read(session_id, format="markdown")` | The page's text, in Markdown or plain text |
+| `browser_snapshot(session_id)` | The page's links, buttons and fields, each with a reference |
+| `browser_step(session_id, tool, arguments)` | Any step of Playwright MCP by its name: `browser_click`, `browser_type`, `browser_take_screenshot` and the others |
+| `browser_session(session_id)`, `browser_sessions(status="running")` | One session or the account's sessions, with seconds, steps and charge. Free |
+| `browser_downloads(session_id)` | The files the browser downloaded, as the bytes of one zip, until ten minutes after the session ends. Free |
+| `close_browser(session_id)` | Ends the session and returns it with `charged_usd` |
+
+A page the browser may not open (a private address, a site that opted out, a host outside `allowed_domains`) is not an exception for a step: the answer's `error` holds the code `blocked` and the reason. `browser_read` raises `SpecstreamError` in that case.
+
+Your own Playwright, Puppeteer, browser-use or Stagehand code can drive the same browser over the Chrome DevTools Protocol:
+
+```python
+from playwright.sync_api import sync_playwright
+
+session = client.open_browser(timeout_s=300, idempotency_key="job-42")
+try:
+    with sync_playwright() as p:
+        browser = p.chromium.connect_over_cdp(session["connect_url"])
+        context = browser.contexts[0] if browser.contexts else browser.new_context()
+        page = context.new_page()
+        page.goto("https://example.com")
+        print(page.title())
+finally:
+    print(client.close_browser(session["id"])["charged_usd"])
+```
+
+With `idempotency_key`, the same call again answers with the same session and opens no second one.
 
 ## More than a first request
 

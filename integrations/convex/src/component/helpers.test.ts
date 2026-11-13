@@ -20,7 +20,7 @@ describe("mapStatus", () => {
 });
 
 describe("toRow", () => {
-  test("keeps each cell with the page it came from", () => {
+  test("keeps each cell with its source URL", () => {
     const row = _test.toRow(
       rowOf("ent_1", 3, "Houston Food Bank", "https://hfb.org/about"),
       1,

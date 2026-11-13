@@ -9,6 +9,7 @@
  */
 
 import type * as api_ from "../api.js";
+import type * as browser from "../browser.js";
 import type * as helpers from "../helpers.js";
 import type * as http from "../http.js";
 import type * as lib from "../lib.js";
@@ -25,6 +26,7 @@ import { anyApi, componentsGeneric } from "convex/server";
 
 const fullApi: ApiFromModules<{
   api: typeof api_;
+  browser: typeof browser;
   helpers: typeof helpers;
   http: typeof http;
   lib: typeof lib;

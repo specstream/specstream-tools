@@ -101,6 +101,8 @@ export function asCount(value: unknown): number {
 export type RequestInitLike = {
   method?: "GET" | "POST" | "DELETE";
   body?: Record<string, unknown>;
+  /** Extra headers, such as an Idempotency-Key that makes a retried POST safe. */
+  headers?: Record<string, string>;
 };
 
 /**
@@ -117,6 +119,7 @@ export async function specstreamRequest(
     Authorization: /^bearer /i.test(key) ? key : `Bearer ${key}`,
     Accept: "application/json",
     "User-Agent": USER_AGENT,
+    ...(init.headers ?? {}),
   };
   let payload: string | undefined;
   if (init.body !== undefined) {

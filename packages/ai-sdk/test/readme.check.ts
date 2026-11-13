@@ -1,5 +1,5 @@
 import { generateText, stepCountIs } from "ai";
-import { specstreamTools, SpecStreamClient } from "../src/index.js";
+import { specstreamBrowserTools, specstreamTools, SpecStreamClient } from "../src/index.js";
 
 export async function readme() {
   const { text } = await generateText({
@@ -21,5 +21,15 @@ export async function readme() {
   else console.log(monitor.message);
   const tools = specstreamTools({ maxPriceUsd: 5, monitorMaxPricePerRunUsd: 2, monitorMaxPricePerMonthUsd: 20 });
   await generateText({ model: "openai/gpt-5-mini", tools, prompt: "x" });
+  await generateText({
+    model: "openai/gpt-5-mini",
+    tools: specstreamBrowserTools({ timeoutSeconds: 300, allowedDomains: ["example.com"] }),
+    stopWhen: stepCountIs(12),
+    prompt: "x",
+  });
+  await generateText({ model: "openai/gpt-5-mini", tools: { ...specstreamTools({ maxPriceUsd: 5 }), ...specstreamBrowserTools() }, prompt: "x" });
+  const browser = await client.openBrowser();
+  const step = await client.browserStep(browser.session_id, "browser_read", { format: "text" });
+  console.log(step.text, (await client.browserSession(browser.session_id)).status, (await client.closeBrowser(browser.session_id)).charged_usd);
   return tools.specstream_monitor_list && text;
 }

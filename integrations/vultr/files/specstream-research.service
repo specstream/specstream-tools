@@ -1,0 +1,32 @@
+[Unit]
+Description=SpecStream research agent
+After=network-online.target
+Wants=network-online.target
+# The page starts only after the first-boot script wrote this server's own password.
+ConditionPathExists=/etc/specstream-research/web-password
+
+[Service]
+User=specstream-research
+Group=specstream-research
+Environment=RESEARCH_DATA_DIR=/var/lib/specstream-research
+Environment=RESEARCH_PASSWORD_FILE=/etc/specstream-research/web-password
+Environment=RESEARCH_BIND=127.0.0.1
+Environment=RESEARCH_PORT=8080
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/usr/bin/python3 /opt/specstream-research/research_agent.py serve
+Restart=on-failure
+RestartSec=3
+StateDirectory=specstream-research
+StateDirectoryMode=0700
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_INET AF_INET6
+MemoryMax=256M
+
+[Install]
+WantedBy=multi-user.target

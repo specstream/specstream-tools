@@ -1,7 +1,7 @@
 /** The SpecStream REST calls the tools share: read a request, price it, start it within a maximum, read its rows. */
 
 export const DEFAULT_BASE_URL = "https://api.specstream.ai";
-export const USER_AGENT = "@specstream/ai-sdk/0.3.0";
+export const USER_AGENT = "@specstream/ai-sdk/0.4.0";
 /** A list runs for up to about five minutes, so the tools wait a little longer than that by default. */
 export const DEFAULT_WAIT_SECONDS = 420;
 export const DEFAULT_POLL_INTERVAL_SECONDS = 3;
@@ -235,12 +235,23 @@ export class SpecStreamClient {
     return data;
   }
 
-  /** Search the live web with GET /v1/web-search ($5 per 1,000 searches of up to 10 results, or $1 on the fast tier, no quote needed). */
-  async webSearch(query: string, options: { passages?: boolean; abortSignal?: AbortSignal } = {}): Promise<Record<string, unknown>> {
+  /**
+   * Search the live web with GET /v1/web-search ($5 per 1,000 searches of up to 10 results, no quote needed).
+   * speed "fast" returns the engines' first ranked results in about a second, at $1 per 1,000 searches;
+   * left out, the API's default search runs.
+   */
+  async webSearch(
+    query: string,
+    options: { passages?: boolean; speed?: "fast" | "default"; abortSignal?: AbortSignal } = {},
+  ): Promise<Record<string, unknown>> {
     const q = (query ?? "").trim();
     if (!q || q.length > 2000) throw new Error("q must be between 1 and 2,000 characters.");
+    if (options.speed !== undefined && options.speed !== "fast" && options.speed !== "default") {
+      throw new Error('speed must be "default" or "fast".');
+    }
     const params = new URLSearchParams({ q });
     if (options.passages) params.set("passages", "true");
+    if (options.speed) params.set("speed", options.speed);
     return (await this.request("GET", `/v1/web-search?${params}`, undefined, { abortSignal: options.abortSignal })) ?? {};
   }
 
@@ -250,6 +261,56 @@ export class SpecStreamClient {
     if (cleaned.length < 1 || cleaned.length > 20) throw new Error("Provide 1 to 20 http or https URLs in urls.");
     const format = options.format === "text" ? "text" : "markdown";
     return (await this.request("POST", "/v1/extract", { urls: cleaned, format }, { abortSignal: options.abortSignal })) ?? {};
+  }
+
+  /**
+   * Open a real browser that SpecStream runs, with POST /v1/browser/sessions. Time costs $0.10 an hour,
+   * charged by the second while it is open, and each step costs $0.001. The browser ends by itself
+   * after `timeoutSeconds`. The steps hold no connection, so the session is kept alive between them.
+   */
+  async openBrowser(options: OpenBrowserOptions = {}): Promise<BrowserSessionView> {
+    const timeout = options.timeoutSeconds ?? BROWSER_DEFAULT_TIMEOUT_SECONDS;
+    if (!Number.isInteger(timeout) || timeout < 60 || timeout > 3600) throw new Error("timeoutSeconds must be a whole number from 60 to 3600.");
+    const idle = options.idleTimeoutSeconds ?? BROWSER_DEFAULT_IDLE_SECONDS;
+    if (!Number.isInteger(idle) || idle < 10 || idle > 600) throw new Error("idleTimeoutSeconds must be a whole number from 10 to 600.");
+    const body: Record<string, unknown> = { timeout_s: timeout, idle_timeout_s: idle, keep_alive: true };
+    if (options.allowedDomains?.length) body.allowed_domains = options.allowedDomains;
+    if (options.blockMedia) body.block_media = true;
+    if (options.headless === false) body.headless = false;
+    if (options.metadata && Object.keys(options.metadata).length) body.metadata = options.metadata;
+    return sessionView((await this.request("POST", "/v1/browser/sessions", body, { abortSignal: options.abortSignal })) ?? {});
+  }
+
+  /**
+   * Run one step in the session's browser with POST /v1/browser/sessions/{id}/actions ($0.001 a step).
+   * `tool` is a Playwright MCP tool name (browser_navigate, browser_snapshot, browser_click, browser_type and
+   * the others) or browser_read for the page's text. A page the site or your allowed hosts refuse comes back
+   * in `error`, not as an exception.
+   */
+  async browserStep(
+    sessionId: string,
+    tool: string,
+    args: Record<string, unknown> = {},
+    abortSignal?: AbortSignal,
+  ): Promise<BrowserStepView> {
+    const id = requireSessionId(sessionId);
+    if (!BROWSER_TOOL_NAME.test(tool ?? "")) throw new Error("tool must be a browser step name such as browser_navigate or browser_click.");
+    const cleaned = Object.fromEntries(Object.entries(args ?? {}).filter(([, value]) => value !== undefined && value !== null));
+    const answer =
+      (await this.request("POST", `/v1/browser/sessions/${encodeURIComponent(id)}/actions`, { tool, arguments: cleaned }, { abortSignal })) ?? {};
+    return stepView(id, answer);
+  }
+
+  /** A session's state, its seconds, steps and charge so far, with GET /v1/browser/sessions/{id}. Reading is free. */
+  async browserSession(sessionId: string, abortSignal?: AbortSignal): Promise<BrowserSessionView> {
+    const id = requireSessionId(sessionId);
+    return sessionView((await this.request("GET", `/v1/browser/sessions/${encodeURIComponent(id)}`, undefined, { abortSignal })) ?? {});
+  }
+
+  /** End the session with POST /v1/browser/sessions/{id}/release, so its time stops being charged. */
+  async closeBrowser(sessionId: string, abortSignal?: AbortSignal): Promise<BrowserSessionView> {
+    const id = requireSessionId(sessionId);
+    return sessionView((await this.request("POST", `/v1/browser/sessions/${encodeURIComponent(id)}/release`, undefined, { abortSignal })) ?? {});
   }
 
   /** Every row found so far for a list, following the pages. Reading is free. */
@@ -606,4 +667,85 @@ function errorMessage(response: Response, raw: string): string {
   const detail = isObject(payload) ? payload.error : undefined;
   const message = isObject(detail) ? detail.message : typeof detail === "string" ? detail : undefined;
   return `SpecStream answered ${response.status}: ${message || response.statusText}`;
+}
+
+export const BROWSER_DEFAULT_TIMEOUT_SECONDS = 300;
+export const BROWSER_DEFAULT_IDLE_SECONDS = 120;
+const BROWSER_TOOL_NAME = /^browser_[a-z][a-z0-9_]{0,62}$/;
+const SESSION_KEYS = ["status", "ended_reason", "live_url", "expires_at", "timeout_s", "seconds", "actions", "charged_usd", "price"] as const;
+
+export type OpenBrowserOptions = {
+  /** The most seconds the browser runs, from 60 to 3600. Defaults to 300: at $0.10 an hour, at most $0.0084 of time. */
+  timeoutSeconds?: number;
+  /** The browser ends after this many seconds with no step, from 10 to 600. Defaults to 120. */
+  idleTimeoutSeconds?: number;
+  /** Hosts the browser may open, such as example.com or *.example.com. Left out, every public host is allowed. */
+  allowedDomains?: string[];
+  /** true skips images, video, audio and fonts, so pages load faster. */
+  blockMedia?: boolean;
+  /** false runs the browser with a screen, for sites that act differently without one. */
+  headless?: boolean;
+  /** Your own labels for the session, returned as sent. */
+  metadata?: Record<string, string | number | boolean>;
+  abortSignal?: AbortSignal;
+};
+
+/** A browser session as a model reads it. The connect address is left out: it carries the session's token. */
+export type BrowserSessionView = {
+  session_id: string;
+  status?: string;
+  ended_reason?: string;
+  live_url?: string;
+  expires_at?: string;
+  timeout_s?: number;
+  seconds?: number;
+  actions?: number;
+  charged_usd?: number;
+  price?: { per_second_usd: number; per_action_usd: number };
+  /** Set by `specstream_open_browser` when it was given a first page. */
+  page?: BrowserStepView;
+  message?: string;
+};
+
+/** One step as a model reads it: the step's text, where the page is, and what the step cost. */
+export type BrowserStepView = {
+  session_id: string;
+  text?: string;
+  /** An image's base64 is left out: it is large and of no use to a model that reads text. */
+  images?: { mime_type: string | null; base64_chars: number }[];
+  url?: string;
+  title?: string;
+  read_at?: string;
+  price_usd?: number;
+  error?: { code: string; reason?: string | null; message: string };
+};
+
+function requireSessionId(sessionId: string): string {
+  const id = String(sessionId ?? "").trim();
+  if (!id) throw new Error("Pass the session_id that specstream_open_browser returned.");
+  return id;
+}
+
+function sessionView(session: Record<string, unknown>): BrowserSessionView {
+  const out: Record<string, unknown> = { session_id: String(session.id ?? "") };
+  for (const key of SESSION_KEYS) if (session[key] !== undefined && session[key] !== null) out[key] = session[key];
+  return out as BrowserSessionView;
+}
+
+function stepView(sessionId: string, step: Record<string, unknown>): BrowserStepView {
+  const out: Record<string, unknown> = { session_id: sessionId };
+  const texts: string[] = [];
+  const images: { mime_type: string | null; base64_chars: number }[] = [];
+  for (const part of Array.isArray(step.result) ? step.result : []) {
+    if (!isObject(part)) continue;
+    if (part.type === "text" && typeof part.text === "string" && part.text) texts.push(part.text);
+    else if (part.type === "image") {
+      images.push({ mime_type: typeof part.mime_type === "string" ? part.mime_type : null, base64_chars: typeof part.data === "string" ? part.data.length : 0 });
+    }
+  }
+  if (texts.length) out.text = texts.join("\n\n");
+  if (images.length) out.images = images;
+  for (const key of ["url", "title", "read_at", "price_usd"]) if (step[key] !== undefined && step[key] !== null) out[key] = step[key];
+  if (isObject(step.error)) out.error = step.error;
+  return out as BrowserStepView;
 }

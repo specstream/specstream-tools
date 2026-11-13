@@ -1,0 +1,26 @@
+[project]
+name = "specstream-agentcore-mcp"
+version = "1.0.0"
+description = "SpecStream's MCP server packaged for Amazon Bedrock AgentCore Runtime."
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "SpecStream", email = "support@specstream.ai" }]
+keywords = ["specstream", "mcp", "bedrock", "agentcore", "aws", "web-data", "web-search"]
+dependencies = ["specstream-mcp-stdio>=1.2.5,<2"]
+
+[project.urls]
+Homepage = "https://specstream.ai"
+Documentation = "https://specstream.ai/integrations/amazon-bedrock-agentcore"
+Repository = "https://github.com/specstream/specstream-tools"
+
+[project.scripts]
+specstream-agentcore-mcp = "specstream_agentcore_mcp.server:main"
+
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["specstream_agentcore_mcp"]

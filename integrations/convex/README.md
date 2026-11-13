@@ -108,7 +108,26 @@ export const readPages = action({
 });
 ```
 
-`webSearch` calls the Search API (`GET /v1/web-search`, $5 per 1,000 searches of up to 10 results, or $1 on the fast tier). `extractPages` calls the Extract API (`POST /v1/extract`, up to 20 URLs a call, web pages, PDF, Word and Excel, $0.80 per 1,000 pages, a page with no text is free). Pass `{ format: "text" }` for plain text instead of markdown.
+`webSearch` calls the Search API (`GET /v1/web-search`, $5 per 1,000 searches of up to 10 results). Pass `{ speed: "fast" }` for the ranked results in about a second: a fast search costs $1 per 1,000. `extractPages` calls the Extract API (`POST /v1/extract`, up to 20 URLs a call, web pages, PDF, Word and Excel, $0.80 per 1,000 pages, a page with no text is free). Pass `{ format: "text" }` for plain text instead of markdown.
+
+## Drive a real browser
+
+```ts
+export const readInBrowser = action({
+  args: { url: v.string() },
+  handler: async (ctx, args) => {
+    const session = await specstream.openBrowser(ctx, { timeoutSeconds: 120 });
+    try {
+      await specstream.browserStep(ctx, session.sessionId, "browser_navigate", { url: args.url });
+      return await specstream.browserStep(ctx, session.sessionId, "browser_read");
+    } finally {
+      await specstream.closeBrowser(ctx, session.sessionId);
+    }
+  },
+});
+```
+
+`openBrowser` opens a real browser that SpecStream runs (`POST /v1/browser/sessions`, $0.10 an hour, charged by the second). `browserStep` runs one step at $0.001: `browser_navigate`, `browser_snapshot`, `browser_click`, `browser_type` and the other Playwright MCP tools, or `browser_read` for the page's text. The browser ends by itself after `timeoutSeconds` (60 to 3600, default 300); `closeBrowser` ends it sooner. Pass `{ includeConnectUrl: true }` to drive it with Playwright or Puppeteer from a Node action over `connect_url`, and keep that address on the server.
 
 ## Find a list
 

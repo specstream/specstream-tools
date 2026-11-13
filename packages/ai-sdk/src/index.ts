@@ -1,4 +1,12 @@
-export { specstreamTools, type SpecStreamToolsOptions, type SpecStreamBaseTools, type SpecStreamMonitorTools } from "./tools.js";
+export {
+  specstreamTools,
+  specstreamBrowserTools,
+  type SpecStreamToolsOptions,
+  type SpecStreamBaseTools,
+  type SpecStreamMonitorTools,
+  type SpecStreamBrowserTools,
+  type SpecStreamBrowserToolsOptions,
+} from "./tools.js";
 export {
   SpecStreamClient,
   SpecStreamError,
@@ -6,7 +14,11 @@ export {
   listLink,
   DEFAULT_BASE_URL,
   DEFAULT_WAIT_SECONDS,
+  BROWSER_DEFAULT_TIMEOUT_SECONDS,
+  BROWSER_DEFAULT_IDLE_SECONDS,
   USER_AGENT,
+  type BrowserSessionView,
+  type BrowserStepView,
   type FindListOptions,
   type FindListResult,
   type FoundList,
@@ -19,6 +31,7 @@ export {
   type MonitorOverMaximum,
   type MonitorRun,
   type NeedsEdit,
+  type OpenBrowserOptions,
   type OverMaximum,
   type SpecStreamClientOptions,
 } from "./client.js";

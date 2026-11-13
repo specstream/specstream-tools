@@ -23,6 +23,45 @@ import type { FunctionReference } from "convex/server";
  */
 export type ComponentApi<Name extends string | undefined = string | undefined> =
   {
+    browser: {
+      browserSession: FunctionReference<
+        "action",
+        "internal",
+        { sessionId: string },
+        any,
+        Name
+      >;
+      browserStep: FunctionReference<
+        "action",
+        "internal",
+        { arguments?: Record<string, any>; sessionId: string; tool: string },
+        any,
+        Name
+      >;
+      closeBrowser: FunctionReference<
+        "action",
+        "internal",
+        { sessionId: string },
+        any,
+        Name
+      >;
+      openBrowser: FunctionReference<
+        "action",
+        "internal",
+        {
+          allowedDomains?: Array<string>;
+          blockMedia?: boolean;
+          headless?: boolean;
+          idempotencyKey?: string;
+          idleTimeoutSeconds?: number;
+          includeConnectUrl?: boolean;
+          metadata?: Record<string, string | number | boolean>;
+          timeoutSeconds?: number;
+        },
+        any,
+        Name
+      >;
+    };
     lib: {
       account: FunctionReference<
         "action",
@@ -62,7 +101,7 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
       webSearch: FunctionReference<
         "action",
         "internal",
-        { passages?: boolean; q: string },
+        { passages?: boolean; q: string; speed?: "fast" | "default" },
         any,
         Name
       >;

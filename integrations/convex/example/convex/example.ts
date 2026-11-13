@@ -180,7 +180,7 @@ export const listProgress = query({
   },
 });
 
-/** Rows as they arrive, each with the page it came from. Pairs with React's `usePaginatedQuery`. */
+/** Rows as they arrive, each with its source URL. Pairs with React's `usePaginatedQuery`. */
 export const listRows = query({
   args: { listId: v.string(), paginationOpts: paginationOptsValidator },
   handler: async (ctx, args) => {
@@ -235,6 +235,30 @@ export const cancelList = action({
 });
 
 /** Ownership check callable from an action, which has no `ctx.db`. */
+// ---------------------------------------------------------------------------
+// A real browser: open, go to a page, read it, close
+// ---------------------------------------------------------------------------
+
+/**
+ * Reads a page the way a person sees it, in a real browser SpecStream runs
+ * ($0.10 an hour by the second, $0.001 a step). The browser is closed in
+ * `finally`, so its time stops even when a step fails.
+ */
+export const readPageInBrowser = action({
+  args: { url: v.string() },
+  handler: async (ctx, args) => {
+    await requireUser(ctx);
+    const session = await specstream.openBrowser(ctx, { timeoutSeconds: 120, blockMedia: true });
+    try {
+      await specstream.browserStep(ctx, session.sessionId, "browser_navigate", { url: args.url });
+      const page = await specstream.browserStep(ctx, session.sessionId, "browser_read");
+      return { url: page.url, title: page.title, text: page.text, error: page.error };
+    } finally {
+      await specstream.closeBrowser(ctx, session.sessionId);
+    }
+  },
+});
+
 export const assertOwned = internalQuery({
   args: { listId: v.string(), userId: v.string() },
   returns: v.null(),

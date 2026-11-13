@@ -15,6 +15,50 @@ import type { ComponentApi } from "../component/_generated/component.js";
 // ---------------------------------------------------------------------------
 
 /** Where a list stands. `partial` means SpecStream finished with the rows it found, fewer than you asked for. */
+export type OpenBrowserOptions = {
+  /** The most seconds the browser runs, from 60 to 3600. Defaults to 300. */
+  timeoutSeconds?: number;
+  /** The browser ends after this many seconds with no step, from 10 to 600. Defaults to 120. */
+  idleTimeoutSeconds?: number;
+  /** Hosts the browser may open, such as example.com or *.example.com. */
+  allowedDomains?: string[];
+  /** true skips images, video, audio and fonts. */
+  blockMedia?: boolean;
+  /** false runs the browser with a screen. */
+  headless?: boolean;
+  /** Your own labels, returned as sent. */
+  metadata?: Record<string, string | number | boolean>;
+  /** Return `connect_url` for Playwright or Puppeteer. Keep it on the server. */
+  includeConnectUrl?: boolean;
+  /** The same key on a retried call returns the session the first call opened. */
+  idempotencyKey?: string;
+};
+
+export type BrowserSession = {
+  sessionId: string;
+  status?: string;
+  ended_reason?: string;
+  live_url?: string;
+  connect_url?: string;
+  expires_at?: string;
+  timeout_s?: number;
+  seconds?: number;
+  actions?: number;
+  charged_usd?: number;
+  price?: { per_second_usd: number; per_action_usd: number };
+};
+
+export type BrowserStep = {
+  sessionId: string;
+  text?: string;
+  images?: { mime_type: string | null; base64_chars: number }[];
+  url?: string;
+  title?: string;
+  read_at?: string;
+  price_usd?: number;
+  error?: { code: string; reason?: string | null; message: string };
+};
+
 export type ListStatus =
   | "running"
   | "completed"
@@ -286,16 +330,18 @@ export class SpecStreamClient {
 
   /**
    * Search the live web with the Search API (`GET /v1/web-search`, $5 per 1,000
-   * searches of up to 10 results, or $1 on the fast tier). No quote is needed.
+   * searches). No quote is needed. `speed: "fast"` returns the first ranked results
+   * in about a second, at $1 per 1,000 searches; left out, the API's default runs.
    */
   async webSearch(
     ctx: ActionCtx,
     q: string,
-    options: { passages?: boolean } = {},
+    options: { passages?: boolean; speed?: "fast" | "default" } = {},
   ): Promise<any> {
     return await ctx.runAction(this.component.lib.webSearch, {
       q,
       passages: options.passages,
+      speed: options.speed,
     });
   }
 
@@ -312,6 +358,44 @@ export class SpecStreamClient {
       urls,
       format: options.format,
     });
+  }
+
+  /**
+   * Open a real browser that SpecStream runs (`POST /v1/browser/sessions`, $0.10 an
+   * hour, charged by the second). It ends by itself after `timeoutSeconds` (60 to
+   * 3600, default 300). Set `includeConnectUrl` to drive it with Playwright or
+   * Puppeteer over `connect_url` from a Node action; that address carries a token.
+   */
+  async openBrowser(ctx: ActionCtx, options: OpenBrowserOptions = {}): Promise<BrowserSession> {
+    return await ctx.runAction(this.component.browser.openBrowser, options);
+  }
+
+  /**
+   * Run one step in the browser (`POST /v1/browser/sessions/{id}/actions`, $0.001 a
+   * step): browser_navigate, browser_snapshot, browser_click, browser_type and the
+   * other Playwright MCP tools, or browser_read for the page's text.
+   */
+  async browserStep(
+    ctx: ActionCtx,
+    sessionId: string,
+    tool: string,
+    args: Record<string, unknown> = {},
+  ): Promise<BrowserStep> {
+    return await ctx.runAction(this.component.browser.browserStep, {
+      sessionId,
+      tool,
+      arguments: args,
+    });
+  }
+
+  /** A session's state, seconds, steps and charge so far. Free. */
+  async browserSession(ctx: ActionCtx, sessionId: string): Promise<BrowserSession> {
+    return await ctx.runAction(this.component.browser.browserSession, { sessionId });
+  }
+
+  /** End the session, so its time stops being charged. */
+  async closeBrowser(ctx: ActionCtx, sessionId: string): Promise<BrowserSession> {
+    return await ctx.runAction(this.component.browser.closeBrowser, { sessionId });
   }
 
   /** Who the API key belongs to and what is left to spend. */

@@ -1,0 +1,34 @@
+{
+  "name": "SpecStream",
+  "listing_line": "A research agent on your own server",
+  "url_slug": "specstream-research-agent",
+  "vendor": "SpecStream",
+  "website": "https://specstream.ai/",
+  "support_url": "https://specstream.ai/docs",
+  "support_email": "support@specstream.ai",
+  "base_os": "Ubuntu 24.04 LTS x64",
+  "build_type": "snapshot, or vendor data (vendor-data/cloud-config.yaml)",
+  "categories": ["AI", "Developer Tools"],
+  "smallest_plan": "1 vCPU, 1 GB of memory",
+  "short_description": "Ask a question and get a written report from the live web, with the page behind each cited sentence. Reports stay on your server.",
+  "price": "The app is free. A report costs $0.10 (quick), $0.30 (standard) or $1.00 (deep) on your SpecStream account. A new account starts with $10 of credit.",
+  "variables": [
+    {
+      "name": "web_pass",
+      "type": "password",
+      "label": "Password of the research page",
+      "description": "Vultr makes this password for each server. Sign in to the page with the user name research and this password."
+    },
+    {
+      "name": "specstream_api_key",
+      "type": "user-supplied",
+      "required": false,
+      "label": "SpecStream API key (optional)",
+      "description": "Your API key from https://specstream.ai/workspace. Leave it empty to save the key on the page after the server starts."
+    }
+  ],
+  "open_ports": [22, 80, 443],
+  "readme": "readme.md",
+  "instructions": "instructions.md",
+  "copy_status": "The readme and the instructions wait for the writer agent before the profile is submitted."
+}

@@ -15,11 +15,12 @@ from urllib.parse import quote as quote_path
 from urllib.parse import urlencode, urljoin, urlsplit
 
 from specstream_client.authorization import require_work_authorization
+from specstream_client.browser import BrowserMixin
 from specstream_client.families import FAMILIES
 from specstream_client.monitors import MonitorsMixin
 
 DEFAULT_BASE_URL = "https://api.specstream.ai"
-USER_AGENT = "specstream-python/1.4.0"
+USER_AGENT = "specstream-python/1.5.0"
 
 OpenFn = Callable[[urllib.request.Request, float], Any]
 
@@ -74,7 +75,7 @@ class SpecstreamError(RuntimeError):
                 self.details = dict(error["details"])
 
 
-class Client(MonitorsMixin):
+class Client(MonitorsMixin, BrowserMixin):
     """Typed HTTP client for finder.cross-source.v1 public operations."""
 
     def __init__(

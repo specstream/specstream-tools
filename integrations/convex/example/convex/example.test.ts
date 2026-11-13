@@ -155,4 +155,32 @@ describe("example app", () => {
     ).rejects.toThrow(/No such list/);
     expect(await bob.query(api.example.myLists, {})).toEqual([]);
   });
+
+  test("reads a page in a browser and closes it", async () => {
+    const t = initConvexTest();
+    const calls = mockFetch({
+      "POST /v1/browser/sessions": { data: { id: "bs_9", status: "running" } },
+      "POST /v1/browser/sessions/bs_9/actions": {
+        data: {
+          result: [{ type: "text", text: "Example Domain" }],
+          url: "https://example.com/",
+          title: "Example Domain",
+        },
+      },
+      "POST /v1/browser/sessions/bs_9/release": { data: { id: "bs_9", status: "ended" } },
+    });
+    await expect(
+      t.action(api.example.readPageInBrowser, { url: "https://example.com" }),
+    ).rejects.toThrow(/Not signed in/);
+    const page = await t
+      .withIdentity({ subject: "alice" })
+      .action(api.example.readPageInBrowser, { url: "https://example.com" });
+    expect(page).toMatchObject({ title: "Example Domain", text: "Example Domain" });
+    expect(calls).toEqual([
+      "POST /v1/browser/sessions",
+      "POST /v1/browser/sessions/bs_9/actions",
+      "POST /v1/browser/sessions/bs_9/actions",
+      "POST /v1/browser/sessions/bs_9/release",
+    ]);
+  });
 });

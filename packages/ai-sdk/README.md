@@ -77,6 +77,36 @@ Settings, all optional except the price:
 
 Running on a serverless function? Set `waitSeconds` below the function's time limit. A list that's still running when the wait ends comes back with its `list_id`, and the agent reads the rest with `specstream_get_list_results`.
 
+## Browser sessions
+
+Some pages show nothing until a button is clicked, a form is filled in or their JavaScript runs. For those, the agent opens a real browser that SpecStream runs, drives it step by step and closes it.
+
+```ts
+import { generateText, stepCountIs } from "ai";
+import { specstreamBrowserTools } from "@specstream/ai-sdk";
+
+const { text } = await generateText({
+  model: "openai/gpt-5-mini",
+  tools: specstreamBrowserTools({ timeoutSeconds: 300, allowedDomains: ["example.com"] }),
+  stopWhen: stepCountIs(12),
+  prompt: "Open example.com, accept the cookie banner and read the pricing table.",
+});
+```
+
+| Tool | Input | What it does | Price |
+| --- | --- | --- | --- |
+| `specstream_open_browser` | `url` (optional) | Calls `POST /v1/browser/sessions` with the limits you set in code and returns the `session_id` | $0.10 an hour of browser time, charged by the second |
+| `specstream_browser_navigate` | `session_id`, `url` | Opens the address | $1 per 1,000 steps |
+| `specstream_browser_read` | `session_id`, `format` | The page's text as it stands after its JavaScript ran, in Markdown or plain text | $1 per 1,000 steps |
+| `specstream_browser_snapshot` | `session_id` | The page's links, buttons and fields, each with a reference | $1 per 1,000 steps |
+| `specstream_browser_click`, `specstream_browser_type` | `session_id`, `target`, `text` | Clicks an element or types into a field, by its reference | $1 per 1,000 steps |
+| `specstream_browser_action` | `session_id`, `tool`, `arguments` | Any other Playwright MCP step: a key press, a select, a wait, a form | $1 per 1,000 steps |
+| `specstream_close_browser` | `session_id` | Calls `POST /v1/browser/sessions/{id}/release` and returns the seconds, the steps and the charge | Free |
+
+`timeoutSeconds` (60 to 3600, default 300) is set in your code and is not a tool input: the browser ends then, whatever the model does, so 300 seconds is at most $0.0084 of time. `idleTimeoutSeconds` (default 120) ends a browser no step has touched. `allowedDomains` keeps the browser on the hosts you name, `blockMedia` skips images, video and fonts. A page a site or your own list refuses comes back as an `error` the agent can read, not an exception. Spread both sets into one agent with `tools: { ...specstreamTools({ maxPriceUsd: 5 }), ...specstreamBrowserTools() }`.
+
+Without a model, the same calls are on the client: `openBrowser()`, `browserStep(sessionId, tool, args)`, `browserSession(sessionId)` and `closeBrowser(sessionId)`.
+
 ## Without a model
 
 The client the tools are built on is exported, for the same calls from your own code:

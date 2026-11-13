@@ -52,7 +52,7 @@ Columns follow the request, so a different request brings different columns. A f
 
 | Tool | The model gives | What happens | Cost |
 | --- | --- | --- | --- |
-| `specstream_web_search` | `q`, `passages` | Calls `GET /v1/web-search` and returns the answer, matching rows, ranked sources and optional page passages | $5 per 1,000 searches, $1 per 1,000 with `speed=fast` |
+| `specstream_web_search` | `q`, `passages`, `speed` | Calls `GET /v1/web-search` and returns the answer, matching rows, ranked sources and optional page passages. `speed="fast"` returns the ranked results in about a second | $5 per 1,000 searches of up to 10 results; a fast search costs $1 per 1,000 |
 | `specstream_extract_pages` | `urls`, `format` | Calls `POST /v1/extract` and returns the clean main text, title and published date of 1 to 20 web pages, PDFs, Word or Excel files | $0.80 per 1,000 pages (empty pages free) |
 | `specstream_find_list` | `request`, `max_results` | Reads the request, prices it, starts it only within `max_price_usd`, waits up to `wait_seconds` (7 minutes by default) and returns every row | Only delivered rows |
 | `specstream_get_list_results` | `list_id` | Every row found so far, for a list that was still running | Free |

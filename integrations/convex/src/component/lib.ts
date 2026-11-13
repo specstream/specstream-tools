@@ -16,10 +16,16 @@ export const read = action({
 
 /**
  * Search the live web in seconds with the SpecStream Search API
- * (`GET /v1/web-search`, $5 per 1,000 searches of up to 10 results, or $1 on the fast tier, no quote needed).
+ * (`GET /v1/web-search`, $5 per 1,000 searches of up to 10 results, no quote needed).
+ * `speed: "fast"` returns the engines' first ranked results in about a second, at $1 per
+ * 1,000 searches; left out, the API's default search runs.
  */
 export const webSearch = action({
-  args: { q: v.string(), passages: v.optional(v.boolean()) },
+  args: {
+    q: v.string(),
+    passages: v.optional(v.boolean()),
+    speed: v.optional(v.union(v.literal("fast"), v.literal("default"))),
+  },
   returns: v.any(),
   handler: async (_ctx, args) => {
     const q = args.q.trim();
@@ -28,6 +34,7 @@ export const webSearch = action({
     }
     const params = new URLSearchParams({ q });
     if (args.passages) params.set("passages", "true");
+    if (args.speed) params.set("speed", args.speed);
     return await specstreamRequest(`/v1/web-search?${params.toString()}`);
   },
 });

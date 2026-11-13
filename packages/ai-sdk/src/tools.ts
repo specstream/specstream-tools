@@ -13,6 +13,8 @@ import {
   type Monitor,
   type MonitorEvery,
   type MonitorListResult,
+  type BrowserSessionView,
+  type BrowserStepView,
 } from "./client.js";
 
 export type SpecStreamToolsOptions = {
@@ -63,6 +65,10 @@ const getListResultsInput = z.object({
 const webSearchInput = z.object({
   q: z.string().min(1).max(2000).describe("The search question or request in everyday words (1 to 2,000 characters). Quoted phrases are searched as phrases."),
   passages: z.boolean().optional().describe("Set true to include the main text passages of the top matching pages in the response."),
+  speed: z
+    .enum(["fast", "default"])
+    .optional()
+    .describe('"fast" returns the first ranked results in about a second for $1 per 1,000 searches; "default" adds the answer read from the pages, for $5 per 1,000. Left out, the default search runs.'),
 });
 
 const extractPagesInput = z.object({
@@ -109,10 +115,10 @@ function baseTools(client: SpecStreamClient, options: SpecStreamToolsOptions) {
   return {
     specstream_web_search: tool({
       description:
-        "Search the live web in seconds with the SpecStream Search API (GET /v1/web-search, $5 per 1,000 searches of up to 10 results, or $1 on the fast tier, no quote needed). " +
+        "Search the live web in seconds with the SpecStream Search API (GET /v1/web-search, $5 per 1,000 searches of up to 10 results, no quote needed; speed 'fast' costs $1 per 1,000 and returns ranked results in about a second). " +
         "Returns JSON with kind ('fact' or 'list'), answer (value, page and seen_at), matching rows, ranked sources and optional passages.",
       inputSchema: webSearchInput,
-      execute: async ({ q, passages }, { abortSignal }) => client.webSearch(q, { passages, abortSignal }),
+      execute: async ({ q, passages, speed }, { abortSignal }) => client.webSearch(q, { passages, speed, abortSignal }),
     }),
     specstream_extract_pages: tool({
       description:
@@ -196,3 +202,147 @@ export function specstreamTools(options: SpecStreamToolsOptions): SpecStreamBase
   if (monitorMax === undefined) return tools;
   return { ...tools, ...monitorTools(client, monitorMax, options.monitorMaxPricePerMonthUsd) };
 }
+
+export type SpecStreamBrowserToolsOptions = {
+  /** A SpecStream API key. Defaults to the SPECSTREAM_API_KEY environment variable. */
+  apiKey?: string;
+  /** The SpecStream API address. */
+  baseUrl?: string;
+  /** Replaces the global fetch. */
+  fetch?: typeof fetch;
+  /**
+   * The most seconds one browser runs, from 60 to 3600. Defaults to 300. Set in code; the model can't see it
+   * or raise it. At $0.10 an hour, 300 seconds is at most $0.0084 of time.
+   */
+  timeoutSeconds?: number;
+  /** The browser ends after this many seconds with no step, from 10 to 600. Defaults to 120. */
+  idleTimeoutSeconds?: number;
+  /** Hosts the browser may open, such as example.com or *.example.com. Left out, every public host is allowed. */
+  allowedDomains?: string[];
+  /** true skips images, video, audio and fonts, so pages load faster. */
+  blockMedia?: boolean;
+  /** false runs the browser with a screen, for sites that act differently without one. */
+  headless?: boolean;
+  /** Your own labels for each session. */
+  metadata?: Record<string, string | number | boolean>;
+};
+
+const sessionId = z.string().min(1).describe("The session_id returned by specstream_open_browser.");
+const TARGET = "The element's reference from the last specstream_browser_snapshot (such as e12), or a unique selector.";
+const CLOSE_HINT = "Call specstream_close_browser with this session_id when the work is done.";
+
+const OPEN_BROWSER_DESCRIPTION = [
+  "Open a real browser in the cloud and get its session_id.",
+  "Use it when a page needs clicks, typed text, a sign-in the user gave you, or JavaScript before its content shows;",
+  "for the plain text of a known page, specstream_extract_pages is cheaper.",
+  "The browser costs money while it is open ($0.10 an hour by the second, and $0.001 a step),",
+  "so call specstream_close_browser with the session_id as soon as the work is done.",
+].join(" ");
+
+/**
+ * Tools that open a real browser at SpecStream and drive it step by step: open, go to a page, read it,
+ * list its elements, click, type, any other Playwright MCP step, and close.
+ *
+ * How long a browser may run, and so its highest price, is set here, in code, and is not a tool input.
+ *
+ * @example
+ * const { text } = await generateText({
+ *   model,
+ *   tools: specstreamBrowserTools({ timeoutSeconds: 300, allowedDomains: ["example.com"] }),
+ *   stopWhen: stepCountIs(12),
+ *   prompt: "Open example.com, accept the cookie banner and read the pricing table.",
+ * });
+ */
+export function specstreamBrowserTools(options: SpecStreamBrowserToolsOptions = {}) {
+  const client = new SpecStreamClient({ apiKey: options.apiKey, baseUrl: options.baseUrl ?? DEFAULT_BASE_URL, fetch: options.fetch });
+  if (!client.hasKey) throw new Error(MISSING_KEY_MESSAGE);
+  const timeout = options.timeoutSeconds ?? 300;
+  if (!Number.isInteger(timeout) || timeout < 60 || timeout > 3600) throw new Error("timeoutSeconds must be a whole number from 60 to 3600.");
+  const idle = options.idleTimeoutSeconds ?? 120;
+  if (!Number.isInteger(idle) || idle < 10 || idle > 600) throw new Error("idleTimeoutSeconds must be a whole number from 10 to 600.");
+  return {
+    specstream_open_browser: tool({
+      description: OPEN_BROWSER_DESCRIPTION,
+      inputSchema: z.object({ url: z.string().optional().describe("A page to open first, as an http or https address.") }),
+      execute: async ({ url }, { abortSignal }): Promise<BrowserSessionView> => {
+        const session = await client.openBrowser({
+          timeoutSeconds: timeout,
+          idleTimeoutSeconds: idle,
+          allowedDomains: options.allowedDomains,
+          blockMedia: options.blockMedia,
+          headless: options.headless,
+          metadata: options.metadata,
+          abortSignal,
+        });
+        const first = (url ?? "").trim();
+        if (first && session.session_id) {
+          session.page = await client.browserStep(session.session_id, "browser_navigate", { url: first }, abortSignal);
+        }
+        session.message = CLOSE_HINT;
+        return session;
+      },
+    }),
+    specstream_browser_navigate: tool({
+      description: "Open an address in the session's browser. Returns the page's address and title after it loaded. One step, $0.001.",
+      inputSchema: z.object({ session_id: sessionId, url: z.string().min(1).describe("The http or https address to open.") }),
+      execute: async ({ session_id, url }, { abortSignal }): Promise<BrowserStepView> =>
+        client.browserStep(session_id, "browser_navigate", { url: url.trim() }, abortSignal),
+    }),
+    specstream_browser_read: tool({
+      description: "Read the text of the page the browser shows, as it stands after its JavaScript ran, in Markdown or plain text. One step, $0.001.",
+      inputSchema: z.object({ session_id: sessionId, format: z.enum(["markdown", "text"]).optional().describe('"markdown" (default) or "text".') }),
+      execute: async ({ session_id, format }, { abortSignal }): Promise<BrowserStepView> =>
+        client.browserStep(session_id, "browser_read", { format: format === "text" ? "text" : "markdown" }, abortSignal),
+    }),
+    specstream_browser_snapshot: tool({
+      description:
+        "List the page's links, buttons and fields, each with a reference such as e12. Call it before a click or typed text, and again after the page changed. One step, $0.001.",
+      inputSchema: z.object({ session_id: sessionId }),
+      execute: async ({ session_id }, { abortSignal }): Promise<BrowserStepView> => client.browserStep(session_id, "browser_snapshot", {}, abortSignal),
+    }),
+    specstream_browser_click: tool({
+      description: "Click an element of the page by its reference from the last snapshot. One step, $0.001.",
+      inputSchema: z.object({
+        session_id: sessionId,
+        target: z.string().min(1).describe(TARGET),
+        element: z.string().optional().describe("What the element is, in a few words."),
+      }),
+      execute: async ({ session_id, target, element }, { abortSignal }): Promise<BrowserStepView> =>
+        client.browserStep(session_id, "browser_click", { target, element }, abortSignal),
+    }),
+    specstream_browser_type: tool({
+      description: "Type text into a field of the page by its reference from the last snapshot. One step, $0.001.",
+      inputSchema: z.object({
+        session_id: sessionId,
+        target: z.string().min(1).describe(TARGET),
+        text: z.string().describe("The text to type into the element."),
+        submit: z.boolean().optional().describe("Press Enter after the text."),
+      }),
+      execute: async ({ session_id, target, text, submit }, { abortSignal }): Promise<BrowserStepView> =>
+        client.browserStep(session_id, "browser_type", { target, text, submit: submit ? true : undefined }, abortSignal),
+    }),
+    specstream_browser_action: tool({
+      description:
+        "Run any other step in the session's browser: browser_press_key, browser_select_option, browser_fill_form, browser_hover, " +
+        "browser_wait_for, browser_navigate_back, browser_tabs, browser_handle_dialog, browser_take_screenshot or another Playwright MCP tool name. One step, $0.001.",
+      inputSchema: z.object({
+        session_id: sessionId,
+        tool: z
+          .string()
+          .regex(/^browser_[a-z][a-z0-9_]{0,62}$/)
+          .describe("The step's name, such as browser_press_key."),
+        arguments: z.record(z.string(), z.unknown()).optional().describe("The step's arguments, as Playwright MCP names them."),
+      }),
+      execute: async ({ session_id, tool: step, arguments: args }, { abortSignal }): Promise<BrowserStepView> =>
+        client.browserStep(session_id, step, args ?? {}, abortSignal),
+    }),
+    specstream_close_browser: tool({
+      description: "Close the browser so its time stops being charged. Returns the seconds it ran, its steps and what the session cost. Free.",
+      inputSchema: z.object({ session_id: sessionId }),
+      execute: async ({ session_id }, { abortSignal }): Promise<BrowserSessionView> => client.closeBrowser(session_id, abortSignal),
+    }),
+  };
+}
+
+/** The eight browser tools. */
+export type SpecStreamBrowserTools = ReturnType<typeof specstreamBrowserTools>;
