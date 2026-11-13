@@ -1,0 +1,55 @@
+[project]
+name = "specstream-claude-browser"
+version = "0.1.0"
+description = "A driver for the browser toolset of the Claude SDK that runs on SpecStream browser sessions."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "BSD-2-Clause"
+license-files = ["LICENSE"]
+authors = [{ name = "SpecStream", email = "support@specstream.ai" }]
+keywords = ["claude", "anthropic", "browser-use", "browser-toolset", "specstream", "browser-sessions", "agents"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Internet :: WWW/HTTP :: Browsers",
+  "Typing :: Typed",
+]
+# httpx2 is the HTTP client the anthropic package itself installs, so the driver adds no package of its own.
+dependencies = ["anthropic>=2.8,<3", "httpx2>=2,<3"]
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[project.urls]
+Homepage = "https://specstream.ai"
+Documentation = "https://specstream.ai/docs/api"
+Repository = "https://github.com/specstream/specstream-tools/tree/main/packages/specstream-claude-browser"
+Issues = "https://github.com/specstream/specstream-tools/issues"
+Changelog = "https://github.com/specstream/specstream-tools/blob/main/packages/specstream-claude-browser/CHANGELOG.md"
+Pricing = "https://specstream.ai/pricing"
+
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["specstream_claude_browser"]
+
+[tool.hatch.build.targets.sdist]
+include = ["specstream_claude_browser", "examples", "tests", "README.md", "CHANGELOG.md", "LICENSE"]
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

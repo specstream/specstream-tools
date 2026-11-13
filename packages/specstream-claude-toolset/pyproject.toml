@@ -1,0 +1,55 @@
+[project]
+name = "specstream-claude-toolset"
+version = "0.1.0"
+description = "A SpecStream driver for the Claude SDK's browser toolset: Claude works in a real browser that SpecStream hosts, at $0.10 an hour."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "BSD-2-Clause"
+license-files = ["LICENSE"]
+authors = [{ name = "SpecStream", email = "support@specstream.ai" }]
+keywords = ["claude", "anthropic", "browser-use", "browser-toolset", "specstream", "playwright", "headless-browser", "ai-agents"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Internet :: WWW/HTTP :: Browsers",
+  "Typing :: Typed",
+]
+dependencies = ["anthropic>=2.8,<3", "playwright>=1.45,<2"]
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[project.urls]
+Homepage = "https://specstream.ai"
+Documentation = "https://specstream.ai/docs/api"
+Repository = "https://github.com/specstream/specstream-tools/tree/main/packages/specstream-claude-toolset"
+Issues = "https://github.com/specstream/specstream-tools/issues"
+Changelog = "https://github.com/specstream/specstream-tools/blob/main/packages/specstream-claude-toolset/CHANGELOG.md"
+Pricing = "https://specstream.ai/pricing"
+
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["specstream_claude_toolset"]
+
+[tool.hatch.build.targets.sdist]
+include = ["specstream_claude_toolset", "examples", "tests", "README.md", "CHANGELOG.md", "LICENSE"]
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+
+[tool.ruff.lint.per-file-ignores]
+"specstream_claude_toolset/_page.py" = ["E501"]
+"tests/*" = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

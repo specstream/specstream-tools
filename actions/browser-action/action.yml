@@ -1,0 +1,65 @@
+name: SpecStream Browser
+description: >
+  Open a real browser in the cloud for your workflow. Read a page that needs JavaScript, take a
+  screenshot, or connect Playwright or Puppeteer to it. The browser closes when the job ends.
+author: SpecStream
+inputs:
+  api_key:
+    description: SpecStream API key (ss_live_ or ss_test_). Keep it in a repository secret.
+    required: true
+  url:
+    description: A page to open and read. Leave it empty to only open the browser and connect your own code.
+    required: false
+  format:
+    description: How the page's text is written, markdown or text.
+    required: false
+    default: markdown
+  screenshot:
+    description: Set to true to also save a PNG screenshot of the page.
+    required: false
+    default: "false"
+  timeout_s:
+    description: The most seconds the browser runs, from 60 to 3600.
+    required: false
+    default: "300"
+  allowed_domains:
+    description: Hosts the browser may open, separated by commas or new lines, such as example.com or *.example.com. Empty allows every public host.
+    required: false
+  block_media:
+    description: Set to true to skip images, video, audio and fonts.
+    required: false
+    default: "false"
+  headless:
+    description: Set to false to run the browser with a screen, for sites that act differently without one.
+    required: false
+    default: "true"
+  keep_open:
+    description: Set to false to close the browser as soon as this step ends. By default it stays open for the next steps and closes when the job ends.
+    required: false
+    default: "true"
+  base_url:
+    description: API origin
+    required: false
+    default: https://api.specstream.ai
+outputs:
+  session_id:
+    description: ID of the browser session
+  connect_url:
+    description: A WebSocket that speaks the Chrome DevTools Protocol, for Playwright connect_over_cdp or Puppeteer connect. Empty when keep_open is false.
+  live_url:
+    description: A page that shows the browser's screen as it changes. Empty when keep_open is false.
+  page_path:
+    description: Path to the file with the page's text, when url is set
+  page_url:
+    description: The page's address after it loaded, when url is set
+  page_title:
+    description: The page's title, when url is set
+  screenshot_path:
+    description: Path to the PNG, when screenshot is true
+runs:
+  using: node24
+  main: main.js
+  post: post.js
+branding:
+  icon: globe
+  color: orange
