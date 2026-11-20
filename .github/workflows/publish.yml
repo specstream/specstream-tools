@@ -1,12 +1,12 @@
-# Publishes the n8n community node, the Activepieces piece, the OpenCode and OpenClaw plugins, the Pi package, the Convex component
+# Publishes the Activepieces piece, the OpenCode and OpenClaw plugins, the Pi package, the Convex component
 # and the DeepSeek Harness plugin, and the Twenty CRM app,
 # to npm with a provenance statement.
 #
-# n8n only verifies community nodes that are published from GitHub Actions with
-# provenance. Each package trusts this file (publish.yml in specstream/specstream-tools)
-# as its npm Trusted Publisher, so no token is stored here.
+# Each package trusts this file (publish.yml in specstream/specstream-tools) as its npm
+# Trusted Publisher, so no token is stored here. The n8n node publishes from its own repo,
+# specstream/n8n-nodes-specstream, as n8n's verification asks (Nov 20, 2026).
 #
-# Run it from the Actions tab, or:  gh workflow run publish.yml -f package=n8n
+# Run it from the Actions tab, or:  gh workflow run publish.yml -f package=activepieces
 name: publish
 
 on:
@@ -16,7 +16,6 @@ on:
         description: Package to publish
         type: choice
         options:
-          - n8n
           - activepieces
           - opencode
           - openclaw
@@ -24,10 +23,9 @@ on:
           - convex
           - dsh
           - twenty-app
-        default: n8n
+        default: activepieces
   push:
     tags:
-      - "n8n-v*"
       - "activepieces-v*"
       - "opencode-v*"
       - "openclaw-v*"
@@ -37,33 +35,6 @@ on:
       - "twenty-app-v*"
 
 jobs:
-  n8n:
-    if: inputs.package == 'n8n' || startsWith(github.ref, 'refs/tags/n8n-v')
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
-    defaults:
-      run:
-        working-directory: integrations/n8n
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          registry-url: https://registry.npmjs.org
-      # npm 11.5+ publishes through an npm Trusted Publisher (OIDC) with no token.
-      - run: npm install -g npm@latest
-      - run: npm ci
-      - run: npm run lint
-      - run: npm run build
-      - run: npm test
-      - name: Publish with provenance
-        env:
-          RELEASE_MODE: "true"
-          NPM_CONFIG_PROVENANCE: "true"
-        run: npm publish --access public
-
   activepieces:
     if: inputs.package == 'activepieces' || startsWith(github.ref, 'refs/tags/activepieces-v')
     runs-on: ubuntu-latest
