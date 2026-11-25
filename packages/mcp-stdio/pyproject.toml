@@ -1,7 +1,7 @@
 [project]
 name = "specstream-mcp-stdio"
-version = "1.2.5"
-description = "Stdio bridge to SpecStream's MCP server: lead lists, company lists and grants from the live web for your agent."
+version = "1.2.6"
+description = "Stdio bridge to SpecStream's MCP server: the Search API ($5 per 1,000 searches, or $1 on the fast tier), Extract API ($0.80 per 1,000 pages) and live web data for your agent."
 readme = "README.md"
 requires-python = ">=3.12"
 license = "MIT"

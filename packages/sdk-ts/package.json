@@ -1,7 +1,7 @@
 {
   "name": "@specstream/sdk",
-  "version": "1.3.3",
-  "description": "TypeScript client for building lead lists and company lists from the live web. Every match comes with its source, priced before it runs.",
+  "version": "1.3.4",
+  "description": "TypeScript client for the live web data engine: Search API ($5 per 1,000 searches of up to 10 results, or $1 on the fast tier), Extract API ($0.80 per 1,000 pages) and Deep Search, each result with its source.",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

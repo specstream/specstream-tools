@@ -233,7 +233,10 @@ export class Client {
     let path = `/v1/workspace/audit`;
     const queryString = new URLSearchParams();
     for (const [key, value] of Object.entries(query))
-      if (value !== undefined && value !== null) queryString.set(key, String(value));
+      if (value !== undefined && value !== null)
+        // A list (like, unlike) goes as the key repeated once for each value.
+        for (const item of Array.isArray(value) ? value : [value])
+          queryString.append(key, String(item));
     if (queryString.size) path += "?" + queryString.toString();
     return this.request("GET", path) as Promise<Schemas["WorkspaceAuditPage"]>;
   }
@@ -247,16 +250,22 @@ export class Client {
     let path = `/v1/search`;
     const queryString = new URLSearchParams();
     for (const [key, value] of Object.entries(query))
-      if (value !== undefined && value !== null) queryString.set(key, String(value));
+      if (value !== undefined && value !== null)
+        // A list (like, unlike) goes as the key repeated once for each value.
+        for (const item of Array.isArray(value) ? value : [value])
+          queryString.append(key, String(item));
     if (queryString.size) path += "?" + queryString.toString();
     return this.request("GET", path) as Promise<Schemas["WorkspaceSearchPage"]>;
   }
 
-  webSearch(query: { "q": string; "passages"?: boolean; "num"?: number; "page"?: number; "speed"?: "default" | "fast"; "news"?: boolean; "language"?: string; "country"?: string; "safe"?: "off" | "moderate" | "strict"; "engines"?: string; "engines_asked"?: boolean; "pages_wait_ms"?: number; }): Promise<Schemas["WebSearchPage"]> {
+  webSearch(query: { "q": string; "passages"?: boolean; "compact"?: boolean; "source_max_chars"?: number; "num"?: number; "page"?: number; "speed"?: "default" | "fast"; "news"?: boolean; "language"?: string; "country"?: string; "safe"?: "off" | "moderate" | "strict"; "engines"?: string; "engines_asked"?: boolean; "images"?: boolean; "image_size"?: string; "min_width"?: number; "min_height"?: number; "max_width"?: number; "max_height"?: number; "image_type"?: string; "image_color"?: string; "image_aspect"?: string; "like"?: Array<string>; "unlike"?: Array<string>; "pages_wait_ms"?: number; }): Promise<Schemas["WebSearchPage"]> {
     let path = `/v1/web-search`;
     const queryString = new URLSearchParams();
     for (const [key, value] of Object.entries(query))
-      if (value !== undefined && value !== null) queryString.set(key, String(value));
+      if (value !== undefined && value !== null)
+        // A list (like, unlike) goes as the key repeated once for each value.
+        for (const item of Array.isArray(value) ? value : [value])
+          queryString.append(key, String(item));
     if (queryString.size) path += "?" + queryString.toString();
     return this.request("GET", path) as Promise<Schemas["WebSearchPage"]>;
   }
@@ -285,7 +294,10 @@ export class Client {
     let path = `/v1/crawl/${encodeURIComponent(crawlId)}`;
     const queryString = new URLSearchParams();
     for (const [key, value] of Object.entries(query))
-      if (value !== undefined && value !== null) queryString.set(key, String(value));
+      if (value !== undefined && value !== null)
+        // A list (like, unlike) goes as the key repeated once for each value.
+        for (const item of Array.isArray(value) ? value : [value])
+          queryString.append(key, String(item));
     if (queryString.size) path += "?" + queryString.toString();
     return this.request("GET", path) as Promise<Schemas["CrawlPage"]>;
   }
@@ -299,7 +311,10 @@ export class Client {
     let path = `/v1/web-search/answers`;
     const queryString = new URLSearchParams();
     for (const [key, value] of Object.entries(query))
-      if (value !== undefined && value !== null) queryString.set(key, String(value));
+      if (value !== undefined && value !== null)
+        // A list (like, unlike) goes as the key repeated once for each value.
+        for (const item of Array.isArray(value) ? value : [value])
+          queryString.append(key, String(item));
     if (queryString.size) path += "?" + queryString.toString();
     return this.request("GET", path) as Promise<Schemas["WebSearchAnswerPage"]>;
   }
@@ -313,7 +328,10 @@ export class Client {
     let path = `/v1/account/requests`;
     const queryString = new URLSearchParams();
     for (const [key, value] of Object.entries(query))
-      if (value !== undefined && value !== null) queryString.set(key, String(value));
+      if (value !== undefined && value !== null)
+        // A list (like, unlike) goes as the key repeated once for each value.
+        for (const item of Array.isArray(value) ? value : [value])
+          queryString.append(key, String(item));
     if (queryString.size) path += "?" + queryString.toString();
     return this.request("GET", path) as Promise<Schemas["ApiRequestPage"]>;
   }
@@ -327,7 +345,10 @@ export class Client {
     let path = `/v1/account/usage`;
     const queryString = new URLSearchParams();
     for (const [key, value] of Object.entries(query))
-      if (value !== undefined && value !== null) queryString.set(key, String(value));
+      if (value !== undefined && value !== null)
+        // A list (like, unlike) goes as the key repeated once for each value.
+        for (const item of Array.isArray(value) ? value : [value])
+          queryString.append(key, String(item));
     if (queryString.size) path += "?" + queryString.toString();
     return this.request("GET", path) as Promise<Schemas["UsagePage"]>;
   }
@@ -336,7 +357,10 @@ export class Client {
     let path = `/v1/workspace/notifications`;
     const queryString = new URLSearchParams();
     for (const [key, value] of Object.entries(query))
-      if (value !== undefined && value !== null) queryString.set(key, String(value));
+      if (value !== undefined && value !== null)
+        // A list (like, unlike) goes as the key repeated once for each value.
+        for (const item of Array.isArray(value) ? value : [value])
+          queryString.append(key, String(item));
     if (queryString.size) path += "?" + queryString.toString();
     return this.request("GET", path) as Promise<Schemas["WorkspaceNotificationPage"]>;
   }
@@ -415,7 +439,10 @@ export class Client {
     let path = `/v1/specs`;
     const queryString = new URLSearchParams();
     for (const [key, value] of Object.entries(query))
-      if (value !== undefined && value !== null) queryString.set(key, String(value));
+      if (value !== undefined && value !== null)
+        // A list (like, unlike) goes as the key repeated once for each value.
+        for (const item of Array.isArray(value) ? value : [value])
+          queryString.append(key, String(item));
     if (queryString.size) path += "?" + queryString.toString();
     return this.request("GET", path) as Promise<Schemas["SpecPage"]>;
   }
@@ -434,7 +461,10 @@ export class Client {
     let path = `/v1/specs/${encodeURIComponent(specId)}/revisions`;
     const queryString = new URLSearchParams();
     for (const [key, value] of Object.entries(query))
-      if (value !== undefined && value !== null) queryString.set(key, String(value));
+      if (value !== undefined && value !== null)
+        // A list (like, unlike) goes as the key repeated once for each value.
+        for (const item of Array.isArray(value) ? value : [value])
+          queryString.append(key, String(item));
     if (queryString.size) path += "?" + queryString.toString();
     return this.request("GET", path) as Promise<Schemas["RevisionPage"]>;
   }
@@ -453,7 +483,10 @@ export class Client {
     let path = `/v1/specs/${encodeURIComponent(specId)}/finds`;
     const queryString = new URLSearchParams();
     for (const [key, value] of Object.entries(query))
-      if (value !== undefined && value !== null) queryString.set(key, String(value));
+      if (value !== undefined && value !== null)
+        // A list (like, unlike) goes as the key repeated once for each value.
+        for (const item of Array.isArray(value) ? value : [value])
+          queryString.append(key, String(item));
     if (queryString.size) path += "?" + queryString.toString();
     return this.request("GET", path) as Promise<Schemas["LineagePage"]>;
   }
@@ -472,7 +505,10 @@ export class Client {
     let path = `/v1/finds/${encodeURIComponent(findId)}/decisions`;
     const queryString = new URLSearchParams();
     for (const [key, value] of Object.entries(query))
-      if (value !== undefined && value !== null) queryString.set(key, String(value));
+      if (value !== undefined && value !== null)
+        // A list (like, unlike) goes as the key repeated once for each value.
+        for (const item of Array.isArray(value) ? value : [value])
+          queryString.append(key, String(item));
     if (queryString.size) path += "?" + queryString.toString();
     return this.request("GET", path) as Promise<Schemas["DecisionPage"]>;
   }
@@ -486,7 +522,10 @@ export class Client {
     let path = `/v1/projects`;
     const queryString = new URLSearchParams();
     for (const [key, value] of Object.entries(query))
-      if (value !== undefined && value !== null) queryString.set(key, String(value));
+      if (value !== undefined && value !== null)
+        // A list (like, unlike) goes as the key repeated once for each value.
+        for (const item of Array.isArray(value) ? value : [value])
+          queryString.append(key, String(item));
     if (queryString.size) path += "?" + queryString.toString();
     return this.request("GET", path) as Promise<Schemas["ProjectPage"]>;
   }
@@ -510,7 +549,10 @@ export class Client {
     let path = `/v1/projects/${encodeURIComponent(projectId)}/members`;
     const queryString = new URLSearchParams();
     for (const [key, value] of Object.entries(query))
-      if (value !== undefined && value !== null) queryString.set(key, String(value));
+      if (value !== undefined && value !== null)
+        // A list (like, unlike) goes as the key repeated once for each value.
+        for (const item of Array.isArray(value) ? value : [value])
+          queryString.append(key, String(item));
     if (queryString.size) path += "?" + queryString.toString();
     return this.request("GET", path) as Promise<Schemas["MemberPage"]>;
   }
@@ -544,7 +586,10 @@ export class Client {
     let path = `/v1/capacity/balance`;
     const queryString = new URLSearchParams();
     for (const [key, value] of Object.entries(query))
-      if (value !== undefined && value !== null) queryString.set(key, String(value));
+      if (value !== undefined && value !== null)
+        // A list (like, unlike) goes as the key repeated once for each value.
+        for (const item of Array.isArray(value) ? value : [value])
+          queryString.append(key, String(item));
     if (queryString.size) path += "?" + queryString.toString();
     return this.request("GET", path) as Promise<Schemas["CapacityBalanceData"]>;
   }
@@ -553,7 +598,10 @@ export class Client {
     let path = `/v1/capacity/entitlements`;
     const queryString = new URLSearchParams();
     for (const [key, value] of Object.entries(query))
-      if (value !== undefined && value !== null) queryString.set(key, String(value));
+      if (value !== undefined && value !== null)
+        // A list (like, unlike) goes as the key repeated once for each value.
+        for (const item of Array.isArray(value) ? value : [value])
+          queryString.append(key, String(item));
     if (queryString.size) path += "?" + queryString.toString();
     return this.request("GET", path) as Promise<Schemas["CapacityEntitlementsData"]>;
   }
@@ -582,7 +630,10 @@ export class Client {
     let path = `/v1/capacity/payments`;
     const queryString = new URLSearchParams();
     for (const [key, value] of Object.entries(query))
-      if (value !== undefined && value !== null) queryString.set(key, String(value));
+      if (value !== undefined && value !== null)
+        // A list (like, unlike) goes as the key repeated once for each value.
+        for (const item of Array.isArray(value) ? value : [value])
+          queryString.append(key, String(item));
     if (queryString.size) path += "?" + queryString.toString();
     return this.request("GET", path) as Promise<Schemas["CapacityReceiptPageData"]>;
   }
@@ -647,7 +698,10 @@ export class Client {
     let path = `/v1/capacity/requests/${encodeURIComponent(requestKey)}`;
     const queryString = new URLSearchParams();
     for (const [key, value] of Object.entries(query))
-      if (value !== undefined && value !== null) queryString.set(key, String(value));
+      if (value !== undefined && value !== null)
+        // A list (like, unlike) goes as the key repeated once for each value.
+        for (const item of Array.isArray(value) ? value : [value])
+          queryString.append(key, String(item));
     if (queryString.size) path += "?" + queryString.toString();
     return this.request("GET", path) as Promise<{ [key: string]: unknown; }>;
   }
@@ -656,7 +710,10 @@ export class Client {
     let path = `/v1/capacity/requests/${encodeURIComponent(requestKey)}/rows`;
     const queryString = new URLSearchParams();
     for (const [key, value] of Object.entries(query))
-      if (value !== undefined && value !== null) queryString.set(key, String(value));
+      if (value !== undefined && value !== null)
+        // A list (like, unlike) goes as the key repeated once for each value.
+        for (const item of Array.isArray(value) ? value : [value])
+          queryString.append(key, String(item));
     if (queryString.size) path += "?" + queryString.toString();
     return this.request("GET", path) as Promise<({ [key: string]: unknown; } | { "format": "markdown" | "csv"; "columns": Array<{ "column_id": string; "label": string; }>; "table": string; "find_id"?: (string | null); "accepted_count"?: number; "next_cursor"?: (string | null); })>;
   }
@@ -710,7 +767,10 @@ export class Client {
     let path = `/v1/capacity/schedules`;
     const queryString = new URLSearchParams();
     for (const [key, value] of Object.entries(query))
-      if (value !== undefined && value !== null) queryString.set(key, String(value));
+      if (value !== undefined && value !== null)
+        // A list (like, unlike) goes as the key repeated once for each value.
+        for (const item of Array.isArray(value) ? value : [value])
+          queryString.append(key, String(item));
     if (queryString.size) path += "?" + queryString.toString();
     return this.request("GET", path) as Promise<{ [key: string]: unknown; }>;
   }
@@ -724,7 +784,10 @@ export class Client {
     let path = `/v1/capacity/schedules/${encodeURIComponent(scheduleId)}/occurrences`;
     const queryString = new URLSearchParams();
     for (const [key, value] of Object.entries(query))
-      if (value !== undefined && value !== null) queryString.set(key, String(value));
+      if (value !== undefined && value !== null)
+        // A list (like, unlike) goes as the key repeated once for each value.
+        for (const item of Array.isArray(value) ? value : [value])
+          queryString.append(key, String(item));
     if (queryString.size) path += "?" + queryString.toString();
     return this.request("GET", path) as Promise<{ [key: string]: unknown; }>;
   }
@@ -803,7 +866,10 @@ export class Client {
     let path = `/v1/workspace/collections`;
     const queryString = new URLSearchParams();
     for (const [key, value] of Object.entries(query))
-      if (value !== undefined && value !== null) queryString.set(key, String(value));
+      if (value !== undefined && value !== null)
+        // A list (like, unlike) goes as the key repeated once for each value.
+        for (const item of Array.isArray(value) ? value : [value])
+          queryString.append(key, String(item));
     if (queryString.size) path += "?" + queryString.toString();
     return this.request("GET", path) as Promise<Schemas["WorkspaceCollectionPage"]>;
   }
@@ -852,7 +918,10 @@ export class Client {
     let path = `/v1/workspace/notes`;
     const queryString = new URLSearchParams();
     for (const [key, value] of Object.entries(query))
-      if (value !== undefined && value !== null) queryString.set(key, String(value));
+      if (value !== undefined && value !== null)
+        // A list (like, unlike) goes as the key repeated once for each value.
+        for (const item of Array.isArray(value) ? value : [value])
+          queryString.append(key, String(item));
     if (queryString.size) path += "?" + queryString.toString();
     return this.request("GET", path) as Promise<Schemas["WorkspaceNotes"]>;
   }
@@ -946,7 +1015,10 @@ export class Client {
     let path = `/v1/connections/${encodeURIComponent(connectionId)}/destinations`;
     const queryString = new URLSearchParams();
     for (const [key, value] of Object.entries(query))
-      if (value !== undefined && value !== null) queryString.set(key, String(value));
+      if (value !== undefined && value !== null)
+        // A list (like, unlike) goes as the key repeated once for each value.
+        for (const item of Array.isArray(value) ? value : [value])
+          queryString.append(key, String(item));
     if (queryString.size) path += "?" + queryString.toString();
     return this.request("GET", path) as Promise<Schemas["ConnectedToolData"]>;
   }
@@ -1020,7 +1092,10 @@ export class Client {
     let path = `/v1/activity`;
     const queryString = new URLSearchParams();
     for (const [key, value] of Object.entries(query))
-      if (value !== undefined && value !== null) queryString.set(key, String(value));
+      if (value !== undefined && value !== null)
+        // A list (like, unlike) goes as the key repeated once for each value.
+        for (const item of Array.isArray(value) ? value : [value])
+          queryString.append(key, String(item));
     if (queryString.size) path += "?" + queryString.toString();
     return this.request("GET", path) as Promise<Schemas["ActivityPage"]>;
   }
@@ -1029,7 +1104,10 @@ export class Client {
     let path = `/v1/workspace/collections/${encodeURIComponent(collectionId)}/relationships`;
     const queryString = new URLSearchParams();
     for (const [key, value] of Object.entries(query))
-      if (value !== undefined && value !== null) queryString.set(key, String(value));
+      if (value !== undefined && value !== null)
+        // A list (like, unlike) goes as the key repeated once for each value.
+        for (const item of Array.isArray(value) ? value : [value])
+          queryString.append(key, String(item));
     if (queryString.size) path += "?" + queryString.toString();
     return this.request("GET", path) as Promise<Schemas["RelationshipData"]>;
   }
@@ -1053,7 +1131,10 @@ export class Client {
     let path = `/v1/request-templates`;
     const queryString = new URLSearchParams();
     for (const [key, value] of Object.entries(query))
-      if (value !== undefined && value !== null) queryString.set(key, String(value));
+      if (value !== undefined && value !== null)
+        // A list (like, unlike) goes as the key repeated once for each value.
+        for (const item of Array.isArray(value) ? value : [value])
+          queryString.append(key, String(item));
     if (queryString.size) path += "?" + queryString.toString();
     return this.request("GET", path) as Promise<Schemas["RequestTemplateList"]>;
   }
@@ -1257,7 +1338,7 @@ export class Client {
       Authorization: token,
       Accept: "application/json",
       "Content-Type": "application/json",
-      "User-Agent": "specstream-typescript/1.3.3",
+      "User-Agent": "specstream-typescript/1.3.4",
     };
   }
 

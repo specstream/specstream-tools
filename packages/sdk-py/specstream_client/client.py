@@ -20,7 +20,7 @@ from specstream_client.families import FAMILIES
 from specstream_client.monitors import MonitorsMixin
 
 DEFAULT_BASE_URL = "https://api.specstream.ai"
-USER_AGENT = "specstream-python/1.5.0"
+USER_AGENT = "specstream-python/1.5.1"
 
 OpenFn = Callable[[urllib.request.Request, float], Any]
 
@@ -260,7 +260,8 @@ class Client(MonitorsMixin, BrowserMixin):
                 key: str(value).lower() if isinstance(value, bool) else value
                 for key, value in query.items()
                 if value is not None
-            }
+            },
+            doseq=True,
         )
         if encoded:
             path += "?" + encoded
@@ -290,7 +291,8 @@ class Client(MonitorsMixin, BrowserMixin):
                 key: str(value).lower() if isinstance(value, bool) else value
                 for key, value in query.items()
                 if value is not None
-            }
+            },
+            doseq=True,
         )
         if encoded:
             path += "?" + encoded
@@ -301,6 +303,8 @@ class Client(MonitorsMixin, BrowserMixin):
         *,
         q: str,
         passages: bool | None = None,
+        compact: bool | None = None,
+        source_max_chars: int | None = None,
         num: int | None = None,
         page: int | None = None,
         speed: str | None = None,
@@ -310,6 +314,17 @@ class Client(MonitorsMixin, BrowserMixin):
         safe: str | None = None,
         engines: str | None = None,
         engines_asked: bool | None = None,
+        images: bool | None = None,
+        image_size: str | None = None,
+        min_width: int | None = None,
+        min_height: int | None = None,
+        max_width: int | None = None,
+        max_height: int | None = None,
+        image_type: str | None = None,
+        image_color: str | None = None,
+        image_aspect: str | None = None,
+        like: list[str] | None = None,
+        unlike: list[str] | None = None,
         pages_wait_ms: int | None = None,
     ) -> dict[str, Any]:
         """
@@ -319,6 +334,8 @@ class Client(MonitorsMixin, BrowserMixin):
         query: dict[str, Any] = {
             "q": q,
             "passages": passages,
+            "compact": compact,
+            "source_max_chars": source_max_chars,
             "num": num,
             "page": page,
             "speed": speed,
@@ -328,6 +345,17 @@ class Client(MonitorsMixin, BrowserMixin):
             "safe": safe,
             "engines": engines,
             "engines_asked": engines_asked,
+            "images": images,
+            "image_size": image_size,
+            "min_width": min_width,
+            "min_height": min_height,
+            "max_width": max_width,
+            "max_height": max_height,
+            "image_type": image_type,
+            "image_color": image_color,
+            "image_aspect": image_aspect,
+            "like": like,
+            "unlike": unlike,
             "pages_wait_ms": pages_wait_ms,
         }
         encoded = urlencode(
@@ -335,7 +363,8 @@ class Client(MonitorsMixin, BrowserMixin):
                 key: str(value).lower() if isinstance(value, bool) else value
                 for key, value in query.items()
                 if value is not None
-            }
+            },
+            doseq=True,
         )
         if encoded:
             path += "?" + encoded
@@ -385,7 +414,8 @@ class Client(MonitorsMixin, BrowserMixin):
                 key: str(value).lower() if isinstance(value, bool) else value
                 for key, value in query.items()
                 if value is not None
-            }
+            },
+            doseq=True,
         )
         if encoded:
             path += "?" + encoded
@@ -415,7 +445,8 @@ class Client(MonitorsMixin, BrowserMixin):
                 key: str(value).lower() if isinstance(value, bool) else value
                 for key, value in query.items()
                 if value is not None
-            }
+            },
+            doseq=True,
         )
         if encoded:
             path += "?" + encoded
@@ -453,7 +484,8 @@ class Client(MonitorsMixin, BrowserMixin):
                 key: str(value).lower() if isinstance(value, bool) else value
                 for key, value in query.items()
                 if value is not None
-            }
+            },
+            doseq=True,
         )
         if encoded:
             path += "?" + encoded
@@ -488,7 +520,8 @@ class Client(MonitorsMixin, BrowserMixin):
                 key: str(value).lower() if isinstance(value, bool) else value
                 for key, value in query.items()
                 if value is not None
-            }
+            },
+            doseq=True,
         )
         if encoded:
             path += "?" + encoded
@@ -513,7 +546,8 @@ class Client(MonitorsMixin, BrowserMixin):
                 key: str(value).lower() if isinstance(value, bool) else value
                 for key, value in query.items()
                 if value is not None
-            }
+            },
+            doseq=True,
         )
         if encoded:
             path += "?" + encoded
@@ -614,7 +648,8 @@ class Client(MonitorsMixin, BrowserMixin):
                 key: str(value).lower() if isinstance(value, bool) else value
                 for key, value in query.items()
                 if value is not None
-            }
+            },
+            doseq=True,
         )
         if encoded:
             path += "?" + encoded
@@ -648,7 +683,8 @@ class Client(MonitorsMixin, BrowserMixin):
                 key: str(value).lower() if isinstance(value, bool) else value
                 for key, value in query.items()
                 if value is not None
-            }
+            },
+            doseq=True,
         )
         if encoded:
             path += "?" + encoded
@@ -687,7 +723,8 @@ class Client(MonitorsMixin, BrowserMixin):
                 key: str(value).lower() if isinstance(value, bool) else value
                 for key, value in query.items()
                 if value is not None
-            }
+            },
+            doseq=True,
         )
         if encoded:
             path += "?" + encoded
@@ -721,7 +758,8 @@ class Client(MonitorsMixin, BrowserMixin):
                 key: str(value).lower() if isinstance(value, bool) else value
                 for key, value in query.items()
                 if value is not None
-            }
+            },
+            doseq=True,
         )
         if encoded:
             path += "?" + encoded
@@ -749,7 +787,8 @@ class Client(MonitorsMixin, BrowserMixin):
                 key: str(value).lower() if isinstance(value, bool) else value
                 for key, value in query.items()
                 if value is not None
-            }
+            },
+            doseq=True,
         )
         if encoded:
             path += "?" + encoded
@@ -788,7 +827,8 @@ class Client(MonitorsMixin, BrowserMixin):
                 key: str(value).lower() if isinstance(value, bool) else value
                 for key, value in query.items()
                 if value is not None
-            }
+            },
+            doseq=True,
         )
         if encoded:
             path += "?" + encoded
@@ -835,7 +875,8 @@ class Client(MonitorsMixin, BrowserMixin):
                 key: str(value).lower() if isinstance(value, bool) else value
                 for key, value in query.items()
                 if value is not None
-            }
+            },
+            doseq=True,
         )
         if encoded:
             path += "?" + encoded
@@ -852,7 +893,8 @@ class Client(MonitorsMixin, BrowserMixin):
                 key: str(value).lower() if isinstance(value, bool) else value
                 for key, value in query.items()
                 if value is not None
-            }
+            },
+            doseq=True,
         )
         if encoded:
             path += "?" + encoded
@@ -898,7 +940,8 @@ class Client(MonitorsMixin, BrowserMixin):
                 key: str(value).lower() if isinstance(value, bool) else value
                 for key, value in query.items()
                 if value is not None
-            }
+            },
+            doseq=True,
         )
         if encoded:
             path += "?" + encoded
@@ -992,7 +1035,8 @@ class Client(MonitorsMixin, BrowserMixin):
                 key: str(value).lower() if isinstance(value, bool) else value
                 for key, value in query.items()
                 if value is not None
-            }
+            },
+            doseq=True,
         )
         if encoded:
             path += "?" + encoded
@@ -1020,7 +1064,8 @@ class Client(MonitorsMixin, BrowserMixin):
                 key: str(value).lower() if isinstance(value, bool) else value
                 for key, value in query.items()
                 if value is not None
-            }
+            },
+            doseq=True,
         )
         if encoded:
             path += "?" + encoded
@@ -1090,7 +1135,8 @@ class Client(MonitorsMixin, BrowserMixin):
                 key: str(value).lower() if isinstance(value, bool) else value
                 for key, value in query.items()
                 if value is not None
-            }
+            },
+            doseq=True,
         )
         if encoded:
             path += "?" + encoded
@@ -1119,7 +1165,8 @@ class Client(MonitorsMixin, BrowserMixin):
                 key: str(value).lower() if isinstance(value, bool) else value
                 for key, value in query.items()
                 if value is not None
-            }
+            },
+            doseq=True,
         )
         if encoded:
             path += "?" + encoded
@@ -1231,7 +1278,8 @@ class Client(MonitorsMixin, BrowserMixin):
                 key: str(value).lower() if isinstance(value, bool) else value
                 for key, value in query.items()
                 if value is not None
-            }
+            },
+            doseq=True,
         )
         if encoded:
             path += "?" + encoded
@@ -1304,7 +1352,8 @@ class Client(MonitorsMixin, BrowserMixin):
                 key: str(value).lower() if isinstance(value, bool) else value
                 for key, value in query.items()
                 if value is not None
-            }
+            },
+            doseq=True,
         )
         if encoded:
             path += "?" + encoded
@@ -1421,7 +1470,8 @@ class Client(MonitorsMixin, BrowserMixin):
                 key: str(value).lower() if isinstance(value, bool) else value
                 for key, value in query.items()
                 if value is not None
-            }
+            },
+            doseq=True,
         )
         if encoded:
             path += "?" + encoded
@@ -1521,7 +1571,8 @@ class Client(MonitorsMixin, BrowserMixin):
                 key: str(value).lower() if isinstance(value, bool) else value
                 for key, value in query.items()
                 if value is not None
-            }
+            },
+            doseq=True,
         )
         if encoded:
             path += "?" + encoded
@@ -1543,7 +1594,8 @@ class Client(MonitorsMixin, BrowserMixin):
                 key: str(value).lower() if isinstance(value, bool) else value
                 for key, value in query.items()
                 if value is not None
-            }
+            },
+            doseq=True,
         )
         if encoded:
             path += "?" + encoded
@@ -1587,7 +1639,8 @@ class Client(MonitorsMixin, BrowserMixin):
                 key: str(value).lower() if isinstance(value, bool) else value
                 for key, value in query.items()
                 if value is not None
-            }
+            },
+            doseq=True,
         )
         if encoded:
             path += "?" + encoded
