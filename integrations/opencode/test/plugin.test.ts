@@ -133,7 +133,9 @@ describe("opencode-specstream", () => {
   it("ships the same skills as the repository's skills folder", () => {
     const upstream = join(root, "..", "..", "skills");
     if (!existsSync(upstream)) return; // running from the published package
-    for (const name of readdirSync(upstream)) {
+    // The plugin bundles a subset of the repository's skills; each bundled one must match.
+    for (const name of readdirSync(skillsDir)) {
+      assert.ok(existsSync(join(upstream, name, "SKILL.md")), `${name} has no skills/${name} to copy from`);
       assert.equal(
         readFileSync(join(skillsDir, name, "SKILL.md"), "utf8"),
         readFileSync(join(upstream, name, "SKILL.md"), "utf8"),
