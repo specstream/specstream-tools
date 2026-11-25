@@ -140,6 +140,7 @@ exa = Exa(api_key=os.environ["SPECSTREAM_API_KEY"], base_url="https://api.specst
 [![npm](https://img.shields.io/npm/v/@specstream/sdk)](https://www.npmjs.com/package/@specstream/sdk)
 [![n8n node](https://img.shields.io/npm/v/n8n-nodes-specstream?label=n8n%20node)](https://www.npmjs.com/package/n8n-nodes-specstream)
 [![MCP Registry](https://img.shields.io/badge/MCP%20Registry-ai.specstream%2Fspecstream-blue)](https://registry.modelcontextprotocol.io/v0.1/servers?search=ai.specstream)
+[![SpecStream MCP server](https://glama.ai/mcp/connectors/ai.specstream/specstream/badges/score.svg)](https://glama.ai/mcp/connectors/ai.specstream/specstream)
 [![Add to Replit](https://replit.com/badge?caption=Add%20to%20Replit)](https://replit.com/integrations?mcp=eyJkaXNwbGF5TmFtZSI6IlNwZWNTdHJlYW0iLCJiYXNlVXJsIjoiaHR0cHM6Ly9hcGkuc3BlY3N0cmVhbS5haS9tY3AifQ==)
 
 This repository holds what you install around SpecStream: MCP client setup, agent plugins and skills, SDKs, the n8n node, a GitHub Action, and examples. The product itself runs at [specstream.ai](https://specstream.ai). Licensed MIT.
