@@ -14,6 +14,11 @@ export type SpecStreamSearchAPIRetrieverFields = ToolParams & {
   specstreamApiKey?: string;
   /** Add the text of the top pages to every search. Takes up to about a second more. @default false */
   passages?: boolean;
+  /**
+   * "fast" returns the first ranked results in about a second, at $1 per 1,000 searches.
+   * Left out, the API's default search runs ($5 per 1,000).
+   */
+  speed?: "fast" | "default";
   /** Replace the tool name. */
   name?: string;
   /** Replace the tool description. */
@@ -51,6 +56,8 @@ export class SpecStreamSearch extends StructuredTool<typeof inputSchema> {
 
   passages?: boolean;
 
+  speed?: "fast" | "default";
+
   private apiWrapper: SpecStreamSearchAPIWrapper;
 
   constructor(params: SpecStreamSearchAPIRetrieverFields = {}) {
@@ -63,6 +70,10 @@ export class SpecStreamSearch extends StructuredTool<typeof inputSchema> {
       this.description = params.description;
     }
     this.passages = params.passages;
+    if (params.speed !== undefined && params.speed !== "fast" && params.speed !== "default") {
+      throw new Error('speed must be "default" or "fast".');
+    }
+    this.speed = params.speed;
 
     this.apiWrapper =
       params.apiWrapper ??
@@ -77,7 +88,7 @@ export class SpecStreamSearch extends StructuredTool<typeof inputSchema> {
     _runManager?: CallbackManagerForToolRun
   ): Promise<SpecStreamSearchResponse | { error: string }> {
     try {
-      return await this.apiWrapper.rawResults({ q: input.query, passages: this.passages });
+      return await this.apiWrapper.rawResults({ q: input.query, passages: this.passages, speed: this.speed });
     } catch (e: unknown) {
       return { error: e instanceof Error ? e.message : String(e) };
     }

@@ -29,6 +29,17 @@ Each `Document` is one row. `content` is the row as JSON. `meta` carries `source
 
 `run` also returns `list_id`, `status`, `list_link` and a `message` when the list was still running. When the quoted price is above `max_price_usd`, or the request is too vague to price, nothing runs and `SpecStreamError` explains why.
 
+## Search the web
+
+```python
+from haystack_integrations.components.fetchers.specstream import SpecStreamWebSearch
+
+search = SpecStreamWebSearch(speed="fast")
+result = search.run(q="Who won the 2026 Tour de France?")
+```
+
+`SpecStreamWebSearch` calls the Search API (`GET /v1/web-search`) and returns one `Document` per result. A search costs $5 per 1,000 searches of up to 10 results. A fast search (`speed="fast"`) returns the ranked results in about a second and costs $1 per 1,000. Without `speed`, the default search runs.
+
 ## As an agent tool
 
 ```python

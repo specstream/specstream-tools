@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from typing import Any, Callable
 
 DEFAULT_BASE_URL = "https://api.specstream.ai"
-USER_AGENT = "crewai-specstream/0.1.3"
+USER_AGENT = "crewai-specstream/0.3.0"
 # A list runs for up to about five minutes, so the tools wait a little longer than that by default.
 DEFAULT_WAIT_SECONDS = 420.0
 FINISHED = {"completed", "partial"}
@@ -113,14 +113,22 @@ class SpecStreamAPI:
         return payload["data"]
 
 
-    def web_search(self, q: str, *, passages: bool = False) -> dict[str, Any]:
-        """Search the live web with GET /v1/web-search ($5 per 1,000 searches of up to 10 results, or $1 on the fast tier, no quote needed)."""
+    def web_search(self, q: str, *, passages: bool = False, speed: str | None = None) -> dict[str, Any]:
+        """Search the live web with GET /v1/web-search ($5 per 1,000 searches of up to 10 results, no quote needed).
+
+        speed="fast" returns the engines' first ranked results in about a second, at $1 per 1,000 searches.
+        Left out, the API's default search runs.
+        """
         query = (q or "").strip()
         if not query or len(query) > 2000:
             raise ValueError("q must be between 1 and 2,000 characters.")
+        if speed not in (None, "default", "fast"):
+            raise ValueError('speed must be "default" or "fast".')
         params: dict[str, str] = {"q": query}
         if passages:
             params["passages"] = "true"
+        if speed:
+            params["speed"] = speed
         return self.request("GET", f"/v1/web-search?{urllib.parse.urlencode(params)}") or {}
 
     def extract_pages(self, urls: list[str], *, format: str = "markdown") -> dict[str, Any]:

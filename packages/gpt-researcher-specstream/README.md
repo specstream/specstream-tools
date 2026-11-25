@@ -32,6 +32,7 @@ A free account comes with $10 of credit and needs no card: [specstream.ai](https
 | --- | --- |
 | `SPECSTREAM_API_KEY` | Your API key. Required. |
 | `SPECSTREAM_EXTRACT` | Set to `true` to read the top results through the Extract API and hand GPT Researcher their text, so it does not fetch those pages again. Off by default: GPT Researcher reads the pages. |
+| `SPECSTREAM_SPEED` | Set to `fast` for the fast search: the ranked results in about a second. A fast search costs $1 per 1,000. Left out, the default search runs. |
 | `SPECSTREAM_BASE_URL` | Defaults to `https://api.specstream.ai`. |
 
 Each research sub-query is one Search API call. With `SPECSTREAM_EXTRACT=true`, each result page read is one Extract API page.

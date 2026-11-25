@@ -27,7 +27,7 @@ Both tools are LangChain `StructuredTool` classes, built like `@langchain/tavily
 
 | Tool | Name | What it does | Cost |
 | --- | --- | --- | --- |
-| `SpecStreamSearch` | `specstream_search` | Calls `GET /v1/web-search` and returns the answer, matching rows and ranked sources, with page passages when `passages: true` | $5 per 1,000 searches, $1 per 1,000 with `speed=fast` |
+| `SpecStreamSearch` | `specstream_search` | Calls `GET /v1/web-search` and returns the answer, matching rows and ranked sources, with page passages when `passages: true`. `speed: "fast"` returns the ranked results in about a second | $5 per 1,000 searches of up to 10 results; a fast search costs $1 per 1,000 |
 | `SpecStreamExtract` | `specstream_extract` | Calls `POST /v1/extract` and returns the main text, title and published date of 1 to 20 web pages, PDF, Word or Excel files | $0.80 per 1,000 pages (a page with no text is free) |
 
 Each tool takes `specstreamApiKey` (default: the `SPECSTREAM_API_KEY` environment variable), `apiBaseUrl`, `name` and `description`. A failed call returns `{ error }` to the model.

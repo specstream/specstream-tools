@@ -3,7 +3,7 @@
 # No `from __future__ import annotations`: LlamaIndex reads these signatures at runtime to build the tool schema.
 import json
 import os
-from typing import Annotated, Optional
+from typing import Annotated, Literal, Optional
 
 from llama_index.core.tools.tool_spec.base import BaseToolSpec
 from pydantic import Field
@@ -68,9 +68,18 @@ class SpecStreamToolSpec(BaseToolSpec):
         self,
         q: Annotated[str, Field(description="Search query or question in everyday words (1 to 2,000 characters).")],
         passages: Annotated[bool, Field(description="Set True to include main text passages from the top matching pages.")] = False,
+        speed: Annotated[
+            Optional[Literal["fast", "default"]],
+            Field(
+                description=(
+                    '"fast" returns the first ranked results in about a second for $1 per 1,000 searches; '
+                    '"default" adds the answer read from the pages, for $5 per 1,000. Left out, the default search runs.'
+                )
+            ),
+        ] = None,
     ) -> str:
-        """Search the live web in seconds with the SpecStream Search API (GET /v1/web-search, $5 per 1,000 searches of up to 10 results, or $1 on the fast tier, no quote needed)."""
-        return json.dumps(self._client.web_search(q, passages=passages), ensure_ascii=False)
+        """Search the live web in seconds with the SpecStream Search API (GET /v1/web-search, $5 per 1,000 searches of up to 10 results, no quote needed; speed="fast" costs $1 per 1,000 and returns ranked results in about a second)."""
+        return json.dumps(self._client.web_search(q, passages=passages, speed=speed), ensure_ascii=False)
 
     def specstream_extract_pages(
         self,

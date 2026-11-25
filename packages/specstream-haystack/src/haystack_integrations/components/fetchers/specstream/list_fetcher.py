@@ -123,18 +123,26 @@ class SpecStreamListFetcher:
 
 @component
 class SpecStreamWebSearch:
-    """Searches the live web in seconds with the SpecStream Search API (`GET /v1/web-search`, $5 per 1,000 searches of up to 10 results, or $1 on the fast tier)."""
+    """Searches the live web in seconds with the SpecStream Search API (`GET /v1/web-search`, $5 per 1,000 searches of up to 10 results).
+
+    `speed="fast"` returns the first ranked results in about a second, at $1 per 1,000 searches. Left out (None),
+    the API's default search runs. A `speed` given to `run` overrides the one set here.
+    """
 
     def __init__(
         self,
         api_key: Secret = Secret.from_env_var("SPECSTREAM_API_KEY"),
         base_url: str = DEFAULT_BASE_URL,
+        speed: Optional[str] = None,
     ):
+        if speed not in (None, "default", "fast"):
+            raise ValueError('speed must be "default" or "fast".')
         self.api_key = api_key
         self.base_url = base_url
+        self.speed = speed
 
     def to_dict(self) -> dict[str, Any]:
-        return default_to_dict(self, api_key=self.api_key.to_dict(), base_url=self.base_url)
+        return default_to_dict(self, api_key=self.api_key.to_dict(), base_url=self.base_url, speed=self.speed)
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "SpecStreamWebSearch":
@@ -142,8 +150,10 @@ class SpecStreamWebSearch:
         return default_from_dict(cls, data)
 
     @component.output_types(documents=list[Document], answer=dict[str, Any])
-    def run(self, q: str, passages: bool = False) -> dict[str, Any]:
-        data = SpecStreamAPI(self.api_key.resolve_value() or "", self.base_url).web_search(q, passages=passages)
+    def run(self, q: str, passages: bool = False, speed: Optional[str] = None) -> dict[str, Any]:
+        data = SpecStreamAPI(self.api_key.resolve_value() or "", self.base_url).web_search(
+            q, passages=passages, speed=speed or self.speed
+        )
         docs: list[Document] = []
         for row in data.get("rows") or []:
             if isinstance(row, dict):

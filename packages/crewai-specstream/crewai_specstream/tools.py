@@ -3,7 +3,7 @@
 import asyncio
 import json
 import os
-from typing import Any, Type
+from typing import Any, Literal, Optional, Type
 
 from crewai.tools import BaseTool, EnvVar
 from pydantic import BaseModel, Field, SecretStr, field_validator
@@ -42,6 +42,13 @@ class GetListResultsInput(BaseModel):
 class WebSearchInput(BaseModel):
     q: str = Field(min_length=1, max_length=2000, description="Search query or question in everyday words.")
     passages: bool = Field(default=False, description="Include main text passages from the top matching pages.")
+    speed: Optional[Literal["fast", "default"]] = Field(
+        default=None,
+        description=(
+            '"fast" returns the first ranked results in about a second for $1 per 1,000 searches; '
+            '"default" adds the answer read from the pages, for $5 per 1,000. Left out, the default search runs.'
+        ),
+    )
 
 
 class ExtractPagesInput(BaseModel):
@@ -166,22 +173,21 @@ class SpecStreamGetListResultsTool(_SpecStreamTool):
 
 
 class SpecStreamWebSearchTool(_SpecStreamTool):
-    """Search the live web in seconds with the SpecStream Search API (GET /v1/web-search, $5 per 1,000 searches of up to 10 results, or $1 on the fast tier)."""
+    """Search the live web in seconds with the SpecStream Search API (GET /v1/web-search, $5 per 1,000 searches of up to 10 results)."""
 
     name: str = "specstream_web_search"
     description: str = (
-        "Search the live web in seconds with the SpecStream Search API ($5 per 1,000 searches of up to 10 results, or $1 on the fast tier, no quote needed). "
+        "Search the live web in seconds with the SpecStream Search API ($5 per 1,000 searches of up to 10 results, no quote needed; "
+        "speed='fast' costs $1 per 1,000 and returns ranked results in about a second). "
         "Returns JSON with kind ('fact' or 'list'), answer (value, page and seen_at), matching rows, ranked sources and optional passages."
     )
     args_schema: Type[BaseModel] = WebSearchInput
 
-    def _run(self, q: str, passages: bool = False) -> str:
-        import json
+    def _run(self, q: str, passages: bool = False, speed: Optional[str] = None) -> str:
+        return json.dumps(self._api().web_search(q, passages=passages, speed=speed), ensure_ascii=False, default=str)
 
-        return json.dumps(self._api().web_search(q, passages=passages), ensure_ascii=False, default=str)
-
-    async def _arun(self, q: str, passages: bool = False) -> str:
-        return await asyncio.to_thread(self._run, q, passages)
+    async def _arun(self, q: str, passages: bool = False, speed: Optional[str] = None) -> str:
+        return await asyncio.to_thread(self._run, q, passages, speed)
 
 
 class SpecStreamExtractPagesTool(_SpecStreamTool):

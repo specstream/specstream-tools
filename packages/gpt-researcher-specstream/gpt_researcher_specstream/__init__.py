@@ -9,7 +9,7 @@ import urllib.parse
 import urllib.request
 from typing import Any
 
-__version__ = "0.1.1"
+__version__ = "0.2.0"
 
 DEFAULT_BASE_URL = "https://api.specstream.ai"
 MAX_EXTRACT_URLS = 20
@@ -26,7 +26,8 @@ class SpecStreamSearch:
 
     By default each result is a link with the page passages the Search API returns, and GPT Researcher
     reads the page. With `SPECSTREAM_EXTRACT=true` the top pages are read through the Extract API and
-    returned as `raw_content`, so GPT Researcher does not fetch them again.
+    returned as `raw_content`, so GPT Researcher does not fetch them again. With `SPECSTREAM_SPEED=fast`
+    (or `speed="fast"`) each search is the fast search, $1 per 1,000 searches; left out, the API's default runs.
     """
 
     def __init__(
@@ -37,12 +38,17 @@ class SpecStreamSearch:
         api_key: str | None = None,
         base_url: str | None = None,
         extract: bool | None = None,
+        speed: str | None = None,
     ) -> None:
         self.query = (query or "").strip()
         self.query_domains = [d.strip() for d in (query_domains or []) if d and d.strip()]
         self.api_key = (api_key or os.environ.get("SPECSTREAM_API_KEY") or "").strip()
         self.base_url = (base_url or os.environ.get("SPECSTREAM_BASE_URL") or DEFAULT_BASE_URL).rstrip("/")
         self.extract_pages = _flag(os.environ.get("SPECSTREAM_EXTRACT")) if extract is None else extract
+        chosen = (speed if speed is not None else os.environ.get("SPECSTREAM_SPEED") or "").strip().lower()
+        if chosen not in ("", "default", "fast"):
+            raise ValueError('speed must be "default" or "fast".')
+        self.speed = chosen or None
 
     @property
     def requires_scraping(self) -> bool:
@@ -121,7 +127,10 @@ class SpecStreamSearch:
             return []
         limit = max(1, int(max_results))
         try:
-            params = urllib.parse.urlencode({"q": self._query_text()[:2000], "passages": "true"})
+            query = {"q": self._query_text()[:2000], "passages": "true"}
+            if self.speed:
+                query["speed"] = self.speed
+            params = urllib.parse.urlencode(query)
             links = self._links(self._request("GET", f"/v1/web-search?{params}"))[:limit]
             if not self.extract_pages or not links:
                 return links

@@ -10,7 +10,7 @@ import httpx
 from pydantic_ai import FunctionToolset, ModelRetry, Tool
 from pydantic_ai.capabilities import AbstractCapability
 
-__version__ = "0.2.1"
+__version__ = "0.3.0"
 
 DEFAULT_BASE_URL = "https://api.specstream.ai"
 MAX_EXTRACT_URLS = 20
@@ -74,7 +74,13 @@ class _Client:
         return data
 
 
-def _search_tool(api: _Client, passages: bool, retry_bad_input: bool) -> Tool[Any]:
+def _check_speed(speed: str | None) -> str | None:
+    if speed not in (None, "default", "fast"):
+        raise ValueError('speed must be "default" or "fast".')
+    return speed
+
+
+def _search_tool(api: _Client, passages: bool, retry_bad_input: bool, speed: str | None = None) -> Tool[Any]:
     async def specstream_search(q: str) -> dict[str, Any]:
         """Search the live web with SpecStream and return the answer, matching rows and ranked sources.
 
@@ -87,6 +93,8 @@ def _search_tool(api: _Client, passages: bool, retry_bad_input: bool) -> Tool[An
         params: dict[str, Any] = {"q": question}
         if passages:
             params["passages"] = "true"
+        if speed:
+            params["speed"] = speed
         try:
             return await api.call("GET", "/v1/web-search", params=params)
         except SpecStreamError as error:
@@ -127,13 +135,15 @@ def specstream_search_tool(
     base_url: str | None = None,
     client: httpx.AsyncClient | None = None,
     passages: bool = False,
+    speed: str | None = None,
 ) -> Tool[Any]:
-    """A Pydantic AI tool for the Search API (`GET /v1/web-search`, $5 per 1,000 searches of up to 10 results, or $1 on the fast tier).
+    """A Pydantic AI tool for the Search API (`GET /v1/web-search`, $5 per 1,000 searches of up to 10 results).
 
-    `passages=True` adds the text of the top pages to every search. The reply holds `kind`, `answer`,
-    `rows`, `sources` and, with passages, `passages`.
+    `passages=True` adds the text of the top pages to every search. `speed="fast"` returns the first ranked
+    results in about a second, at $1 per 1,000 searches; left out, the API's default search runs. The reply
+    holds `kind`, `answer`, `rows`, `sources` and, with passages, `passages`.
     """
-    return _search_tool(_Client(api_key, base_url, client), passages, retry_bad_input=False)
+    return _search_tool(_Client(api_key, base_url, client), passages, retry_bad_input=False, speed=_check_speed(speed))
 
 
 def specstream_extract_tool(
@@ -152,11 +162,12 @@ def specstream_toolset(
     base_url: str | None = None,
     client: httpx.AsyncClient | None = None,
     passages: bool = False,
+    speed: str | None = None,
 ) -> FunctionToolset[Any]:
     """A Pydantic AI toolset with `specstream_search` and `specstream_extract`."""
     return FunctionToolset(
         [
-            specstream_search_tool(api_key, base_url=base_url, client=client, passages=passages),
+            specstream_search_tool(api_key, base_url=base_url, client=client, passages=passages, speed=speed),
             specstream_extract_tool(api_key, base_url=base_url, client=client),
         ]
     )
@@ -185,6 +196,8 @@ class SpecStreamCapability(AbstractCapability[Any]):
         search: Add the `specstream_search` tool.
         extract: Add the `specstream_extract` tool.
         passages: Add the text of the top pages to every search.
+        speed: "fast" for the fast search ($1 per 1,000 searches, ranked results in about a second), "default",
+            or None for the API's default.
         instructions: The guidance added to the agent's instructions. `None` or `""` adds none.
         client: A shared `httpx.AsyncClient`. Not available in an agent spec.
         id, description, defer_loading: See `AbstractCapability`. `defer_loading=True` needs an `id`.
@@ -195,12 +208,14 @@ class SpecStreamCapability(AbstractCapability[Any]):
     search: bool = True
     extract: bool = True
     passages: bool = False
+    speed: str | None = None
     instructions: str | None = DEFAULT_INSTRUCTIONS
     client: httpx.AsyncClient | None = field(default=None, repr=False, compare=False)
 
     def __post_init__(self) -> None:
         if not (self.search or self.extract):
             raise ValueError("SpecStreamCapability needs search, extract or both.")
+        _check_speed(self.speed)
         if self.description is None:
             self.description = DESCRIPTION
 
@@ -213,6 +228,7 @@ class SpecStreamCapability(AbstractCapability[Any]):
         search: bool = True,
         extract: bool = True,
         passages: bool = False,
+        speed: str | None = None,
         instructions: str | None = DEFAULT_INSTRUCTIONS,
         id: str | None = None,
         description: str | None = None,
@@ -225,6 +241,7 @@ class SpecStreamCapability(AbstractCapability[Any]):
             search=search,
             extract=extract,
             passages=passages,
+            speed=speed,
             instructions=instructions,
             id=id,
             description=description,
@@ -238,7 +255,7 @@ class SpecStreamCapability(AbstractCapability[Any]):
         api = _Client(self.api_key, self.base_url, self.client)
         tools: list[Tool[Any]] = []
         if self.search:
-            tools.append(_search_tool(api, self.passages, retry_bad_input=True))
+            tools.append(_search_tool(api, self.passages, retry_bad_input=True, speed=self.speed))
         if self.extract:
             tools.append(_extract_tool(api, retry_bad_input=True))
         return FunctionToolset(tools)

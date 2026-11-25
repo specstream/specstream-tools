@@ -8,6 +8,11 @@ export type SpecStreamSearchParams = {
   q: string;
   /** Add the text of the top pages to the reply. */
   passages?: boolean;
+  /**
+   * "fast" returns the engines' first ranked results in about a second, at $1 per 1,000 searches.
+   * Left out, the API's default search runs ($5 per 1,000).
+   */
+  speed?: "fast" | "default";
 };
 
 export type SpecStreamSource = {
@@ -118,6 +123,12 @@ export class SpecStreamSearchAPIWrapper extends BaseSpecStreamAPIWrapper {
     const query = new URLSearchParams({ q: params.q.trim() });
     if (params.passages) {
       query.set("passages", "true");
+    }
+    if (params.speed !== undefined) {
+      if (params.speed !== "fast" && params.speed !== "default") {
+        throw new Error('speed must be "default" or "fast".');
+      }
+      query.set("speed", params.speed);
     }
     return this.call<SpecStreamSearchResponse>("GET", `/v1/web-search?${query.toString()}`);
   }

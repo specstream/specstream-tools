@@ -43,6 +43,7 @@ The example needs `SPECSTREAM_API_KEY` and a model, here `pip install "pydantic-
 | `search` | `True` | Adds `specstream_search` (Search API) |
 | `extract` | `True` | Adds `specstream_extract` (Extract API) |
 | `passages` | `False` | Adds the text of the top pages to every search |
+| `speed` | API default | `"fast"` returns the ranked results in about a second; a fast search costs $1 per 1,000 |
 | `instructions` | built in | Your own guidance, or `None` for none |
 | `base_url`, `client` | | The API address and a shared `httpx.AsyncClient` |
 | `id`, `description`, `defer_loading` | | The standard capability fields. `defer_loading=True` needs an `id` |
@@ -68,7 +69,7 @@ agent = Agent.from_file('agent.yaml', custom_capability_types=[SpecStreamCapabil
 
 | Function | What it gives the agent | Cost |
 | --- | --- | --- |
-| `specstream_search_tool()` | A `specstream_search` tool: calls `GET /v1/web-search` and returns the answer, matching rows and ranked sources, with page passages when `passages=True` | $5 per 1,000 searches, $1 per 1,000 with `speed=fast` |
+| `specstream_search_tool()` | A `specstream_search` tool: calls `GET /v1/web-search` and returns the answer, matching rows and ranked sources, with page passages when `passages=True`. `speed="fast"` runs the fast search | $5 per 1,000 searches of up to 10 results; a fast search costs $1 per 1,000 |
 | `specstream_extract_tool()` | A `specstream_extract` tool: calls `POST /v1/extract` and returns the main text, title and published date of 1 to 20 web pages, PDF, Word or Excel files | $0.80 per 1,000 pages (pages with no text are free) |
 | `specstream_toolset()` | A `FunctionToolset` with both tools, for `Agent(toolsets=[...])` | |
 
