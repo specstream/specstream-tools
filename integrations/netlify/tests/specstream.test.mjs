@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { API_BASE, KEY_VARIABLE, buildLine, checkKey, keyHint, keyProblem } from "../src/lib/specstream.ts";
 
-const KEY = "ss_live_scripted";
+const KEY = "ss_live_scripted_wxyz";
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
 
 function scripted(status, body) {

@@ -42,4 +42,4 @@ __all__ = [
     "specstream_browser_tools",
     "specstream_tools",
 ]
-__version__ = "0.4.0"
+__version__ = "0.4.1"

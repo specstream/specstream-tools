@@ -3,7 +3,7 @@
 // One file with no dependencies, so the npm package and the single binary (Node SEA) run the same code.
 "use strict";
 
-const VERSION = "0.1.0";
+const VERSION = "0.2.0";
 const DEFAULT_BASE_URL = "https://api.specstream.ai";
 const KEY_HELP =
   "Set SPECSTREAM_API_KEY (or pass --api-key). Create a key under Agents & API at https://specstream.ai/workspace";
@@ -15,6 +15,8 @@ Usage:
       --fast            the fast search ($1 per 1,000 searches; the default search is $5 per 1,000)
       --num <n>         how many results (default 10)
       --news            news results
+      --passages        each source with its passages closest to the question, read from the page
+      --compact         one best snippet per source, read from the page (not with --passages or --news)
       --country <cc>    two-letter country      --language <xx>  two-letter language
   specstream read <url> [<url> ...]          Extract API: the main text of up to 20 pages, PDF, Word or Excel
       --format <markdown|text>   (default markdown)
@@ -38,7 +40,7 @@ ${KEY_HELP}
 const VALUE_FLAGS = new Set([
   "num", "country", "language", "format", "results", "max-cents", "key", "api-key", "base-url", "limit",
 ]);
-const SWITCHES = new Set(["fast", "news", "json", "all", "help", "version"]);
+const SWITCHES = new Set(["fast", "news", "passages", "compact", "json", "all", "help", "version"]);
 
 class Usage extends Error {}
 class ApiError extends Error {
@@ -146,6 +148,9 @@ async function search(ctx, words, flags) {
   if (flags.fast) query.set("speed", "fast");
   if (flags.num !== undefined) query.set("num", String(wholeNumber(flags, "num", 10, 1, 100)));
   if (flags.news) query.set("news", "true");
+  if (flags.compact && (flags.passages || flags.news)) throw new Usage("--compact goes with neither --passages nor --news");
+  if (flags.passages) query.set("passages", "true");
+  if (flags.compact) query.set("compact", "true");
   if (flags.country) query.set("country", flags.country);
   if (flags.language) query.set("language", flags.language);
   const data = await ctx.api("GET", "/v1/web-search?" + query);
@@ -159,7 +164,9 @@ async function search(ctx, words, flags) {
   sources.forEach((source, index) => {
     ctx.out(`${index + 1}. ${source.title || source.url}`);
     ctx.out(`   ${source.url}`);
-    if (source.snippet) ctx.out(`   ${String(source.snippet).replace(/\s+/g, " ").trim()}`);
+    const highlights = Array.isArray(source.highlights) ? source.highlights.filter(Boolean) : [];
+    if (highlights.length) highlights.forEach((text) => ctx.out(`   > ${String(text).replace(/\s+/g, " ").trim()}`));
+    else if (source.snippet) ctx.out(`   ${String(source.snippet).replace(/\s+/g, " ").trim()}`);
   });
   if (!sources.length && !(data.answer && data.answer.value)) ctx.err("No results.");
   if (typeof data.price_usd === "number") ctx.err(`$${data.price_usd} charged, ${data.took_ms} ms`);

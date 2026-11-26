@@ -83,7 +83,7 @@ class SpecStreamToolSpec(BaseToolSpec):
 
     def specstream_extract_pages(
         self,
-        urls: Annotated[list[str], Field(description="1 to 20 http or https URLs (web pages, PDF, Word, Excel) to read live.")],
+        urls: Annotated[list[str], Field(description="1 to 20 http or https URLs (web pages, PDF, Word, Excel) to read live, or from SpecStream's own dated copy when a page is slow or refuses.")],
         format: Annotated[str, Field(description='Output format: "markdown" (default) or "text".')] = "markdown",
     ) -> str:
         """Read the main text, title and published date of 1 to 20 URLs live with the SpecStream Extract API (POST /v1/extract, $0.80 per 1,000 pages)."""

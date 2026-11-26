@@ -62,6 +62,30 @@ test("the default search names no speed, so it is the default tier", async () =>
   assert.match(result.err, /No results/);
 });
 
+test("--passages asks for page passages and prints each source's highlights in place of its snippet", async () => {
+  const result = await run(["search", "pg", "release", "--passages"], [
+    ok({
+      sources: [
+        { title: "A", url: "https://a.example/", snippet: "short", highlights: ["first\n passage", "second passage"] },
+        { title: "B", url: "https://b.example/", snippet: "only a snippet" },
+      ],
+    }),
+  ]);
+  assert.equal(result.code, 0);
+  assert.equal(result.calls[0].url, "https://api.specstream.ai/v1/web-search?q=pg+release&passages=true");
+  assert.equal(
+    result.out,
+    "1. A\n   https://a.example/\n   > first passage\n   > second passage\n2. B\n   https://b.example/\n   only a snippet",
+  );
+});
+
+test("--compact asks for compact sources and refuses --passages or --news beside it", async () => {
+  const result = await run(["search", "x", "--compact", "--fast"], [ok({ sources: [] })]);
+  assert.equal(result.calls[0].url, "https://api.specstream.ai/v1/web-search?q=x&speed=fast&compact=true");
+  assert.equal((await run(["search", "x", "--compact", "--passages"])).code, 2);
+  assert.equal((await run(["search", "x", "--compact", "--news"])).code, 2);
+});
+
 test("--json prints the API's data as JSON", async () => {
   const data = { answer: null, sources: [{ url: "https://a.example/", title: "A" }] };
   const result = await run(["search", "a", "--json"], [ok(data)]);

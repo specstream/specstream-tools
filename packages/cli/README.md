@@ -23,7 +23,7 @@ No Node on the machine? Each release has one file per system, with nothing else 
 | Windows x64 | `specstream-windows-x64.exe` |
 
 ```sh
-curl -fsSL -o specstream https://github.com/specstream/specstream-tools/releases/download/cli-v0.1.0/specstream-linux-x64
+curl -fsSL -o specstream https://github.com/specstream/specstream-tools/releases/download/cli-v0.2.0/specstream-linux-x64
 chmod +x specstream
 ./specstream --version
 ```
@@ -36,9 +36,10 @@ chmod +x specstream
 specstream search "What is the latest stable release of PostgreSQL?"
 specstream search "open source vector databases" --fast --num 20
 specstream search "central bank rate decision" --news --country us --json
+specstream search "PostgreSQL 18 release notes logical replication" --passages
 ```
 
-The Search API answers from the live web and prints the answer, the page it stands on, and the sources. The default search costs $5 per 1,000 searches of up to 10 results; `--fast` costs $1 per 1,000.
+The Search API answers from the live web and prints the answer, the page it stands on, and the sources. The default search costs $5 per 1,000 searches of up to 10 results; `--fast` costs $1 per 1,000. `--passages` reads the pages and prints under each source the passages closest to the question, so an agent answers without opening a page; `--compact` prints one best snippet per source instead.
 
 ## Read pages
 

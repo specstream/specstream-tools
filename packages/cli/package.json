@@ -1,6 +1,6 @@
 {
   "name": "@specstream/cli",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "The specstream command: web search, page reading and Deep Search from the terminal, with one key.",
   "bin": {
     "specstream": "bin/specstream.js"

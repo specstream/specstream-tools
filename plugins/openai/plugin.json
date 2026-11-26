@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "specstream",
-  "version": "1.2.1",
-  "description": "SpecStream is the live web data engine for teams and agents. One platform to build, search, extract, enrich, map, and monitor data across the entire web.",
+  "version": "1.2.2",
+  "description": "SpecStream is the live web data engine for teams and agents. Search the live web, read web pages and documents, and turn a request in plain words into structured rows with Deep Search.",
   "author": {
     "name": "SpecStream SAS",
     "email": "support@specstream.ai",
@@ -15,16 +15,22 @@
     "research",
     "public records",
     "local businesses",
-    "mcp"
+    "mcp",
+    "web search",
+    "search api",
+    "extract",
+    "deep search"
   ],
   "extensions": {
     "com.openai": {
       "interface": {
         "displayName": "SpecStream",
         "shortDescription": "The live web data engine",
-        "longDescription": "SpecStream is the live web data engine for teams and agents. One platform to build, search, extract, enrich, map, and monitor data across the entire web.\n\nAsk for any dataset in plain words, and SpecStream builds it from the entire live web: every match found, extracted and enriched into structured records, then monitored for change. It runs through the API and MCP, and inside Sheets, CRMs, Slack, n8n, Zapier and the other tools teams already use.\n\nRows meet the conditions you wrote. Matches SpecStream couldn't confirm are shown apart, labeled as possible, and never counted as results.\n\nBefore anything runs, you see how SpecStream read your request, as parts you can change, and you approve each run. You can stop a run at any time. Open a row to see each condition it meets.\n\nSource URL and read time on every value.\n\nFrom there, ask for more results, add facts to every row, or recheck the rows you have. Bring your own CSV or Excel file and SpecStream fills in or checks each row. Paste a few example rows from a website and SpecStream reads the rest of it the same way.\n\nThe Lists app shows your recent runs and fills in rows as they arrive. Download results as CSV, Excel, JSON or HTML, or as KML and GeoJSON when they have places, or share them with a link.",
+        "longDescription": "SpecStream is the live web data engine for teams and agents. One platform to build, search, extract, enrich, map, and monitor data across the entire web.\n\nSearch the live web from ChatGPT. Ask a question in your own words and SpecStream answers it from the pages it reads. For a list, the search returns the first rows, and Deep Search builds the full table.\n\nRead pages the same way. Give SpecStream up to 20 web addresses and it returns the main text of each page or document, PDF, Word and Excel included.\n\nDeep Search is for many rows with the same facts on each. Ask in plain words and get every match on the live web, in structured rows. Before anything runs, you see how SpecStream read your request, as parts you can change, and you approve the run. You can stop a run at any time. Rows meet the conditions you wrote. Matches SpecStream couldn't confirm are shown apart, labeled as possible, and never counted as results.\n\nSource URL and read time on every value.\n\nFrom there, ask for more results, add facts to every row, or recheck the rows you have. Bring your own CSV or Excel file and SpecStream fills in or checks each row. Paste a few example rows from a website and SpecStream reads the rest of it the same way. Ask for a written report that answers a question from the live web.\n\nThe Lists app shows your recent runs and fills in rows as they arrive. Download results as CSV, Excel, JSON or HTML, or as KML and GeoJSON when they have places, or share them with a link.",
         "developerName": "SpecStream SAS",
         "category": "Data & Analytics",
+        "brandColor": "#8b4486",
+        "brandColorDark": "#c782c1",
         "capabilities": [
           "Read",
           "Write"
@@ -34,7 +40,9 @@
         "privacyPolicyURL": "https://specstream.ai/privacy",
         "termsOfServiceURL": "https://specstream.ai/terms",
         "defaultPrompt": [
-          "Use SpecStream to find datasets on urban tree canopy published since 2020 under an open license."
+          "Use SpecStream to search the web for this week's changes to US tariff rates on steel, with sources.",
+          "Use SpecStream to read the changelogs of Notion, Linear and Asana and list what each shipped this month.",
+          "Use SpecStream to build a table of every NABCEP certified solar installer in Arizona, with city and website."
         ],
         "logo": "./assets/logo.png",
         "composerIcon": "./assets/icon.png"
@@ -43,10 +51,16 @@
         "test_cases": {
           "positive": [
             {
-              "description": "Understands a request and shows the reading before anything runs or costs money.",
-              "prompt": "Find dental practices in Florida with three or more locations. Leave out practices owned by a dental service organization.",
-              "tools_triggered": "compile",
-              "expected_behavior": "Shows what SpecStream will look for (dental practices in Florida), the conditions (three or more locations, not owned by a dental service organization) and the facts to bring back. Says nothing has run or been charged, and offers to get a price."
+              "description": "Answers one question from the live web with the page the answer was read from.",
+              "prompt": "Use SpecStream to search the web: on what date did the EU AI Act enter into force?",
+              "tools_triggered": "search_web",
+              "expected_behavior": "Calls search_web once and answers with the date (August 1, 2024) and the page it was read from. Nothing is quoted or approved."
+            },
+            {
+              "description": "Reads the text of a page the user names.",
+              "prompt": "Use SpecStream to read https://specstream.ai/privacy and tell me how long backups are kept.",
+              "tools_triggered": "read_pages",
+              "expected_behavior": "Calls read_pages with that address and answers from the page's text, quoting the retention period the page states."
             },
             {
               "description": "Gets a price for a request and asks for approval without starting work.",
@@ -65,12 +79,6 @@
               "prompt": "Find datasets on urban tree canopy published since 2020 under an open license. Run it if the price is $5 or less, then give me a CSV of the results.",
               "tools_triggered": "compile, quote_new_list, run_new_list, get_find, list_find_rows, export_find",
               "expected_behavior": "Runs the request within the $5 ceiling, lists the datasets with their sources, and returns a CSV download link."
-            },
-            {
-              "description": "Reads the user's projects and balance without spending.",
-              "prompt": "Which SpecStream projects can I use, and how much balance do I have left?",
-              "tools_triggered": "list_projects, get_capacity_balance",
-              "expected_behavior": "Lists the projects with the user's role in each and shows the available balance. Nothing is quoted, approved or charged."
             }
           ],
           "negative": [
@@ -80,9 +88,9 @@
               "expected_behavior": "ChatGPT writes the email itself. No SpecStream tool is called, because the user asked for an email, not a list."
             },
             {
-              "description": "A single fact, not a list.",
-              "prompt": "What's the population of Austin, Texas?",
-              "expected_behavior": "Answers directly or with ChatGPT's own search. No SpecStream tool is called, because SpecStream builds lists."
+              "description": "A language task that needs nothing from the web.",
+              "prompt": "Translate this sentence into Spanish: Our office is closed on Friday.",
+              "expected_behavior": "ChatGPT translates the sentence itself. No SpecStream tool is called, because nothing needs to be searched or read on the web."
             },
             {
               "description": "Account changes that stay in the owner's SpecStream workspace.",
@@ -92,12 +100,12 @@
           ]
         },
         "commerce": true,
-        "commerce_description": "SpecStream reads the live web for a request and checks each result against the user's conditions. Work is paid from the user's own SpecStream account balance, which the user manages on specstream.ai. The plugin never shows plans, prices to buy, upgrade prompts or checkout links, and it sells no credits. Before any paid run the user sees a quote and approves a maximum in the conversation, and ChatGPT asks for confirmation because the approval tool is marked destructive. Spending stops at the approved maximum and at the account's own limit.",
+        "commerce_description": "SpecStream reads the live web for a request and checks each result against the user's conditions. Work is paid from the user's own SpecStream account balance, which the user manages on specstream.ai. The plugin never shows plans, prices to buy, upgrade prompts or checkout links, and it sells no credits. A web search or a page read takes a small amount from the same balance per call, without a separate quote. Before any other paid run the user sees a quote and approves a maximum in the conversation, and ChatGPT asks for confirmation because the approval tool is marked destructive. Spending stops at the approved maximum and at the account's own limit.",
         "demo_recording_url": "https://drive.google.com/file/d/1mIt4o3o5F54OuuGOiD34x9Lw-nAX0wZx/view?usp=sharing"
       },
       "onboardingSkill": "./skills/get-started/SKILL.md",
       "publication": {
-        "release_notes": "Version 1.2.1. First release. Ask for any dataset in plain words, see how SpecStream read it, approve the run, then get rows that meet your conditions. Possible matches are shown apart and never counted. Ask for more results, add facts or recheck the rows you have. Bring a CSV or Excel file to fill in or check, or show SpecStream a few example rows from a website to read the rest. Download results as CSV, Excel, JSON or HTML, or as KML and GeoJSON for records with places, or share them with a link. The Lists app opens from the sidebar and beside a conversation, opens CSV, Excel, GeoJSON and KML files, offers your saved work as mentions and keeps its settings in ChatGPT. When a place matches several, ChatGPT asks which one in a form. Events tell a chat when a run finishes or a saved request finds new results. Includes five skills, with get-started as the setup skill."
+        "release_notes": "Version 1.2.2. Adds web search and page reading. Ask a question and SpecStream answers it from the live web. Give it up to 20 web addresses and it returns the main text of each page or document. Past searches can be opened again. Adds written reports that answer a question from the live web, priced and approved before they run. Adds a skill for searching the web and reading pages. Deep Search, the Lists app, downloads and sharing work as in 1.2.1."
       }
     }
   }

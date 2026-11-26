@@ -72,7 +72,7 @@ const webSearchInput = z.object({
 });
 
 const extractPagesInput = z.object({
-  urls: z.array(z.string().min(1)).min(1).max(20).describe("1 to 20 http or https URLs (web pages, PDF, Word, Excel) to read live."),
+  urls: z.array(z.string().min(1)).min(1).max(20).describe("1 to 20 http or https URLs (web pages, PDF, Word, Excel) to read live, or from SpecStream's own dated copy when a page is slow or refuses."),
   format: z.enum(["markdown", "text"]).optional().describe('Output format: "markdown" (default) or "text".'),
 });
 

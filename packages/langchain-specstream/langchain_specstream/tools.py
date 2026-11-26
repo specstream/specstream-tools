@@ -42,7 +42,7 @@ class WebSearchInput(BaseModel):
 
 
 class ExtractPagesInput(BaseModel):
-    urls: list[str] = Field(min_length=1, max_length=20, description="1 to 20 http or https URLs to read live.")
+    urls: list[str] = Field(min_length=1, max_length=20, description="1 to 20 http or https URLs to read live, or from SpecStream's own dated copy when a page is slow or refuses.")
     format: str = Field(default="markdown", description='Output format: "markdown" or "text".')
 
 class _SpecStreamTool(BaseTool):

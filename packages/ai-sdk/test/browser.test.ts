@@ -70,7 +70,7 @@ describe("specstreamBrowserTools", () => {
     expect(calls[0].path).toBe("/v1/browser/sessions");
     expect(calls[0].body).toEqual({ timeout_s: 120, idle_timeout_s: 120, keep_alive: true, allowed_domains: ["example.com"], block_media: true });
     expect(calls[0].headers.Authorization).toBe("Bearer ss_live_test_key");
-    expect(calls[0].headers["User-Agent"]).toBe("@specstream/ai-sdk/0.4.0");
+    expect(calls[0].headers["User-Agent"]).toBe("@specstream/ai-sdk/0.4.1");
     expect(out.session_id).toBe("bss_01JX");
     expect(out.message).toContain("specstream_close_browser");
     expect(JSON.stringify(out)).not.toContain("secret-token");
